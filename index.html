@@ -1,0 +1,2730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#04080a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>雾港回响 · 百幕</title>
+<style>
+  :root{
+    --bg:#04080a; --panel:#0b1419; --panel2:#101d25;
+    --line:rgba(126,170,180,.16); --line2:rgba(126,170,180,.36);
+    --ink:#dbe6e2; --muted:#8296a0; --dim:#5d727b;
+    --gold:#c9a24b; --gold-dim:#7d652f; --teal:#67b8a9;
+    --red:#d4564b; --green:#57b368; --purple:#a98bdf; --abyss:#3d7392;
+    --serif:"Songti SC","Noto Serif SC","Source Han Serif SC","STSong","SimSun",Georgia,serif;
+    --sans:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(201,162,75,.12)}
+  html,body{margin:0;padding:0}
+  html{background:var(--bg)}
+  body{
+    background:
+      radial-gradient(1100px 700px at 12% -12%, #0d222b 0%, transparent 58%),
+      radial-gradient(900px 620px at 94% 6%, #141b2c 0%, transparent 52%),
+      linear-gradient(#050a0d,#03070a 62%,#050a0d);
+    color:var(--ink); font-family:var(--serif); line-height:1.78;
+    min-height:100vh; min-height:100dvh;
+    -webkit-text-size-adjust:100%; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    touch-action:manipulation; overscroll-behavior-y:contain;
+  }
+  button{user-select:none;-webkit-user-select:none;touch-action:manipulation}
+  input,textarea{user-select:text;-webkit-user-select:text}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .fog{position:fixed;pointer-events:none;filter:blur(70px);opacity:.5;z-index:0}
+  .fog-a{width:70vw;height:70vw;left:-22vw;top:-26vw;
+    background:radial-gradient(circle,rgba(46,104,110,.4),transparent 66%);
+    animation:drift 30s ease-in-out infinite alternate}
+  .fog-b{width:62vw;height:62vw;right:-22vw;bottom:-22vw;
+    background:radial-gradient(circle,rgba(40,62,110,.38),transparent 66%);
+    animation:drift 40s ease-in-out infinite alternate-reverse}
+  @keyframes drift{to{transform:translate3d(4%,3%,0) scale(1.16)}}
+  .scan{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.3;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
+  body.low-san .scan{opacity:.5;background:repeating-linear-gradient(0deg,rgba(180,40,40,.03) 0 1px,transparent 1px 4px)}
+
+  .top{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);
+    background:rgba(4,8,10,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:0 8px 28px rgba(0,0,0,.34);padding-top:env(safe-area-inset-top);
+    transform:translateZ(0)}
+  .top .inner{max-width:960px;margin:0 auto;
+    padding:8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+    display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand{display:flex;align-items:center;gap:9px;min-width:0}
+  .brand>div{min-width:0}
+  .seal{width:34px;height:34px;flex:0 0 34px;border:1px solid rgba(201,162,75,.55);
+    border-radius:4px;display:grid;place-items:center;color:var(--gold);font-size:18px;
+    box-shadow:inset 0 0 16px rgba(201,162,75,.12)}
+  .brand b{display:block;font-size:15px;letter-spacing:.16em;color:#eef6f3;font-weight:600;
+    line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand i{display:block;font-family:var(--sans);font-style:normal;font-size:9.5px;
+    letter-spacing:.18em;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbtns{display:flex;gap:6px;flex:0 0 auto}
+  .tbtn{font-family:var(--sans);font-size:11.5px;color:var(--muted);background:transparent;
+    border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer;transition:.15s;
+    white-space:nowrap;min-height:38px;display:inline-flex;align-items:center;justify-content:center}
+  .tbtn:active{background:rgba(201,162,75,.12);color:var(--gold)}
+  .tbtn.on{color:var(--gold);border-color:var(--gold-dim)}
+
+  .wrap{position:relative;z-index:2;max-width:960px;margin:0 auto;
+    padding:10px max(12px, env(safe-area-inset-right)) calc(26px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left))}
+
+  .hud{margin-bottom:10px}
+  .hrow{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+  .st{background:linear-gradient(180deg,rgba(16,29,37,.9),rgba(9,15,19,.94));
+    border:1px solid var(--line);border-radius:9px;padding:5px 6px;text-align:center}
+  .st span{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.08em;color:var(--dim)}
+  .st b{display:block;font-size:17px;line-height:1.35;color:var(--teal);font-variant-numeric:tabular-nums}
+  .sanbox{background:linear-gradient(180deg,rgba(16,29,37,.9),rgba(9,15,19,.94));
+    border:1px solid var(--line);border-radius:9px;padding:6px 9px 8px}
+  .sanhead{display:flex;align-items:baseline;gap:8px;font-family:var(--sans);
+    font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:4px}
+  .sanhead b{font-family:var(--serif);font-size:14px;color:var(--green);letter-spacing:0}
+  .sanhead .spacer{flex:1}
+  .sanhead .buff{color:var(--purple);font-size:9.5px;letter-spacing:.02em}
+  .bar{height:6px;background:#050b0e;border:1px solid rgba(126,170,180,.12);
+    border-radius:7px;overflow:hidden}
+  .bar i{display:block;height:100%;width:100%;
+    background:linear-gradient(90deg,#3f8f6a,#c9a24b 58%,#d4564b);transition:width .45s ease}
+  .prestart .hud{display:none}
+
+  .scene{position:relative;background:linear-gradient(180deg,rgba(16,29,37,.95),rgba(8,14,18,.98));
+    border:1px solid var(--line);border-left:3px solid var(--gold-dim);border-radius:13px;
+    padding:16px 14px 15px;box-shadow:0 22px 56px rgba(0,0,0,.42);animation:scenein .35s ease;margin-bottom:12px}
+  @keyframes scenein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .kick{font-family:var(--sans);font-size:9.5px;letter-spacing:.24em;color:var(--abyss);margin-bottom:5px}
+  .scene h2{margin:0 0 4px;font-size:clamp(19px,5.4vw,22px);letter-spacing:.06em;color:#eef6f3;font-weight:600;line-height:1.4}
+  .scene .sub{font-family:var(--sans);font-size:12px;color:var(--dim);margin-bottom:12px;letter-spacing:.03em;line-height:1.65}
+  .body p{margin:.7em 0;font-size:15.5px;line-height:1.85;color:#cbd9d5;text-align:justify;text-justify:inter-ideograph}
+  .body p:first-child{margin-top:0}
+  .ask{margin:14px 0;background:rgba(8,16,20,.85);border:1px solid var(--line);
+    border-left:2px solid var(--abyss);border-radius:8px;padding:11px 12px;
+    font-family:var(--sans);font-size:12.5px;color:#a9bdc2;line-height:1.75}
+  .ask .h{color:var(--gold);letter-spacing:.14em;font-size:9.5px;margin-bottom:3px}
+  .ask b{color:var(--teal)}
+  .rail{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:12px 0 2px}
+  .chip{font-family:var(--sans);font-size:10.5px;color:var(--teal);background:rgba(10,20,24,.9);
+    border:1px dashed var(--line2);border-radius:20px;padding:6px 12px;cursor:pointer;min-height:34px;
+    display:inline-flex;align-items:center;transition:.15s}
+  .chip:active{background:rgba(103,184,169,.12)}
+  .chip.gold{color:var(--gold);border-color:var(--gold-dim)}
+  .opts{display:flex;flex-direction:column;gap:9px;margin-top:12px;transition:opacity .3s ease}
+  .opts.pending{opacity:0;pointer-events:none}
+  .opt{width:100%;text-align:left;cursor:pointer;border:1px solid var(--line);
+    background:rgba(10,18,23,.92);color:var(--ink);padding:12px 14px;border-radius:10px;
+    font-family:inherit;font-size:14.5px;transition:transform .12s ease,background .15s ease,border-color .15s ease;
+    min-height:50px;-webkit-user-select:none;user-select:none}
+  .opt:active:not(:disabled){background:rgba(103,184,169,.1);border-color:var(--teal);transform:scale(.993)}
+  .opt .t{display:block;line-height:1.55}
+  .opt .tag{display:block;margin-top:4px;font-family:var(--sans);font-size:10.5px;color:var(--dim);
+    letter-spacing:.04em;line-height:1.55}
+  .opt.roll{border-color:rgba(169,139,223,.36)}
+  .opt.deep{border-color:rgba(212,86,75,.3)}
+  .opt:disabled{opacity:.4;cursor:not-allowed}
+  .foot{display:flex;justify-content:space-between;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .tiny{font-family:var(--sans);font-size:10.5px;color:var(--dim);background:transparent;
+    border:1px solid var(--line);border-radius:7px;padding:7px 10px;cursor:pointer;min-height:36px}
+  .tiny:active{color:var(--teal)}
+
+  .maphead{margin-bottom:10px}
+  .progress{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--sans);font-size:10.5px;
+    color:var(--dim);letter-spacing:.05em;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+  .progress b{color:var(--teal);font-family:var(--serif);font-size:13px;letter-spacing:0}
+  .mapgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:12px}
+  .site{position:relative;text-align:left;cursor:pointer;background:linear-gradient(180deg,rgba(16,29,37,.92),rgba(9,15,19,.96));
+    border:1px solid var(--line);border-radius:11px;padding:11px 11px 10px;color:var(--ink);
+    font-family:inherit;transition:transform .12s ease,border-color .15s ease,background .15s ease;
+    overflow:hidden;min-height:102px;animation:cardin .3s ease both}
+  @keyframes cardin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .site:nth-child(2){animation-delay:.03s}.site:nth-child(3){animation-delay:.06s}
+  .site:nth-child(4){animation-delay:.09s}.site:nth-child(5){animation-delay:.12s}
+  .site:nth-child(6){animation-delay:.15s}.site:nth-child(7){animation-delay:.18s}
+  .site:nth-child(8){animation-delay:.21s}
+  .site:active:not(:disabled){border-color:var(--teal);transform:scale(.985);background:rgba(103,184,169,.06)}
+  .site .idx{position:absolute;right:8px;top:3px;font-size:25px;font-weight:700;line-height:1.2;
+    color:rgba(201,162,75,.13);font-family:var(--sans)}
+  .site h3{margin:0 0 3px;font-size:15px;letter-spacing:.04em;font-weight:600;padding-right:24px;line-height:1.4}
+  .site .omen{font-family:var(--sans);font-size:10.5px;color:var(--muted);line-height:1.6;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
+  .site .state{display:inline-block;margin-top:6px;font-family:var(--sans);font-size:9.5px;
+    padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--dim)}
+  .site.done{opacity:.55;cursor:default;animation:none}
+  .site.done .state{color:var(--teal);border-color:rgba(103,184,169,.35)}
+  .site:disabled{pointer-events:none}
+  .actions{position:sticky;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;
+    background:linear-gradient(180deg,rgba(4,8,10,.55),rgba(4,8,10,.97) 42%);
+    border-top:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    padding:10px 0 calc(12px + env(safe-area-inset-bottom));margin-top:4px}
+  .act{font-family:var(--sans);font-size:12.5px;letter-spacing:.04em;cursor:pointer;
+    border:1px solid var(--line);background:rgba(12,22,28,.95);color:var(--ink);
+    border-radius:10px;padding:11px 8px;min-height:50px;transition:transform .12s ease,background .15s ease,border-color .15s ease;
+    line-height:1.35}
+  .act:active:not(:disabled){border-color:var(--teal);background:rgba(103,184,169,.08);transform:scale(.985)}
+  .act b{display:block;font-size:13px;color:var(--gold);font-weight:600}
+  .act span{display:block;font-size:10px;color:var(--dim);margin-top:1px}
+  .act.final{border-color:var(--gold-dim);color:var(--gold);background:rgba(201,162,75,.06)}
+  .act.final:active{border-color:var(--gold)}
+  .act:disabled{opacity:.38;cursor:not-allowed}
+  .act .lock{color:var(--red)}
+
+  .qblock{border:1px solid var(--line);border-radius:9px;padding:11px 12px;margin:10px 0;
+    background:rgba(8,15,19,.7)}
+  .qblock .qh{font-size:14px;color:#e6efec;margin-bottom:6px}
+  .qblock .qh span{color:var(--gold);font-family:var(--sans);font-size:10px;letter-spacing:.12em;margin-right:6px}
+  .line{display:flex;gap:9px;align-items:flex-start;border:1px solid transparent;border-radius:8px;
+    padding:10px 9px;cursor:pointer;font-family:var(--sans);font-size:13px;color:#b9c8c5;line-height:1.65;
+    min-height:44px;transition:background .15s ease,border-color .15s ease}
+  .line.sel{border-color:rgba(201,162,75,.4);background:rgba(201,162,75,.06);color:#e6efec}
+  .line input{margin-top:4px;accent-color:#c9a24b;flex:0 0 auto}
+  .score{display:flex;align-items:baseline;gap:8px;margin:4px 0 10px}
+  .score b{font-size:38px;color:var(--gold);font-family:var(--sans);line-height:1}
+  .score span{font-family:var(--sans);font-size:11.5px;color:var(--muted)}
+  .qr{border-left:2px solid var(--line2);padding:7px 10px;margin:8px 0;
+    font-family:var(--sans);font-size:12px;color:#a9bdc2;line-height:1.7}
+  .qr.right{border-color:var(--green)} .qr.wrong{border-color:var(--red)}
+  .qr .m{font-weight:700;margin-right:5px}
+  .qr.right .m{color:var(--green)} .qr.wrong .m{color:var(--red)}
+
+  .ending{position:relative;text-align:center;border:1px solid var(--line2);border-radius:15px;
+    padding:32px 16px 26px;background:linear-gradient(180deg,rgba(17,29,36,.97),rgba(6,11,14,.99));
+    box-shadow:0 30px 80px rgba(0,0,0,.55);animation:scenein .5s ease;margin-bottom:12px}
+  .ending::before{content:'';position:absolute;inset:8px;border:1px solid rgba(255,255,255,.04);
+    border-radius:10px;pointer-events:none}
+  .end-kick{font-family:var(--sans);font-size:9.5px;letter-spacing:.4em;color:var(--dim);margin-bottom:10px}
+  .ending h2{margin:0 0 6px;font-size:clamp(22px,5vw,30px);letter-spacing:.06em;font-weight:600;line-height:1.4}
+  .ending .eid{font-family:var(--sans);font-size:11px;letter-spacing:.22em;color:var(--gold-dim);margin-bottom:12px}
+  .ending blockquote{margin:0 auto 16px;max-width:620px;font-style:italic;font-size:13px;color:var(--muted);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:9px 0;line-height:1.9}
+  .ebody{max-width:660px;margin:0 auto;text-align:left;font-size:15px;color:#cddad6}
+  .ebody p{margin:.7em 0;text-align:justify}
+  .estats{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:22px 0 4px;
+    font-family:var(--sans);font-size:10.5px;color:var(--dim);letter-spacing:.05em}
+  .estats b{display:block;font-family:var(--serif);font-size:17px;color:var(--teal);letter-spacing:0}
+  .unlock{margin:14px auto 0;max-width:520px;padding:8px 12px;border:1px dashed var(--gold-dim);
+    border-radius:8px;font-family:var(--sans);font-size:11.5px;color:var(--gold);line-height:1.7}
+  .fogcount{margin-top:12px;font-family:var(--sans);font-size:11px;color:var(--dim);letter-spacing:.08em}
+  .fogcount b{color:var(--gold)}
+  .endbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+  .btn{font-family:var(--sans);font-size:13px;letter-spacing:.06em;cursor:pointer;border-radius:9px;
+    padding:12px 20px;border:1px solid var(--line2);background:transparent;color:var(--ink);
+    min-height:46px;transition:transform .12s ease,background .15s ease,border-color .15s ease}
+  .btn:active{border-color:var(--teal);color:var(--teal);transform:scale(.985)}
+  .btn.gold{border-color:var(--gold-dim);color:var(--gold);background:rgba(201,162,75,.07)}
+  .btn.gold:active{border-color:var(--gold)}
+  .tone-gold h2,.tone-gold .eid{color:var(--gold)} .tone-gold{border-color:var(--gold-dim)}
+  .tone-teal h2{color:var(--teal)}
+  .tone-red h2{color:var(--red)}
+  .tone-purple h2{color:var(--purple)}
+  .tone-void h2{color:#e8d9a8;text-shadow:0 0 30px rgba(201,162,75,.35)}
+
+  .hero{text-align:center;padding:26px 0 8px}
+  .sigil{width:86px;height:86px;margin:0 auto 16px;position:relative;display:grid;place-items:center;
+    color:var(--gold);border:1px solid rgba(201,162,75,.45);border-radius:50%;
+    box-shadow:0 0 60px rgba(201,162,75,.12),inset 0 0 40px rgba(201,162,75,.06)}
+  .sigil span{font-size:30px;line-height:1;text-shadow:0 0 22px rgba(201,162,75,.4)}
+  .sigil::before{content:'';position:absolute;inset:8px;border:1px dashed rgba(201,162,75,.25);
+    border-radius:50%;animation:spin 50s linear infinite}
+  .sigil::after{content:'';position:absolute;inset:20px;border:1px solid rgba(201,162,75,.16);border-radius:50%}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hero .k{font-family:var(--sans);font-size:9.5px;letter-spacing:.3em;color:var(--abyss)}
+  .hero h1{margin:8px 0 4px;font-size:clamp(30px,8vw,44px);letter-spacing:.14em;
+    color:#f0f7f4;font-weight:600;text-shadow:0 0 50px rgba(120,190,190,.18)}
+  .hero .s{font-family:var(--sans);font-size:12px;letter-spacing:.14em;color:var(--muted)}
+  .epi{margin:20px auto 0;max-width:620px;color:#b9c9c6;font-size:13.5px;font-style:italic;
+    padding:12px 14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);line-height:1.9}
+  .intro{max-width:640px;margin:18px auto 0;text-align:left;color:#c8d5d1;font-size:14.5px}
+  .intro p{margin:.55em 0}
+  .herobtns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .meta{margin-top:16px;font-family:var(--sans);font-size:11px;color:var(--dim);letter-spacing:.06em;line-height:1.8}
+  .meta b{color:var(--gold)}
+  .rules{display:grid;grid-template-columns:1fr;gap:8px;max-width:760px;margin:24px auto 0;text-align:left}
+  .rule{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:rgba(10,18,23,.6)}
+  .rule h4{margin:0 0 3px;font-size:12px;color:var(--gold);letter-spacing:.08em}
+  .rule p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.65;font-family:var(--sans)}
+
+  .crow{display:grid;grid-template-columns:74px 1fr auto;gap:8px;align-items:center;
+    padding:8px 0;border-bottom:1px dashed rgba(126,170,180,.1)}
+  .crow:last-of-type{border-bottom:none}
+  .crow .cl{font-family:var(--sans);font-size:11.5px;color:var(--muted)}
+  .crow .cd{font-family:var(--sans);font-size:10.5px;color:var(--dim);line-height:1.5}
+  .cin{width:100%;background:#060d11;border:1px solid var(--line);color:var(--ink);
+    padding:10px 11px;border-radius:8px;font-size:16px;font-family:var(--sans);outline:none;
+    min-height:44px;-webkit-appearance:none;appearance:none}
+  .cin:focus{border-color:var(--teal)}
+  .cin::-webkit-outer-spin-button,.cin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .cin[type=number]{-moz-appearance:textfield}
+  .dbtn{background:rgba(169,139,223,.08);border:1px solid rgba(169,139,223,.3);color:var(--purple);
+    width:44px;height:44px;border-radius:8px;cursor:pointer;font-size:16px;transition:.15s}
+  .dbtn:active{background:rgba(169,139,223,.2);transform:scale(.95)}
+  .archs{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0}
+  .arch{text-align:left;border:1px solid var(--line);background:rgba(10,18,23,.8);color:var(--ink);
+    border-radius:9px;padding:11px 12px;cursor:pointer;font-family:inherit;min-height:52px;transition:.15s}
+  .arch:active{background:rgba(103,184,169,.07)}
+  .arch.sel{border-color:var(--gold-dim);background:rgba(201,162,75,.06);box-shadow:inset 0 0 20px rgba(201,162,75,.05)}
+  .arch b{display:block;font-size:13.5px;color:var(--gold)}
+  .arch span{display:block;font-family:var(--sans);font-size:10.5px;color:var(--dim);line-height:1.55}
+  .namerow{display:flex;gap:8px;align-items:center;margin:6px 0 10px}
+  .namerow label{font-family:var(--sans);font-size:11px;color:var(--muted);flex:0 0 auto}
+  .sumwrap{margin:10px 0 8px;border:1px solid rgba(201,162,75,.22);border-radius:10px;
+    background:rgba(201,162,75,.04);padding:9px 10px}
+  .sumhead{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    font-family:var(--sans);font-size:9.5px;letter-spacing:.12em;color:var(--dim);margin-bottom:7px}
+  .grade{font-family:var(--sans);font-size:10px;padding:2px 9px;border-radius:20px;
+    border:1px solid var(--line2);letter-spacing:.04em;white-space:nowrap}
+  .grade.g1{color:var(--gold);border-color:var(--gold-dim);background:rgba(201,162,75,.08)}
+  .grade.g2{color:var(--teal);border-color:rgba(103,184,169,.4)}
+  .grade.g3{color:var(--muted)}
+  .grade.g4{color:var(--red);border-color:rgba(212,86,75,.35)}
+  .sumgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+  .sumgrid span{display:block;font-family:var(--sans);font-size:9px;color:var(--dim);letter-spacing:.08em}
+  .sumgrid b{display:block;font-family:var(--serif);font-size:18px;color:var(--teal);
+    line-height:1.4;font-variant-numeric:tabular-nums}
+  .sumgrid .hi b{color:var(--gold)}
+  .sumnote{margin-top:7px;font-family:var(--sans);font-size:9.5px;color:var(--dim);
+    letter-spacing:.06em;text-align:right}
+  .sumnote.over{color:var(--red)}
+
+  .overlay{position:fixed;inset:0;z-index:100;background:rgba(2,5,7,.84);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;
+    padding:16px;animation:fadein .18s ease}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  .dice{width:min(410px,100%);background:linear-gradient(180deg,#0e1b22,#070d11);
+    border:1px solid var(--line2);border-radius:15px;padding:22px 18px;text-align:center;
+    box-shadow:0 40px 100px #000;animation:scenein .24s ease}
+  .dl{font-family:var(--sans);font-size:9.5px;letter-spacing:.26em;color:var(--abyss)}
+  .dn{font-size:62px;font-weight:800;color:var(--gold);line-height:1.15;margin:4px 0 0;
+    font-variant-numeric:tabular-nums;font-family:var(--sans);text-shadow:0 0 36px rgba(201,162,75,.35)}
+  .dn.ok{color:var(--green);text-shadow:0 0 36px rgba(87,179,104,.35)}
+  .dn.fail{color:var(--red);text-shadow:0 0 36px rgba(212,86,75,.35)}
+  .ds{font-family:var(--sans);font-size:10px;color:var(--dim);letter-spacing:.12em}
+  .dv{font-family:var(--sans);font-size:12px;letter-spacing:.22em;margin:6px 0 10px;color:var(--muted)}
+  .dv.ok{color:var(--green)} .dv.fail{color:var(--red)}
+  .dt{font-size:12.5px;color:#b9c8c5;line-height:1.7;text-align:left;min-height:40px;
+    border-top:1px solid var(--line);padding-top:10px}
+
+  .modal{width:min(720px,100%);max-height:88dvh;max-height:88vh;overflow:auto;
+    background:linear-gradient(180deg,#0d1a21,#070d11);border:1px solid var(--line2);
+    border-radius:13px;box-shadow:0 40px 100px #000;animation:scenein .24s ease}
+  .mhead{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:12px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;
+    background:rgba(11,22,28,.97);z-index:2}
+  .mhead h3{margin:0;font-size:14px;letter-spacing:.08em;color:#eaf3f1;font-weight:600}
+  .mhead .x{background:transparent;border:1px solid var(--line);color:var(--muted);
+    width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:16px;line-height:1}
+  .mbody{padding:13px 14px 18px;font-size:13px;color:#b9c8c5}
+  .sec{margin-bottom:16px}
+  .sec h4{margin:0 0 7px;font-size:12px;color:var(--gold);letter-spacing:.1em}
+  .clueitem{border:1px solid var(--line);border-left:2px solid var(--gold-dim);border-radius:7px;
+    padding:8px 10px;background:rgba(8,15,19,.7);margin-bottom:6px}
+  .clueitem .cn{color:var(--gold);font-size:12.5px;margin-bottom:1px}
+  .clueitem .cd{font-family:var(--sans);font-size:11px;color:var(--muted);line-height:1.6}
+  .itemrow{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;
+    padding:8px 10px;margin-bottom:6px;background:rgba(8,15,19,.7)}
+  .itemrow .ii{flex:1;min-width:0}
+  .itemrow .in{font-size:12.5px;color:var(--teal)}
+  .itemrow .id{font-family:var(--sans);font-size:10.5px;color:var(--dim);line-height:1.5}
+  .use{font-family:var(--sans);font-size:11px;border:1px solid var(--line2);background:transparent;
+    color:var(--gold);border-radius:6px;padding:6px 10px;cursor:pointer;min-height:34px}
+  .use:disabled{opacity:.4;color:var(--dim)}
+  .grid100{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+  .gcell{border:1px solid var(--line);border-radius:6px;padding:6px 4px;background:rgba(8,15,19,.7);
+    min-height:52px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+  .gcell b{font-family:var(--sans);font-size:10px;color:var(--dim);line-height:1.4}
+  .gcell span{font-family:var(--sans);font-size:8.5px;color:var(--dim);line-height:1.35;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .gcell.on{border-color:rgba(201,162,75,.35);background:rgba(201,162,75,.06)}
+  .gcell.on b{color:var(--gold)} .gcell.on span{color:#c8d5d1}
+  .gcell.grand{grid-column:1/-1;min-height:60px;border-style:dashed}
+  .gcell.grand.on{border-style:solid;border-color:var(--gold);box-shadow:0 0 30px rgba(201,162,75,.12)}
+  .gcell.grand span{font-size:11px;color:var(--gold)}
+  .galnote{font-family:var(--sans);font-size:10.5px;color:var(--dim);line-height:1.7;margin-top:8px}
+
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));
+    z-index:140;background:#0d1a20;border:1px solid var(--gold-dim);border-radius:8px;
+    padding:8px 14px;font-family:var(--sans);font-size:12px;color:var(--gold);
+    box-shadow:0 14px 40px rgba(0,0,0,.55);max-width:88vw;text-align:center;
+    animation:toastin .26s ease,toastout .5s 2.5s forwards}
+  @keyframes toastin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+  @keyframes toastout{to{opacity:0;transform:translate(-50%,10px)}}
+  .whisper{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:95;
+    width:min(540px,88vw);text-align:center;pointer-events:none;color:rgba(206,236,231,.8);
+    font-size:clamp(14px,3.6vw,19px);letter-spacing:.12em;line-height:1.95;
+    text-shadow:0 0 22px rgba(120,200,200,.45);animation:whisper 4.2s ease forwards}
+  @keyframes whisper{0%{opacity:0;filter:blur(7px)}18%{opacity:.95;filter:blur(0)}
+    78%{opacity:.7}100%{opacity:0;filter:blur(5px)}}
+  footer{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);text-align:center;
+    font-family:var(--sans);font-size:9.5px;color:var(--dim);letter-spacing:.06em;line-height:1.9}
+
+  @media (min-width:680px){
+    .wrap{padding:16px 16px 40px}
+    .mapgrid{grid-template-columns:repeat(4,1fr)}
+    .actions{grid-template-columns:repeat(4,1fr);position:static;background:none;padding:0}
+    .hrow{grid-template-columns:repeat(4,1fr)}
+    .rules{grid-template-columns:repeat(3,1fr)}
+    .archs{grid-template-columns:repeat(3,1fr)}
+    .grid100{grid-template-columns:repeat(5,1fr)}
+    .scene{padding:22px 22px 18px}
+  }
+  @media (max-width:380px){
+    .brand b{font-size:13.5px;letter-spacing:.1em}
+    .tbtn{padding:6px 7px;font-size:10.5px}
+    .mapgrid{grid-template-columns:1fr}
+    .site{min-height:96px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001s !important;transition-duration:.001s !important}
+  }
+</style>
+</head>
+<body>
+<div class="fog fog-a"></div><div class="fog fog-b"></div><div class="scan"></div>
+
+<header class="top">
+  <div class="inner">
+    <div class="brand">
+      <div class="seal">雾</div>
+      <div><b>雾港回响 · 百幕</b><i>THE LITERALIST · 100 FOGS</i></div>
+    </div>
+    <div class="topbtns">
+      <button class="tbtn" id="noteBtn" data-a="notes">笔记</button>
+      <button class="tbtn" id="galleryBtn" data-a="gallery">回廊</button>
+      <button class="tbtn" id="audioBtn" data-a="audio">音</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hud" id="hud">
+    <div class="hrow">
+      <div class="st"><span>侦查</span><b id="hInv">—</b></div>
+      <div class="st"><span>意志</span><b id="hWill">—</b></div>
+      <div class="st"><span>幸运</span><b id="hLuck">—</b></div>
+      <div class="st"><span>时段</span><b id="hTime">—</b></div>
+    </div>
+    <div class="sanbox">
+      <div class="sanhead"><span>理智 SAN</span><b id="hSan">80</b><span class="spacer"></span><span class="buff" id="hBuff"></span></div>
+      <div class="bar"><i id="sanbar"></i></div>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+
+  <footer>雾港系列 · 单人跑团 · 100 幕 + 隐藏终幕 ｜ 每一次重开，雾的形状都不同</footer>
+</main>
+
+<script>
+/* =========================================================
+   常量与存档
+   ========================================================= */
+const SAVE_KEY = 'wugang_baimu_run_v1';
+const META_KEY = 'wugang_baimu_meta_v1';
+const START_TIME = 12;
+const POINT_CAP = 180;
+
+const STAT_LABEL = {inv:'侦查 INV', will:'意志 WIL', luck:'幸运 LCK'};
+const ARCHETYPES = {
+  field:{name:'现场派', inv:10, will:0, luck:-5, item:'torch', desc:'习惯用眼睛和手解决问题。侦查 +10，幸运 -5。自带手电。'},
+  mind:{name:'审讯派', inv:-5, will:10, luck:0, item:'sedative', desc:'听过太多谎话，意志比常人硬。意志 +10，侦查 -5。自带镇静剂。'},
+  luck:{name:'流浪者', inv:0, will:-5, luck:10, item:'charm', desc:'总在最后一刻躲开不该看的东西。幸运 +10，意志 -5。自带护身符。'}
+};
+
+const CLUES = {
+  n_teng:{name:'藤连黑海',desc:'瓜藤的尽头不是土，是黑海。藤是活物的神经末梢，而你在它的一根血管上走。'},
+  n_hand:{name:'被牵引的手',desc:'王警官拔瓜时手很稳，像有人替他数着数。律令会牵引人的身体，也会替人做决定。'},
+  n_scale:{name:'深潜者鳞',desc:'灰烬里的鳞属于一种海裔。它听见「惊蛇」，便返回了海中。它听得懂人话。'},
+  n_grass:{name:'草死蛇回海',desc:'字面律令杀死了被指名的草，却放走了真正的蛇。被说出的词，比事实更重要。'},
+  n_well:{name:'井底灯语',desc:'井底居民用灯呼吸、用灯光交谈。他们曾经都是镇上的人，一共三十一盏。'},
+  n_wang:{name:'半同化的王警官',desc:'王守义已半人半深潜者。他尚能言语，也尚能说谎。他说「别在我面前说成语」。'},
+  n_avatar:{name:'舌头之脸',desc:'海湾里那张由无数舌头拼成的脸，是谕令者伸进现实的显化。它不杀人，只执行话。'},
+  n_law:{name:'言即律',desc:'人说出的话——尤其成语——会被当作不可违抗的律令。它没有意志，只有语法。'},
+  n_loop:{name:'第三十一圈',desc:'木马座椅下刻着数字。第三十一圈时，钟楼和你的表同时停在 11:17。'},
+  n_fold:{name:'时间折叠',desc:'旋转木马是谕令者折出的成语夹层。里面的一分钟可以是一小时，也可以是一辈子。'},
+  n_order:{name:'枯井底的订单',desc:'三十一件商品全寄往枯井底，收件人王守义。最近一单的下单时间是明天凌晨。'},
+  n_files:{name:'三十一份结案',desc:'三十一份卷宗对应三十二桩案子。多出的那一桩，案由栏是空的，落款是明天 11:17。'},
+  n_egypt:{name:'倒过来的金字塔',desc:'小刘的埃及照片里，金字塔底座标着雾港经纬度。他说那年他们根本没去过埃及。'},
+  n_bandage:{name:'呼吸的绷带',desc:'绷带下面没有尸体，只有写满字的结案报告，和海藻纤维拧成的线。'},
+  n_glass:{name:'慢半拍的倒影',desc:'单向玻璃后面是海。你的倒影比你慢半拍，还隔着玻璃冲你眨眼。'},
+  n_tape:{name:'第三十二段录音',desc:'王警官在录音里交代了所有秘密，最后一句由另一个声音替他说完。'},
+  n_call:{name:'潮声里的电码',desc:'三长两短，译作「沉默」。它怕的不是咒语，是没有人说话。'},
+  n_reg:{name:'注销记录',desc:'三年前注销的号码，注销人王守义。备注：机主已沉入井底。'},
+  n_dream:{name:'海底的仓库',desc:'谕令者照着雾港复制了一座海底小镇，所有被说出口的话都堆在那里。'},
+  n_door:{name:'三十一号门牌',desc:'海底街道尽头有一扇门，门牌是雾港镇三十一号。门后有人反复练习成语。'},
+  n_photo:{name:'被出售的照片',desc:'集市老人卖的旧照片里，有你站在雾港镇口的背影，日期是你抵达的前一天。'},
+  n_envelope:{name:'湿信封',desc:'信封里只有一张纸：「不要说四字成语。它只听得懂四字。」'},
+  n_tape2:{name:'空白的磁带',desc:'磁带两面都是空白，但贴纸上写着你的名字，字迹和你一模一样。'},
+  n_dog:{name:'湿透的警犬',desc:'一条没有眼睛的警犬跟着你走了三条街。它只在听见成语时停下。'},
+  n_gate:{name:'门后的山',desc:'盐场仓库的门被整框拆走，门后凭空多出一座盐山。图纸上那里本来只有一堵墙。'},
+  n_salt:{name:'盐里的字',desc:'盐粒在地面自己排成四个字：开门见山。字是新的，盐是咸的，像刚从海里捞出来。'},
+  n_peak:{name:'山在回话',desc:'你在盐山深处喊了一句成语，山用你的声音重复了一遍，只把宾语换成了你的名字。'},
+  n_ferry:{name:'船底的拖绳',desc:'沉船下面拖着一条缆绳，另一头不是锚，是一只还锁着的档案柜。'},
+  n_cabinet:{name:'水下档案柜',desc:'柜里三十一份卷宗全泡胀了，唯有第三十二份是干的，封皮上写着「交接」。'},
+  n_ticket:{name:'第三十二张船票',desc:'票根印着三十一号，乘客姓名一栏空着，墨迹却已经在你手里干了。'},
+  c_name:{name:'它没有名字',desc:'「谕令者」是人类给它起的称呼。它真正的名字是一个还没被说完整的句子。'},
+  c_contract:{name:'王守义的契约',desc:'王守义不是第一个被吃掉的人。他是第一个在卷宗末页签下名字、同意「被写」的人。'},
+  c_zero:{name:'第零页',desc:'所有卷宗都有第零页，但没人见过。那一页记录的不是案子，是记录者。'},
+  c_writer:{name:'观测者也在被写',desc:'你每翻一页，就有一行新的字出现在你背后。雾港不是案发地，是稿纸。'}
+};
+
+const ITEMS = {
+  torch:{name:'手电筒',desc:'下一次侦查判定 +20。光会照出一些东西，也会引来一些东西。',use:'buffInv'},
+  sedative:{name:'镇静剂',desc:'恢复 15 点理智。针管里的液体是温的。',use:'heal'},
+  charm:{name:'护身符',desc:'接下来累计抵挡 8 点理智损失。是从一个失踪者口袋里找到的。',use:'shield'},
+  matches:{name:'火柴',desc:'下一次意志判定 +15。划亮时，你听见有人在数数。',use:'buffWill'},
+  tape:{name:'录音带',desc:'随机获得一条尚未发现的线索。磁带在没人播放时也会转。',use:'clue'},
+  zero:{name:'第零页',desc:'一页没有字的纸。你不能在这里读它。',use:'readZero'}
+};
+
+const WHISPERS = [
+  '你听见有人在数：三十一、三十二……',
+  '海水从你的牙龈里渗出来，带着咸味。',
+  '你开始分不清，是谁在说话。',
+  '有人在你耳边练习四字短语，一遍，又一遍。',
+  '你低头，看见自己的倒影比你慢了半拍。',
+  '你数了数自己的手指，多了一根。',
+  '巷子尽头有人叫你的名字，用你自己的声音。'
+];
+
+const OMENS = [
+  '雾里有第三种脚步声，一直跟着你。',
+  '门缝里渗出海水，带着不属于海的腥味。',
+  '有人在墙上反复写同一个四字短语。',
+  '你听见远处有人在数数，数到三十一就停下。',
+  '空气里有旧纸和盐的味道。',
+  '今天的雾比昨天低，像在找人的脚踝。',
+  '所有的钟都停在 11:17。',
+  '你路过时，井盖下面安静了一瞬。',
+  '墙上的寻人启事多了一张，照片是你。',
+  '有人在巷口招手，背对着你。'
+];
+
+const SITE_ORDER = ['gua','cao','jing','shui','horse','fa','motel','cell','salt','ferry'];
+
+const SITES = {
+  gua:{
+    name:'瓜田', kicker:'现场 · 镇东', title:'顺藤摸瓜', sub:'瓜农报案：警察把他所有西瓜都拔了',
+    body:`瓜农老陈蹲在田埂上，指节发白。他反复只说一句话：「他顺着藤，一根一根往外拔。」
+
+被拔起的瓜藤横七竖八铺了半亩地。你蹲下去，指尖碰到断口——渗出来的不是汁液，而是海水。咸的，冰的。
+
+藤蔓一路朝南，穿过田埂、芦苇、防波堤，最后没入黑色的海。你忽然明白：不是王警官在拔藤。是藤，在把王警官往海边拉。`,
+    ask:'藤的尽头是瓜，还是别的东西？<br><b>答</b>：不是瓜。那是「谕令者」伸向陆地的神经末梢。',
+    hint:'顺着藤走，你会摸到律令的实体。但别摸太久。',
+    safeClue:'n_hand', checkClue:'n_teng',
+    opts:[
+      {t:'留下来，问老陈王警官当时的样子', tag:'安全 · 走访', san:2, go:'after',
+       ok:'老陈把烟按灭：「他眼睛是直的，手却特别稳，像有人在替他数数。拔到第三十一根，他忽然说——摸到了。然后就不动了。」',
+       okClues:['n_hand']},
+      {t:'沿着瓜藤一直走到海边，摸清尽头', tag:'侦查判定 · 高风险', roll:'inv', san:4, extraSan:4, go:'after',
+       ok:'你沿着湿冷的藤走到防波堤下。藤没入黑水，触感像活人的皮肤，温热，还在轻轻搏动。海面下有什么东西顺着同一根藤，正朝岸上摸索。',
+       okClues:['n_teng'],
+       fail:'藤突然绷直，把你拖进盐碱地。你啃了一嘴沙，再抬头时，藤已经缩回海里，只在滩上留下一道湿痕。',
+       failClues:[]},
+      {t:'把手伸进黑海，抓住那根还在搏动的藤', tag:'深层 · 意志判定 · 极危', roll:'will', san:10, extraSan:6, deep:true, go:'after',
+       ok:'海水没过你的手腕。你摸到藤的表面，也摸到藤里面缓慢流动的东西。它没有推开你，反而顺着你的手臂往上爬了一寸，像在辨认你是谁。',
+       fail:'藤缠住你的小臂，把你往水里拖。你割断袖子才挣脱，断口处留下一圈青紫的指印。',
+       failClues:['n_teng']}
+    ]
+  },
+
+  cao:{
+    name:'草垛', kicker:'现场 · 村东', title:'打草惊蛇', sub:'草全烧死了，蛇一条没见着',
+    body:`草垛烧了整夜。灰是干的，风一吹就散，像一场没烧完的葬礼。
+
+镇上的老人围着火场说，那晚王警官举着火把喊了一句「打草惊蛇」，草就自己着了。蛇——他们说——「跑回海里去了，再没回来」。
+
+你在灰里翻出一片鳞。虹彩不属于任何你认识的爬行动物。指腹贴上的一瞬，它轻轻颤了一下，像想回到水里。`,
+    ask:'那条「蛇」是陆地上的蛇吗？<br><b>答</b>：不是。那是深潜者的斥候。它听见「惊蛇」二字，便奉命返海。',
+    hint:'蛇回了海，草却真的死了。律令只认字面。',
+    safeClue:'n_grass', checkClue:'n_scale',
+    opts:[
+      {t:'听老人讲那晚的细节', tag:'安全 · 走访', san:2, go:'after',
+       ok:'老人说，草烧起来的时候，王警官一动不动，只盯着海。第二天早上，海边多了几行脚印，全是往水里去的，没有回来的。',
+       okClues:['n_grass']},
+      {t:'把鳞片带回去化验', tag:'侦查判定', roll:'inv', san:4, extraSan:4, go:'after',
+       ok:'显微镜下，鳞片张开成一朵白色的鳃。它不是蛇。玻璃载片忽然裂开，盐水顺着桌沿滴到地上，滴答，滴答。',
+       okClues:['n_scale'],
+       fail:'载玻片在你手里碎成粉。你只记得那股味道——退潮后的滩涂，和很多东西一起烂掉的味道。',
+       failClues:[]},
+      {t:'在灰烬里划一根火柴，念出「打草惊蛇」', tag:'深层 · 意志判定 · 极危', roll:'will', san:9, extraSan:6, deep:true, go:'after',
+       ok:'火苗亮起的一瞬，整片灰烬同时复燃。火里没有草，只有无数条细小的、正在往海里游的影子。你听见一个声音替你补完了后半句：「……惊蛇。」',
+       fail:'火柴刚划亮就被一股湿风扑灭。你的手背多了一道烫伤，形状像一个写了一半的字。',
+       failClues:['n_grass']}
+    ]
+  },
+
+  jing:{
+    name:'枯井', kicker:'现场 · 镇西', title:'适应井底生活', sub:'井底有灯，还有人在招呼你下去',
+    body:`枯井被镇民拿木板半掩着。你移开木板，一股带着鱼腥的暖风涌上来。
+
+井底有灯。不是手电的光，是很多盏小小的、会呼吸的灯。井壁上凿出鱼鳃一样的气窗，整口井像某种巨大的、正在睡觉的东西。
+
+一张脸从井底仰起来，冲你笑：「下来坐坐？底下信号好，房租低。」那张脸，是寻人启事上的王警官。`,
+    ask:'王警官还活着吗？<br><b>答</b>：一半。他正在被同化，尚能言语，也尚能说谎。',
+    hint:'他还认得你。别在他面前说成语。',
+    safeClue:'n_well', checkClue:'n_wang',
+    opts:[
+      {t:'把井盖回去，只记下灯的样子', tag:'安全 · 封井', san:3, go:'after',
+       ok:'你重新盖好木板，又压上两块石头。木板下面，灯一盏接一盏地暗下去，像有人在里面叹气。你数了数，一共三十一盏。',
+       okClues:['n_well']},
+      {t:'顺着井绳下到井底，与他面对面', tag:'意志判定 · 高危', roll:'will', san:9, extraSan:5, go:'after',
+       ok:'王警官坐在灯旁，蹼一样的手指正在给灯添油。「律令不分对错，」他说，「只要说出口，它就得执行。所以别在我面前说成语。」',
+       okClues:['n_wang'],
+       fail:'井底的风吹上来，你听见无数人同时说话，每个字都像钩子。你抓住井沿爬回地面，指甲缝里全是黑泥。',
+       failClues:['n_well']},
+      {t:'喝一口井水，听它把话说完', tag:'深层 · 意志判定 · 极危', roll:'will', san:12, extraSan:7, deep:true, go:'after',
+       ok:'井水是温的，像谁含在嘴里很久才吐出来。你咽下去的一瞬，三十一盏灯同时转向你。王警官在你耳边说了一个词，你听懂了，却发现自己已经无法把它复述出来。',
+       fail:'水刚碰到嘴唇，你就开始剧烈呕吐。吐出来的全是细小的、还在游动的灯芯。',
+       failClues:['n_wang']}
+    ]
+  },
+
+  shui:{
+    name:'海湾', kicker:'现场 · 镇口', title:'浮出水面', sub:'海面浮上来一张由舌头组成的脸',
+    body:`海雾忽然裂开一道缝。
+
+海面「浮」出一具东西——不是尸体。那是一张由无数条舌头拼成的脸，每一条舌头都在动，正一个字、一个字地往外吐：
+
+「快——捞——上——来——」
+
+你想起卷宗里王警官的字条。原来他不是在求救。他是在复述。`,
+    ask:'此物是凶手吗？<br><b>答</b>：它是谕令者的显化。它不杀人，它只执行人说出口的话。',
+    hint:'它不是在说话，它是在下命令。',
+    safeClue:'n_avatar', checkClue:'n_law',
+    opts:[
+      {t:'退到堤上，记下它的外形', tag:'安全 · 观察', san:3, go:'after',
+       ok:'你数了数，那张脸由三十一条舌头拼成。每条舌头的背面都刻着一个名字，其中一条刻着：王守义。',
+       okClues:['n_avatar']},
+      {t:'躲起来，记录它「说话」的规律', tag:'侦查判定 · 高危', roll:'inv', san:7, extraSan:4, go:'after',
+       ok:'你蹲在礁石后记录：它每说完一个四字短语，海面就按那个短语的字面动一次。它不是在说话——它是在下命令。',
+       okClues:['n_law'],
+       fail:'你还没记完，它忽然转向你，所有舌头同时停下。然后它说：「记——者——」你捂住耳朵滚进礁石缝。',
+       failClues:['n_avatar']},
+      {t:'走到水边，对它说出自己的名字', tag:'深层 · 意志判定 · 极危', roll:'will', san:12, extraSan:7, deep:true, go:'after',
+       ok:'你报出名字。所有舌头同时转向你，像一群终于等到开饭的东西。它们开始一个字一个字地重复你的名字，越念越像另一个人的名字。',
+       fail:'你张开嘴，却发不出声音。海面下有什么东西替你说了，声音和你一模一样。',
+       failClues:['n_law']}
+    ]
+  },
+
+  horse:{
+    name:'旋转木马', kicker:'现场 · 废弃游乐场', title:'周旋两小时', sub:'没有电，木马却在转',
+    body:`旋转木马还在转。没有电，没有音乐，马背上的「人」都没有脸。
+
+你被一股力道按上马背。下一秒，王警官（或者他的残影）坐在你旁边，笑着说：「陪我周旋两小时。」
+
+钟楼敲了一下。你数着圈数：一圈、两圈……第两百圈时，钟楼又敲了一下。管理员在栏杆外叹气：「到点了，下马吧。你已经在上面待了两小时——也可能，只有一分钟。」`,
+    ask:'时间真的过去了吗？<br><b>答</b>：没有。这里是谕令者折叠出来的「成语夹层」。',
+    hint:'别数圈，数马。或者别讲道理，赌一把。',
+    safeClue:'n_loop', checkClue:'n_fold',
+    opts:[
+      {t:'蹲下来，数每一匹马的眼睛', tag:'安全 · 记录', san:3, go:'after',
+       ok:'二十三匹马，四十六只眼睛。只有那匹白马的眼睛是湿的。它的瞳孔里映着钟楼，指针停在 11:17。',
+       okClues:['n_loop']},
+      {t:'不再数圈，改数马，找出入口', tag:'侦查判定', roll:'inv', san:6, extraSan:3, go:'after',
+       ok:'第七次经过同一匹白马时，你在它眼睛里看见自己的倒影——倒影里的你已经下了马，正站在栏杆外招手。你顺着这个方向跳出去，落在两小时之前的游乐场门口。',
+       okClues:['n_fold'],
+       fail:'你在第无数圈里失去方向。管理员把你从马背上拎下来：「客人，你转了太久，脸都快转没了。」',
+       failClues:['n_loop']},
+      {t:'闭上眼，在马背上完整听完这两小时', tag:'深层 · 意志判定 · 极危', roll:'will', san:10, extraSan:6, deep:true, go:'after',
+       ok:'你闭上眼，任木马带着你转。黑暗里，有人开始念名单。三十一个名字之后，它念到你。你听见自己的名字被折成四段，嵌进一段很旧的旋律里。',
+       fail:'你听见名单。念到第三十二个名字时，你想睁眼，却发现眼皮被什么东西轻轻按住了。',
+       failClues:['n_fold']}
+    ]
+  },
+
+  fa:{
+    name:'法庭', kicker:'现场 · 镇中心', title:'一拍桌子', sub:'法庭的电脑跳转到了淘宝',
+    body:`镇法庭空无一人。审判席上摆着一台亮着的旧电脑，屏幕上是一个永远打不开的网页。
+
+你俯身查看卷宗，手指无意间在桌面上敲了一下——
+
+「啪。」
+
+屏幕跳转了。淘宝首页。购物车里有三十一件商品，收件人全部写着：王守义。收货地址：雾港镇，枯井底。
+
+墙角贴着一张便签，是王警官的字：「我看破了真相，所以真相不完整。」`,
+    ask:'真相可以被完整认知吗？<br><b>答</b>：不能。直视谕令者会撕裂认知，「不完整」是一种保护。',
+    hint:'真相被看破时会自己碎掉。碎掉的部分，才是保护你的。',
+    safeClue:'n_order', checkClue:'n_files',
+    opts:[
+      {t:'检查电脑的购物记录', tag:'安全 · 物证', san:4, go:'after',
+       ok:'三十一件商品全寄往枯井底。最近一单的下单时间是明天凌晨三点——商品名是一行乱码，规格写着：一位侦探。',
+       okClues:['n_order']},
+      {t:'读完那三十一份已结案卷宗', tag:'意志判定 · 高危', roll:'will', san:8, extraSan:5, go:'after',
+       ok:'你一份份翻开。读到第七份时，纸上的字开始往你手背上爬。最后一行写着：「三十一份卷宗，三十二桩案子。多出来的那一桩，结案人是你。」',
+       okClues:['n_files'],
+       fail:'你读到第三份，突然发现自己不认识字了。所有汉字都变成一张张张开的嘴。',
+       failClues:['n_order']},
+      {t:'坐上审判席，在桌面上敲第三下', tag:'深层 · 意志判定 · 极危', roll:'will', san:10, extraSan:6, deep:true, go:'after',
+       ok:'第三下敲下去，整间法庭安静了。电脑屏幕上出现一份空白的判决书，被告栏自动浮出你的名字。你听见一个声音说：「请记录。」',
+       fail:'第三下敲下去，桌子裂开一道缝。缝里是海水，还有一只正在往上爬的手。',
+       failClues:['n_files']}
+    ]
+  },
+
+  motel:{
+    name:'海边旅馆', kicker:'现场 · 镇南', title:'密室里的绷带', sub:'密室的死者，缠着会呼吸的绷带',
+    body:`旅馆二楼，房门从里面反锁。死者躺在床上，全身缠满绷带，像一具还没拆封的东西。
+
+小刘蹲在门口翻相机。他是王警官的助手，眼下是全镇少数还会说完整句子的人。
+
+「王哥说，死者是死后被人放进密室的。」他顿了顿，「我说，这话不该在单位组织去埃及旅游时讲。他非讲。」
+
+你低头看那卷绷带。它随着某种潮汐，一起一伏。`,
+    ask:'死者真的是死后被放进密室的吗？<br><b>答</b>：不是。绷带在「呼吸」，尸体是被绷带自己拖进密室的。',
+    hint:'绷带不是布。看看它的线。',
+    safeClue:'n_egypt', checkClue:'n_bandage',
+    opts:[
+      {t:'翻看小刘的埃及旅游照片', tag:'安全 · 物证', san:3, go:'after',
+       ok:'照片里，小刘站在金字塔前比耶。你把照片倒过来看——金字塔底座标着雾港经纬度，塔尖正对海底。小刘脸色白了：「我们那年，根本没去过埃及。」',
+       okClues:['n_egypt']},
+      {t:'拆开绷带，检查里面的东西', tag:'侦查判定 · 高危', roll:'inv', san:7, extraSan:4, go:'after',
+       ok:'绷带下面没有尸体，只有一层层写满字的纸。每一张都是结案报告，字迹全是王守义的。最里面裹着一根海藻纤维拧成的线，还在轻轻抽动。',
+       okClues:['n_bandage'],
+       fail:'你刚碰到绷带，它猛地收紧，把你手腕勒出三道红痕。小刘把你拖开时，床上的东西已经坐了起来。',
+       failClues:['n_egypt']},
+      {t:'躺进那卷绷带里，听完它的呼吸', tag:'深层 · 意志判定 · 极危', roll:'will', san:12, extraSan:7, deep:true, go:'after',
+       ok:'绷带自己缠上来，很轻，像有人在替你盖被子。黑暗里，你听见三十一个声音同时说：「欢迎回来。」你数了数，其中一个是你自己的。',
+       fail:'绷带缠到你的脖子时，小刘用剪刀割开了它。你咳出一口海水，发现绷带内侧写满了你的名字。',
+       failClues:['n_bandage']}
+    ]
+  },
+
+  cell:{
+    name:'审讯室', kicker:'现场 · 镇警局', title:'一对一审讯', sub:'交代秘密的，总是王警官',
+    body:`审讯室的灯管坏了一根，另一根在嗡嗡作响。单向玻璃后面是空的——至少你以为那是空的。
+
+桌上堆着三十一份审讯记录。每一份的格式都很规整：嫌疑人姓名、案由、供述。可你翻到最后一页，供述人一栏，签的都是王守义。
+
+「经过整夜和嫌疑人一对一审讯，王警官成功交代了刑警大队所有秘密。」这是一份结案报告的原话。不是笔误。`,
+    ask:'审讯室里究竟谁在审谁？<br><b>答</b>：门牌错位了。王警官坐在被审的位置，却以为自己在审人。',
+    hint:'声音不会撒谎。听听录音。',
+    safeClue:'n_glass', checkClue:'n_tape',
+    opts:[
+      {t:'查看单向玻璃的另一面', tag:'安全 · 观察', san:4, go:'after',
+       ok:'玻璃后面不是观察室，是海。水压在玻璃上缓慢起伏。你看着自己的倒影——它比你慢了半拍，正隔着玻璃冲你眨眼。',
+       okClues:['n_glass']},
+      {t:'戴上耳机，重听第三十二段录音', tag:'意志判定 · 高危', roll:'will', san:8, extraSan:5, go:'after',
+       ok:'录音里，王警官的声音越来越低：「它从语言里取形……每说一个词，它就实一分……我交代，我全都交代……」磁带最后，是一个不属于人类的声音在替他把话说完。',
+       okClues:['n_tape'],
+       fail:'耳机里突然灌满海水。你扯掉耳机，咳出一口咸水。玻璃后面，有个影子慢慢坐直了。',
+       failClues:['n_glass']},
+      {t:'坐上被审的椅子，回答它的问题', tag:'深层 · 意志判定 · 极危', roll:'will', san:12, extraSan:7, deep:true, go:'after',
+       ok:'椅子还是温的，像刚有人坐过。灯灭了一瞬，你听见有人在问：「姓名？」你回答了。第二个问题你听不清，但你的嘴自己动了。等你回神，笔录上已经写满你的供述。',
+       fail:'你刚坐下，椅子就开始往下沉。地板变成水面，倒映着一个正在被审讯的你——那个你抬起头，替你回答了所有问题。',
+       failClues:['n_tape']}
+    ]
+  },
+
+  salt:{
+    name:'盐场', kicker:'现场 · 镇西', title:'开门见山', sub:'仓库门被拆走了，门后多了一座山',
+    body:`盐场的仓库大敞着。门不是被撬开的，是连框一起被人卸走的，地上只留下四个新土坑，方方正正。
+
+盐工说，王警官站在门口说了句「开门见山」，然后伸手把门抱走了。他抱得很稳，像抱一件证物。
+
+你走进仓库。里面没有货架，没有盐袋，只有一座山——白得刺眼，盐堆成的山，从地面一直顶到房梁。盐场的平面图上，这里本来只是一间平地仓库。`,
+    ask:'门后面本来是什么？<br><b>答</b>：一堵墙。王警官说出那四个字之后，墙才变成山的。',
+    hint:'盐会记住落进去的东西，也会记住说过的话。',
+    safeClue:'n_gate', checkClue:'n_salt',
+    opts:[
+      {t:'问盐工，那扇门被搬去了哪里', tag:'安全 · 走访', san:2, go:'after',
+       ok:'盐工指了指海的方向。他说那扇门后来出现在滩涂上，立着，没人扶，也没倒。门框里是黑的，像一条竖起来的巷子。',
+       okClues:['n_gate']},
+      {t:'沿着盐坡爬上去，看山后面有什么', tag:'侦查判定 · 高风险', roll:'inv', san:4, extraSan:4, go:'after',
+       ok:'盐坡比看上去陡。爬到一半，你看见盐粒在脚边自己挪动，排成四个字：开门见山。再往上，山的另一侧不是墙，是海。',
+       okClues:['n_salt'],
+       fail:'你踩空，滑进盐堆里。盐灌进领口，咸得发苦。等你爬出来，那四个字已经被踩乱了，只剩下一个「山」字。',
+       failClues:[]},
+      {t:'走进盐山深处，喊出「开门见山」', tag:'深层 · 意志判定 · 极危', roll:'will', san:10, extraSan:6, deep:true, go:'after',
+       ok:'你的声音被盐吸干了。过了很久，山里面有人用你的声音把你那句话重复了一遍——只是把「山」换成了你的名字。你退出来时，门框已经在身后合拢。',
+       fail:'话刚出口，盐山就朝你压了过来。你被埋在盐里，听见外面有人在数：三十一，三十二。等盐退开，你的袖口结了一层白霜。',
+       failClues:['n_peak']}
+    ]
+  },
+
+  ferry:{
+    name:'旧渡口', kicker:'现场 · 北岸', title:'顺水推舟', sub:'他把船推下河，证据跟着沉了',
+    body:`渡口只剩半截木栈桥。船不见了，水面平得像铺开的纸。
+
+撑船的老周说，那天王警官押着证物箱来，站在岸边说了句「顺水推舟」，然后真的把船推了出去。船在水里翻了，箱子没浮起来。
+
+「他不是想毁证据。」老周说，「他是想让水把它带走。带去哪里，他没说。」`,
+    ask:'沉下去的是船，还是别的？<br><b>答</b>：船底拖着一条缆绳，另一头锁在水下的一只档案柜上。柜子还在。',
+    hint:'水底的东西不怕水，怕的是被人捞上来。',
+    safeClue:'n_ferry', checkClue:'n_cabinet',
+    opts:[
+      {t:'坐下来，听老周把那天说完', tag:'安全 · 走访', san:2, go:'after',
+       ok:'老周说船翻之前，水面下有东西顶了一下船底，很轻，像有人从下面敲门。他伸手去够缆绳，摸到的不是麻，是一层还在搏动的皮。',
+       okClues:['n_ferry']},
+      {t:'潜下水，把证物箱捞上来', tag:'幸运判定 · 高风险', roll:'luck', san:5, extraSan:4, go:'after',
+       ok:'水很浑，你全靠手感。缆绳一路往下，尽头不是船，是一只锁着的档案柜。你摸到柜门上的编号：第三十二。肺里的气刚好够你上来。',
+       okClues:['n_cabinet'],
+       fail:'你在水下摸到一段缆绳，越摸越长。等你反应过来，缆绳已经绕上脚踝。你割断它才浮出水面，手里只攥着一把锈。',
+       failClues:['n_ferry']},
+      {t:'坐上那条已经沉了的船', tag:'深层 · 意志判定 · 极危', roll:'will', san:11, extraSan:6, deep:true, go:'after',
+       ok:'你踏上水面，脚下竟有船板的触感。船载着你慢慢下沉，水却绕开你的脸。船底传来敲门声，三下，你数到第三十一，它停了。',
+       fail:'船板在脚下滑走。你整个人沉进水里，睁眼看见水底坐满了人，正仰头看你，等你坐下。',
+       failClues:['n_ticket']}
+    ]
+  }
+};
+
+/* =========================================================
+   随机事件 / 夜访 / 推理题库
+   ========================================================= */
+const EVENTS = [
+  {id:'e_well', kicker:'随机事件 · 井盖', title:'井盖下面有人递东西',
+   body:`你路过一口井，井盖被顶开一条缝。
+
+一只手伸出来，指节发白，手里捏着一张湿透的纸。它不抓你，只是举着，像在等你接。`,
+   opts:[
+     {t:'接过那张纸', san:3, clues:['n_envelope'],
+      ok:'纸上只有一行字：「不要说四字成语。它只听得懂四字。」墨迹还没干，像刚写完。'},
+     {t:'后退，记下井的位置', san:1, clues:[],
+      ok:'你退开三步。井盖慢慢合上，缝隙里传出一声很轻的叹息——像松了口气，又像失望。'}
+   ]},
+
+  {id:'e_notice', kicker:'随机事件 · 巷口', title:'多出来的寻人启事',
+   body:`巷口的电线杆上贴满了寻人启事。最上面一张是新的，浆糊还湿着。
+
+照片上的人穿着你的外套，站在雾港镇口，回头看了一眼镜头。日期：你抵达的前一天。`,
+   opts:[
+     {t:'把启事撕下来收好', san:4, clues:['n_photo'],
+      ok:'纸背还有一行小字：「别找王守义。他也在找你。」你把纸折好，手指沾了一层盐。'},
+     {t:'用手机拍下来，不动它', san:2, clues:[],
+      ok:'照片拍得很清楚。回放时你发现，照片里的你比刚才多走了一步。'}
+   ]},
+
+  {id:'e_dog', kicker:'随机事件 · 长街', title:'没有眼睛的警犬',
+   body:`一条警犬跟着你走了三条街。它没有眼睛，眼眶里是两小片海。
+
+它不叫，只在听见成语时停下，歪着头，像在等后半句。`,
+   opts:[
+     {t:'蹲下来，让它闻你的手', san:4, clues:['n_dog'],
+      ok:'它把鼻子贴在你掌心，喉咙里滚出一句很轻的人话：「三十一。」然后它转身，走进雾里，尾巴摇得很慢。'},
+     {t:'绕进窄巷甩掉它', san:1, clues:[],
+      ok:'你拐了七个弯。回头时，它站在巷口，正对着你，像在等你把话说完。'}
+   ]},
+
+  {id:'e_tape', kicker:'随机事件 · 电话亭', title:'贴着你名字的磁带',
+   body:`电话亭边上躺着一盒磁带。贴纸上写着你的名字，字迹和你一模一样。
+
+旁边没有录音机，可你听见里面有很轻的转动声。`,
+   opts:[
+     {t:'把磁带贴近耳朵', san:5, clues:['n_tape2'],
+      ok:'里面是空白，只有底噪。底噪里，有人一遍遍练习说「我」。练到第三十一次，声音变了。'},
+     {t:'把磁带丢进海里', san:1, clues:[],
+      ok:'磁带落水没有沉，浮着，慢慢转向你。你走了很远，还能看见它那面白色的贴纸。'}
+   ]},
+
+  {id:'e_phone', kicker:'随机事件 · 街角', title:'断了线的电话',
+   body:`街角电话亭的铃声响了。
+
+这个电话亭三年前就断了线，玻璃上还贴着「故障停用」的纸条。铃声很耐心，一声，一声，中间停三秒。`,
+   opts:[
+     {t:'接起来', san:4, clues:['n_call'],
+      ok:'听筒里是潮声，潮声里有电码：三长两短，译作「沉默」。然后一个声音说：「你终于接了。」'},
+     {t:'站着听完它响', san:2, clues:[],
+      ok:'铃响了三十一声，停了。你记下节奏：三长两短。它不是求救，是在报数。'}
+   ]},
+
+  {id:'e_radio', kicker:'随机事件 · 广播', title:'全镇广播',
+   body:`全镇的广播忽然同时响了。女播音员用很平的声音念：「请市民注意，近期请勿使用四字成语。」
+
+念到第三遍，她停顿了一下，用另一个声音补了一句：「特别是不要在我面前说。」`,
+   opts:[
+     {t:'记下广播频率和时间', san:3, clues:['n_law'],
+      ok:'频率是本地应急频道。播报时间却是明天 11:17。你反复核对，秒数一分不差。'},
+     {t:'找到广播站，要求停播', san:6, clues:[],
+      ok:'广播站里没有人，只有一台还在转的机器。你拔掉电源，它继续念完了最后一句，才慢慢安静。'}
+   ]},
+
+  {id:'e_bus', kicker:'随机事件 · 末班车', title:'夜班公交',
+   body:`末班车停在你面前，车门自己开了。
+
+车上坐满了人，每个人都没有脸，手里都攥着一张车票。他们不看你，只盯着前方。`,
+   opts:[
+     {t:'上车，看他们去哪', san:6, clues:['n_fold'],
+      ok:'车一直开，没有站。你看了表，11:17。下车时，你回到上车的地方，只过了一分钟。'},
+     {t:'站在站台，等车开走', san:2, clues:[],
+      ok:'车开走时，最后一排有人回头。那张脸是你的，只是还没有长好。'}
+   ]},
+
+  {id:'e_funeral', kicker:'随机事件 · 雨中', title:'送葬的队伍',
+   body:`雨里来了一队送葬的人。他们抬着一口空棺，走得很慢。
+
+你数了数，一共三十一个人，没有一个人打伞。`,
+   opts:[
+     {t:'跟到墓地', san:6, clues:['n_files'],
+      ok:'墓坑里没有棺材，只有一沓卷宗。最上面那份的案由栏写着：侦办者之死。落款空缺。'},
+     {t:'让开路，低头站着', san:1, clues:[],
+      ok:'队伍从你身边过。每个人都转头看你一眼，眼神像在核对名单。最后一个人停了一下，又走了。'}
+   ]},
+
+  {id:'e_store', kicker:'随机事件 · 便利店', title:'三十一件',
+   body:`便利店值夜班的店员站在收银台后，一遍遍说同一句话：「欢迎光临，一共三十一件。」
+
+你看了看货架，只拿了一瓶水。`,
+   opts:[
+     {t:'问他三十一件是什么', san:3, clues:['n_grass'],
+      ok:'他抬头，眼睛很亮：「你也是其中之一。别急，还没轮到你结账。」'},
+     {t:'放下水离开', san:1, clues:[],
+      ok:'自动门在你身后说：「欢迎下次光临。」声音是你的。'}
+   ]},
+
+  {id:'e_roof', kicker:'随机事件 · 对面楼顶', title:'穿旧警服的人',
+   body:`对面楼顶站着一个人，穿着旧式警服。
+
+他没有看你，正低头对着空气做记录，笔尖沙沙响，写得很认真。`,
+   opts:[
+     {t:'喊他的名字', san:6, clues:['n_wang'],
+      ok:'他停下笔，抬头。那张脸是王守义的。他冲你比了个噤声的手势，然后从楼顶走了下去——像走下一级台阶。'},
+     {t:'不惊动他，绕路走', san:2, clues:[],
+      ok:'你走出一段，回头。楼顶空了，只有一张纸飘下来，落在你脚边，上面写着你的名字。'}
+   ]},
+
+  {id:'e_child', kicker:'随机事件 · 雨巷', title:'画门的孩子',
+   body:`一个孩子蹲在雨里，用粉笔在地面画门。画完一扇，就在旁边再画一扇，一直画到巷子尽头。
+
+雨水冲不掉那些线条。`,
+   opts:[
+     {t:'问他画给谁', san:4, clues:['n_reg'],
+      ok:'「给里面的人。」他头也不抬，「他们出不来，只能等门被画对。」他画到第三十一扇时，雨停了。'},
+     {t:'帮他画完最后一扇', san:6, clues:[],
+      ok:'你蹲下，画了一扇门。门里传出敲击声，三下，很轻。孩子说：「错了。他们要的是出口，不是门。」'}
+   ]},
+
+  {id:'e_beach', kicker:'随机事件 · 退潮', title:'走上岸的脚印',
+   body:`退潮后的滩涂上有一串脚印，从海里走上岸，走了十几步，又掉头走回海里。
+
+脚印之间没有间隔，像有人是一瞬间长出来的。`,
+   opts:[
+     {t:'沿着脚印走到水边', san:5, clues:['n_avatar'],
+      ok:'脚印在水边变成蹼印。你抬头，海面上浮着一张很大的、正在呼吸的脸。它没有看你，只是在数浪。'},
+     {t:'用手机拍下脚印', san:2, clues:[],
+      ok:'照片里，脚印的方向全都反了，而且多了一双，跟在你身后。'}
+   ]},
+
+  {id:'e_clock', kicker:'随机事件 · 钟楼', title:'停在 11:17 的钟',
+   body:`钟楼的钟停在 11:17，已经停了三个月。
+
+你经过时，它忽然敲了一下。又一下。你数到第三十一，钟声没停；第三十二下时，整条街的人都抬头看天。`,
+   opts:[
+     {t:'站在原地，把钟声数完', san:5, clues:['n_loop'],
+      ok:'钟一共敲了三十三下。最后一下没有声音，可你听见了。街上的人同时低下头继续走路，像刚才什么也没发生。'},
+     {t:'捂上耳朵，快步离开', san:2, clues:[],
+      ok:'钟声跟着你走了三条街。等你停下，它正好敲到第三十一，然后安静了。'}
+   ]},
+
+  {id:'e_pawn', kicker:'随机事件 · 当铺', title:'只收话的当铺',
+   body:`当铺的柜台很高，老板不看你，只看你开口。
+
+「押什么？」他说，「这里只收话。」`,
+   opts:[
+     {t:'押一个四字成语', san:4, clues:['n_law'],
+      ok:'你把「开门见山」押在柜台上。老板伸手一抓，指尖多了四个字的分量。「三个月不赎，就归雾了。」他说。'},
+     {t:'什么都不押，转身走', san:1, clues:[],
+      ok:'你走到门口，听见身后有人把你的名字念了一遍，念得像在估价钱。'}
+   ]},
+
+  {id:'e_school', kicker:'随机事件 · 小学', title:'黑板上最后的听写',
+   body:`废弃小学的黑板上还留着听写题。
+
+题目只有一道：「请写出你此刻最想说的一句话。」底下是三十一个学生的答案，字迹全都一模一样。`,
+   opts:[
+     {t:'拿起粉笔，写下自己的名字', san:5, clues:['n_dream'],
+      ok:'笔尖刚落下，走廊里响起下课铃。你回头看黑板，你的名字已经变成了两个字：「登记」。'},
+     {t:'把黑板擦干净', san:3, clues:[],
+      ok:'粉笔灰落进袖口，是咸的。黑板擦干净以后，上面慢慢自己浮出一行：「擦得不错，继续。」'}
+   ]},
+
+  {id:'e_tide', kicker:'随机事件 · 海边', title:'潮水送来的交接',
+   body:`退潮后，滩涂上摆着一排东西：警号、钢笔、半包烟、一只表。
+
+东西摆得很齐，像有人正准备交接。`,
+   opts:[
+     {t:'把表捡起来，对准时间', san:4, clues:['n_loop'],
+      ok:'表是坏的，指针停在 11:17。你把它贴近耳朵，里面有人在数数，数到三十一，正好是你把它放进口袋的时候。'},
+     {t:'把东西摆回原样，不拿', san:2, clues:[],
+      ok:'你刚走开，潮水就漫上来，把东西一件件收走。最后收走的是警号，收得很仔细。'}
+   ]}
+];
+
+const NIGHTS = [
+  {id:'n1', kicker:'夜访 · 第一夜', title:'凌晨的来电',
+   body:`凌晨两点，旅馆的电话响了。
+
+前台说，这个房间没有装电话。
+
+铃声很耐心，一声，一声，中间停三秒。你数到第三十一声，它还在响。`,
+   opts:[
+     {t:'接起来', san:4, clues:['n_call'],
+      ok:'听筒里是潮声。潮声退了以后，有个声音用很标准的普通话念：「三长两短。」你问它什么意思。它说：「沉默。」'},
+     {t:'拔掉墙上的电话线', san:2, clues:['n_reg'],
+      ok:'线头是湿的，滴下来的水在墙上写出一个号码。你查了这个号码：三年前注销，注销人王守义。备注一栏写着：机主已沉入井底。'}
+   ]},
+
+  {id:'n2', kicker:'夜访 · 第二夜', title:'海底的仓库',
+   body:`你梦见自己一直往下沉。
+
+海底有一座和雾港一模一样的小镇：同样的街道，同样的门牌，同样的雾——只是那雾是水做的，慢慢地横着流。
+
+镇子尽头有一间仓库，灯亮着。`,
+   opts:[
+     {t:'走进那间亮着灯的仓库', san:6, clues:['n_dream'],
+      ok:'仓库里堆满了纸。每一张都是某个人说出口的话，被折好、编号、归档。你抽出最上面一张，上面写着：「这次一定能破案。」字迹是王守义的。'},
+     {t:'站在街口，数亮着的窗', san:3, clues:['n_door'],
+      ok:'三十一扇窗亮着。第三十一扇窗后面有人影在走动，反复做一个动作：张嘴，闭嘴，张嘴。像在练习说一个词。'}
+   ]},
+
+  {id:'n3', kicker:'夜访 · 第三夜', title:'第三十一盏灯',
+   body:`你醒来时，床头多了一盏小灯。
+
+灯很小，灯芯是湿的，烧起来却不出烟。你把它捧在手里，能听见灯罩里有很轻的说话声，像隔着一层水。`,
+   opts:[
+     {t:'吹灭它', san:4, clues:['n_well'],
+      ok:'灯灭了。黑暗里，三十个声音同时叹了一口长气，然后安静下来。你摸到灯座上刻着一行字：第三十一盏，备用。'},
+     {t:'为它添一点灯油', san:8, core:true,
+      ok:'灯油是温的。火苗稳了一下，灯罩里浮起一页残卷，边缘被烧焦了，字却还完整。你伸手去接，它自己落进你掌心。'}
+   ]}
+];
+
+const DED_BANK = [
+  {q:'瓜藤的尽头连着的是什么？', opts:['一口枯井','黑海里的活物','镇公所的地基','另一片瓜田'], a:1,
+   exp:'藤不是植物的根，是谕令者伸向陆地的神经末梢，尽头浸在黑海里。'},
+  {q:'「打草惊蛇」之后，真正的蛇去了哪里？', opts:['钻进了草垛','回到了海里','爬进了法庭','就在你脚边'], a:1,
+   exp:'被指名的草真的死了，而听得懂人话的海裔斥候奉命返海。律令只认字面。'},
+  {q:'井底一共有多少盏灯？', opts:['十一盏','二十三盏','三十一盏','没有灯'], a:2,
+   exp:'三十一盏灯对应三十一个被同化的镇民，也对应卷宗里三十一个名字。'},
+  {q:'旋转木马上的钟与你的表同时停在几点？', opts:['三点零七分','十一点十七分','零点整','没有停'], a:1,
+   exp:'所有被折叠的时段都在 11:17 合拢。王警官的手表坏了以后，全镇的时间都显示 11:17。'},
+  {q:'三十一份结案卷宗，对应多少桩案子？', opts:['三十桩','三十一桩','三十二桩','数不清'], a:2,
+   exp:'多出来的那一桩案由栏是空的，落款是明天 11:17，结案人是你。'},
+  {q:'小刘埃及照片里，金字塔底座标着什么？', opts:['开罗经纬度','雾港经纬度','一串电话号码','什么都不标'], a:1,
+   exp:'小刘后来承认：那年他们根本没去过埃及。照片是雾港的某个地方，被折成了金字塔的形状。'},
+  {q:'审讯室单向玻璃的后面是什么？', opts:['观察室','一面砖墙','海','另一间审讯室'], a:2,
+   exp:'玻璃后面是海。你的倒影比你慢半拍，还隔着玻璃冲你眨眼。'},
+  {q:'法庭电脑的购物车里有多少件商品？', opts:['十三件','二十七件','三十一件','零件'], a:2,
+   exp:'三十一件商品全部寄往枯井底，收件人王守义。最近一单的下单时间是明天凌晨三点。'},
+  {q:'海边旅馆那卷绷带下面，真正的「尸体」是什么？', opts:['一具白骨','写满字的结案报告','一台录音机','另一个你'], a:1,
+   exp:'绷带下没有尸体，只有一层层写满字的结案报告，和海藻纤维拧成的线。'},
+  {q:'审讯录音最后，替王警官把话说完的是谁？', opts:['小刘','小张','不属于人类的声音','王警官自己'], a:2,
+   exp:'磁带最后那半句话不是王守义说的。那个声音很耐心，像是第一次使用人类的舌头。'},
+  {q:'盐场仓库的门后，原本是什么？', opts:['一堵墙','一座盐山','一片海','一间空仓库'], a:0,
+   exp:'门被拆走之前，那里只有一堵墙。王警官说出「开门见山」，墙才变成了山。'},
+  {q:'盐山重复你的话时，把「山」换成了什么？', opts:['海','井','你的名字','三十一'], a:2,
+   exp:'盐山用你的声音说话，只是把宾语换成了你。被点名的人，会被律令接管。'},
+  {q:'沉船下面拖着的缆绳，另一头锁着什么？', opts:['另一条船','一只档案柜','王警官的手','锚'], a:1,
+   exp:'缆绳的尽头是一只水下档案柜。船只是幌子，真正被藏起来的是柜子。'},
+  {q:'水下档案柜里，哪一份卷宗是干的？', opts:['第一份','第三十一份','第三十二份','没有'], a:2,
+   exp:'只有第三十二份是干的，封皮写着「交接」。它在等一个接手的人。'},
+  {q:'旧渡口的船票票根上印着几号？', opts:['三十一号','三十二号','十一号','没有编号'], a:0,
+   exp:'票根印着三十一号，乘客姓名栏空着——空栏是留给下一个上船的人。'},
+  {q:'钟楼的钟停了三个月，为什么忽然开始敲？', opts:['有人上弦','整点到了','因为你经过','起风了'], a:2,
+   exp:'钟不是为时间敲的。它只为被写进卷宗的人敲，一下，一下，替他数。'}
+];
+
+/* =========================================================
+   结局矩阵：5 抉择 × 5 理智层 × 4 真相层 = 100，其中 1–6 号为异闻幕
+   ========================================================= */
+const SAN_NAMES = ['清醒','镇定','动摇','崩坏','将熄'];
+const TRUTH_NAMES = ['一无所知','半页残卷','接近真相','完整卷宗'];
+
+const CHOICES = [
+  {
+    id:'seal', title:'无言之镇', tone:'tone-teal', cost:10,
+    hint:'让全镇从此不再说话。需：线索 ≥ 6，且时段未耗尽',
+    paraHigh:`你把所有线索订成一份厚卷，然后做了一件全镇没人敢做的事：让所有人闭嘴。
+
+你用镇公所的广播线接出一套简陋的装置，把「沉默」写进每一台收音机的频率里。天亮时，雾港镇安静得像一张未写字的纸。没有成语，没有律令，海面平得像一块玻璃。
+
+只是从那天起，镇上再也没有人叫过你的名字。`,
+    paraLow:`你已经分不清哪一句是自己的话。
+
+你把卷宗烧了，把灰拌进海水，然后对着整座镇子说了一个字：「哑。」
+
+雾退了。你坐在空无一人的街上，听见自己的喉咙里还有别的声音在排队。它们很守秩序，一个接一个地出来，替你把沉默补全。`
+  },
+  {
+    id:'become', title:'新王警官', tone:'tone-gold', cost:18,
+    hint:'接过他的位置。代价：理智 −18',
+    paraHigh:`你走进枯井，坐在那盏还亮着的灯旁。王守义站起来，把警号、笔录本和一句没说完的话一起交给你。
+
+「轮到你了。」他说，然后沉进水里，像终于卸下一件穿太久的衣服。
+
+井壁上的灯一盏盏转向你。你听见三十一个声音同时开口，叫你「警官」。你点了点头。从今往后，这座镇子的每一条成语，都要先经过你的嘴。`,
+    paraLow:`你不太记得自己是怎么下的井。只记得井底很暖，灯很友好，所有人都在等你。
+
+王守义把警服披在你肩上，尺寸刚好。你摸了摸胸前的警号，指尖碰到了自己的鳞。
+
+「适应得真快。」有人在水里说。你想回答，却发现自己的舌头已经很长，很适合说那些四字的话。`
+  },
+  {
+    id:'flee', title:'离岸的回响', tone:'tone-purple', cost:4,
+    hint:'登上最后一班船。代价：理智 −4',
+    paraHigh:`你登上最后一班离港的船。船开出去很久，雾港的轮廓还贴在船尾，像一块洗不掉的污渍。
+
+你在甲板上回头，看见镇口的灯一盏盏亮起来，为你送行。你数了数，三十一盏。
+
+后来你在别的城市办案，从不使用成语。有人问为什么，你说：有些话一说出口，就会有人替它执行。`,
+    paraLow:`船票是湿的。检票的人没有脸，只问你：「一个人？」你点头。他撕下票根，票根上印着三十一。
+
+船开了。你站在船尾，看见雾港镇慢慢沉下去——不是沉进海里，是沉进一张纸里。
+
+你摸了摸口袋，摸到一截井绳。它还有温度，像刚被谁握过。`
+  },
+  {
+    id:'sacrifice', title:'以我为烛', tone:'tone-red', cost:25,
+    hint:'把自己当作灯油。需：线索 ≥ 5 且理智 ≥ 20；代价：理智 −25',
+    paraHigh:`你把自己点着了。
+
+不是用火，是用记忆。你一条一条地烧：名字、警号、母亲的脸、第一次握枪的手感。每烧掉一样，雾就退一寸。最后你烧到「王守义」这三个字，火苗忽然稳住了。
+
+镇子得救了。第二天，人们在枯井边发现一盏还很烫的灯。没人知道灯芯是什么做的，只知道它一直亮着，像有人在里面值夜班。`,
+    paraLow:`你割开手腕，让血流进井里。血是咸的，和海水分不清。
+
+三十一盏灯同时亮起来，照得井壁像白天。你听见它们在数数，数到三十一，然后开始数你。
+
+你没有觉得疼。你只觉得终于安静了——安静得像一张被写完的纸。`
+  },
+  {
+    id:'paradox', title:'不完整的证词', tone:'tone-void', cost:8,
+    hint:'拒绝给出完整答案。需：四卷残页齐；代价：理智 −8',
+    paraHigh:`你没有结案。你在卷宗最后一页写下：「真相不完整。」然后签上名字。
+
+这句话像一把钥匙，也像一根刺。谕令者靠完整的陈述存在，而「不完整」是它无法执行的命令。雾开始退回海里，海面出现一道从未有过的裂缝。
+
+你合上卷宗。纸页之间，有什么东西第一次没有说完。`,
+    paraLow:`你笑着说：「我看破了真相。」
+
+于是真相碎了。碎得很轻，像一张被戳破的纸。你蹲下去捡，捡到的全是自己的指纹。
+
+谕令者在雾里停了很久，然后慢慢退走。它不明白：一个不肯把话说完的人，要怎么被律令约束。`
+  }
+];
+
+/* =========================================================
+   出身专属结局：102–104，不计入 100 条
+   ========================================================= */
+const ARCH_ENDINGS = {
+  field:{
+    id:102, choice:0, title:'物证之镇',
+    verdict:'结案报告最后一栏：无异常。签名处的墨，比别处厚一点。',
+    body:`你把每一样东西都摆在桌上，按时间、按地点、按潮汐排好。三十一件物证，一件不多，一件不少。
+
+然后你让全镇闭嘴。不是靠广播，是靠这份卷宗——它在每一家门前放了一页，写着：你说过的话，已经有人替你负责了。
+
+雾退的那天，盐场的盐山也塌了。你蹲下去检查碎盐，发现每一粒结晶里都封着一句没说完的话。你把它们装进证物袋，编号从三十二开始。
+
+从此雾港镇再没发生过怪事。所有的怪事，都被你归档了。`
+  },
+  mind:{
+    id:103, choice:1, title:'第三十二份笔录',
+    verdict:'笔录归档。被审人一栏是空的，审讯人一栏排着三十二个名字。',
+    body:`你坐上审讯席。灯管嗡嗡响，单向玻璃后面是海。
+
+第一个被带进来的人是你自己。你问了三个问题，答得都很流利。第四个问题你犹豫了，笔录上却已经写好了答案。
+
+「你到底是谁？」你听见自己问。
+
+「审讯者。」对面答。
+
+于是你明白了：王守义从来不是被同化的那个人，他是第一个学会反过来审讯的人。你接过他的笔，把第三十二份笔录的落款改成自己的名字。雾在窗外站了很久，最后敬了个礼。`
+  },
+  luck:{
+    id:104, choice:2, title:'第三十二张船票',
+    verdict:'海图上有这座镇。但所有的航线，都不经过它。',
+    body:`你在开船前五分钟登上甲板。检票的人没有脸，接过你的票，撕下票根。
+
+「三十一号。」他说。
+
+「不。」你把另一张票递过去，「我的是三十二。」
+
+他低头看了很久，久到船已经离港。那张票上原本空着的乘客姓名，此刻慢慢浮出字来：不是你的名字，是「王守义」三个字。
+
+你没有下船。你只是把票折好，放进内袋。船尾的雾港镇一盏盏熄了灯，从三十一数到一，数得很慢，像在送你。`
+  }
+};
+
+function archEndingFor(i, preSan){
+  if(!S) return null;
+  var e = ARCH_ENDINGS[S.arch];
+  if(!e || e.choice !== i) return null;
+  if(e.id === 102 && S.clues.length < 10) return null;
+  if(e.id === 103 && !(S.ded && S.ded.score >= 2)) return null;
+  if(e.id === 104 && preSan < 50) return null;
+  return e;
+}
+
+const EXTRA_ENDINGS = [
+  {
+    id:3, title:'第 3 号 · 守灯人',
+    hint:'传闻：意志极坚的人，会在灯下留下来。',
+    verdict:'有些封印不是贴上去的，是有人整夜睁着眼守出来的。',
+    body:`你留了下来。
+
+灯塔的钥匙很旧，锁孔里全是盐。你每天擦一遍镜片，把光打向海面，不是为了让船靠岸，而是为了让井底的东西知道：这里有人醒着。
+
+镇上的人开始给你送饭。他们不叫你的名字，只叫「守灯的」。你答应了。`
+  },
+  {
+    id:84, title:'第 84 号 · 证物室',
+    hint:'传闻：眼睛太尖的人，最后会把自己也收进证物袋。',
+    verdict:'证据不会说谎，但摆证据的人可以。',
+    body:`你把所有证物按时间排开，从第一片鳞到最后一页笔录。
+
+做到第七个小时，你发现它们围成一个圈，圈心是空的。你把自己的徽章放进去，圈就合上了。
+
+第二天，证物室多了一个玻璃柜，里面没有人，只有一个很标准的站姿。`
+  },
+  {
+    id:47, title:'第 47 号 · 赌徒的船票',
+    hint:'传闻：运气好到极点的人，能在码头上赢来一个方向。',
+    verdict:'幸运不是躲开结局，是让结局换一种方式来。',
+    body:`你没有买票。你在码头和人掷了一把骰子，赢了，赢来一张写着「任意方向」的船票。
+
+船开的时候，雾从两侧退开。你知道这不是运气，是海在还你什么。
+
+很多年后，你仍在船上。每次有人问你去哪，你就把骰子递过去。`
+  },
+  {
+    id:68, title:'第 68 号 · 三十二盏灯',
+    hint:'传闻：把三题都答对的人，会知道第三十二盏灯在哪。',
+    verdict:'看清全局的人，才有资格决定哪一盏不点。',
+    body:`你把三题全答对了，于是你知道了灯该点在哪。
+
+三十一盏在镇上的窗里，最后一盏在你手里。你挨个点亮，点到最后一盏时，井底传来有人数数的声音，数到三十二，停了。
+
+从那以后，雾港镇夜夜通明。没有人再失踪，也没有人再离开。`
+  },
+  {
+    id:34, title:'第 34 号 · 无人签收',
+    hint:'传闻：一题都答不对却急着接班的人，抽屉里会多一份卷宗。',
+    verdict:'不推理的人，最后会变成别人推理里的那具尸体。',
+    body:`你一份推理也没做，直接坐上了新王警官的椅子。
+
+最难的那几宗案子被你压进抽屉，理由是「证据不足」。镇上的人夸你办事稳妥，只有井底偶尔传来翻纸的声音。
+
+很多年后，抽屉自己开了一条缝。里面多了一份卷宗，签名栏是你的名字，笔迹却像王守义。`
+  },
+  {
+    id:100, title:'第 100 号 · 井底来客',
+    hint:'传闻：带着四卷残页、理智将尽的人，会在井边遇见自己。',
+    verdict:'你找了很久的失踪者，最后发现名单第一行就是自己。',
+    body:`你带着四卷残页走到井边时，已经分不清自己是来查案还是来赴约。
+
+你朝井下看。井里的人也朝上看，他有你的脸，但比你安静得多。
+
+他伸手，你把残页递下去。交换完成的那一刻，你想起自己其实一直住在下面。`
+  }
+];
+
+function extraEndingFor(i, preSan){
+  if(!S) return null;
+  if(i === 0 && S.will >= 85 && preSan >= 50) return EXTRA_ENDINGS[0];
+  if(i === 4 && S.inv >= 85 && S.clues.length >= 14) return EXTRA_ENDINGS[1];
+  if(i === 2 && S.luck >= 85) return EXTRA_ENDINGS[2];
+  if(i === 3 && S.ded && S.ded.score === 3) return EXTRA_ENDINGS[3];
+  if(i === 1 && S.ded && S.ded.done && S.ded.score === 0 && S.done.length >= 6) return EXTRA_ENDINGS[4];
+  if(S.san <= 10 && coreCount() === 4) return EXTRA_ENDINGS[5];
+  return null;
+}
+
+const OPEN_PARAS = [
+  [ /* 无言之镇 */
+    '你把封条压在卷宗上，手指很稳。镇子在你身后屏住了呼吸，像一个终于被按住的证人。',
+    '你没有十足的把握，但封条已经蘸好了浆糊。雾在门外等着看你的字迹。',
+    '你的手抖得厉害，封条贴歪了。镇子没有笑，它只是安静地等你贴完。',
+    '你已经分不清哪一边是海，哪一边是纸。你只知道，必须把这张封条贴上去。'
+  ],
+  [ /* 新王警官 */
+    '你坐上那张椅子，桌面上有一层薄薄的盐。警徽在灯下很亮，像刚从海里捞出来。',
+    '警服肩线有点勒。你把它抚平，听见走廊尽头有人立正，动作和你一模一样。',
+    '你不记得自己什么时候换上的制服，只记得换的时候，没人问你愿不愿意。',
+    '椅子在等你。你坐下去，发现它的高度早就是按你的腿量好的。'
+  ],
+  [ /* 离岸的回响 */
+    '你把船票捏在手里，检票口的灯是绿的。雾港镇在你背后，像一件脱下来的湿衣服。',
+    '海风很咸，船笛响了两声。你数了数行李，发现自己只带走了半份卷宗。',
+    '你不确定这班船开往哪里，但码头在后退，这就够了。',
+    '船板在你脚下轻轻起伏，像某种呼吸。你告诉自己，那是浪。'
+  ],
+  [ /* 以我为烛 */
+    '你把灯芯拨亮，火苗立得很直。镇上所有的窗都没亮，只有你这一盏。',
+    '灯油只够烧一夜。你算了算，刚好够把最黑的那段路照完。',
+    '你把手伸进灯罩时没有犹豫，甚至觉得暖。火光里，井口显得很远。',
+    '你已经烧掉了名字、警号、和来时的路。剩下来的部分，正好可以当灯芯。'
+  ],
+  [ /* 不完整的证词 */
+    '你把笔录翻到最后一页，笔尖悬在签名栏上方。只要落笔，这件事就会被写成另一种样子。',
+    '你删掉了最关键的一句，纸面留下一个浅浅的凹痕。真相没有反抗，它只是变轻了。',
+    '你反复读自己的证词，读到后来，连你自己都开始相信那个更温和的版本。',
+    '纸上的字开始自己挪动，替你补全句子。你没有阻止，因为你已经想不起原句。'
+  ]
+];
+
+const TRUTH_PARAS = [
+  [ /* 无言之镇 */
+    '你其实什么也没查清。封条盖住的是一团你不敢再看第二眼的东西。',
+    '你带着半页残卷封住了井口。剩下半页的内容，你打算用余生不去想。',
+    '律令在你手里折成一个死结。你听见海面下传来一声很长的、类似叹息的动静。',
+    '四卷残页拼在一起，露出「谕令者」真正的名字。你把它念反，封条就生效了。',
+    '你读到第零页，却选择把它重新合上。封印的不是海，是那句还没来得及被说出口的话。'
+  ],
+  [ /* 新王警官 */
+    '你接过了警徽，也接过了那些没人敢结的案子。第一份卷宗上，死者姓名空着。',
+    '旧档案里夹着半页残卷。你把它锁进抽屉，钥匙扔进井里，第二天又在桌上看见它。',
+    '你开始用四字词写结案报告。它们总能执行，只是执行出来的东西越来越不像人。',
+    '四卷残页齐了，你没有上报。你把它们压在玻璃板下，当作新的办案手册。',
+    '第零页上写着你的名字。你合上卷宗，坐到灯下，等下一个敲门的人。'
+  ],
+  [ /* 离岸的回响 */
+    '你什么都没带走，除了一身雾味。船开的时候，你甚至不知道这算不算逃。',
+    '半页残卷在行李里发烫。你把它扔进海里，它浮了一会儿，然后朝岸的方向游去。',
+    '你在船上听说雾港镇又失踪了一个人。你数了数日期，那天你还在镇上。',
+    '四卷残页被你缝进船票夹层。你发誓不再打开它，除非海先开口。',
+    '你读完了第零页，船就开始下沉。你这才明白，有些岸是专门为回头的人准备的。'
+  ],
+  [ /* 以我为烛 */
+    '你点燃了自己，也点燃了镇上那盏熄了很久的灯。火光很小，但足够让人看清脚下。',
+    '你烧掉了半页残卷，火里浮出几个名字，其中一个你认识，另一个是你自己。',
+    '你把自己的一截记忆当灯芯。照亮的是一口井，井底整整齐齐坐着三十一个人。',
+    '四卷残页一起烧起来，火光是完整的。你第一次看清「谕令者」没有脸。',
+    '你读到第零页，然后把它举到火上。第零页没有烧着，你烧着了自己。'
+  ],
+  [ /* 不完整的证词 */
+    '你交上去的证词缺了一页。没人追问，所有人都松了口气，包括你。',
+    '半页残卷被你故意漏在附录外。它后来出现在别人的卷宗里，字迹和你一样。',
+    '你写的每句话都能对上现场，连在一起却指向一个不存在的凶手。案子结了。',
+    '四卷残页拼出完整的真相。你在最后一行加了「（此处字迹不清）」，于是它又不完整了。',
+    '第零页没有字。你在空白处写下自己的名字，它就成了唯一的一页证据。'
+  ]
+];
+
+const COMBO_PARAS = [
+  [
+    `你带着问题离开。没人相信你的报告，你自己也不全信。
+
+但至少，你的手没有抖。回去的船上你睡了一觉，没有做梦。`,
+    `你拼出了半页。把它锁进抽屉时，你忽然想到：剩下的半页，也许正被谁写着。`,
+    `你摸到了轮廓。回家后的第一个夜里，你把家里所有成语词典都收进箱子——不是怕它，是怕自己忍不住念出来。`,
+    `数字对齐的那一刻，你听见纸背后鼓掌。你没有回头。
+
+你只是把卷宗合上，关灯，像关掉一个太亮的房间。`,
+    `你看见了写字的那只手。你没有疯，这是最坏的部分：你清醒地知道，自己从今往后说的每句话，都可能被谁记下来。`
+  ],
+  [
+    `你不确定自己查到了什么。离开雾港时，你在车上反复检查口袋，怕带走什么，又怕落下什么。`,
+    `半页残卷在你手里发烫。你开始怀疑，缺的那半页不是丢了，是被你亲手撕掉的。`,
+    `轮廓已经成形。夜里你梦见一条规则，它不长脸，只长嘴，正一句一句地复述你白天说过的话。`,
+    `所有数字都对齐了。你想笑，笑到一半停住——你数了数自己的牙，数到三十一就重新开始。`,
+    `你看见了那只手。它没有恶意，只是很忙。你忽然不敢再往下想：自己是不是也在这张纸上，被写了一行。`
+  ],
+  [
+    `你已经说不清问题是什么。回程的船票你买了三次，每次都忘记自己买过。`,
+    `残卷在你自己身上。你掀开袖子，看见皮肤下有一行字，正慢慢地往下沉。`,
+    `轮廓开始反过来描你。你照着镜子练习说「我不是它」，练到第三十一遍，镜子里的人先停了。`,
+    `完整卷宗被你读完了。可你发现最后一页的签名栏里，字迹正在一点点变成你的。`,
+    `写真相的手停了笔。它不是在看你，是在等你把这句话读完。你听见自己的心跳，正被排成铅字。`
+  ],
+  [
+    `你什么都没带回来，包括你自己。雾港镇的寻人启事上，多了一张没有脸的照片。`,
+    `半页残卷沉进井里。你蹲在井边看了很久，觉得那上面写的像是你的名字，又像不是。`,
+    `你不记得轮廓，只记得它很耐心。它一句一句地教你说话，你学得很快，邻居都夸你。`,
+    `卷宗完整了。你坐在井底，把它一页页念给三十一个邻居听。他们听得很认真，没有人打断你。`,
+    `你终于成了那个停顿。句子与句子之间，很短，很安静，所有人说话时都会经过你。`
+  ]
+];
+
+const VERDICTS = [
+  '卷宗归档。签字人：你。',
+  '雾没有散，它只是换了一种形状。',
+  '有人在很远的地方，用你的声音念完最后一句。',
+  '第二天，寻人启事上多了一张照片。',
+  '你听见海水在纸背后翻页。',
+  '三十一盏灯，从此少了一盏，或者多了一盏。',
+  '没有人报案。这桩案子从始至终，只有你一个当事人。',
+  '你终于明白，破案和结案是两件不同的事。',
+  '雾港镇继续存在，因为还需要有人把它写下来。',
+  '所有成语都回到了字典里。字典很厚，压得住它们。',
+  '你把灯关了。雾没有走，但也没有再往前一步。',
+  '档案袋上写着「已结」，没人敢拆。',
+  '从此你说话很慢，慢到别人以为你在斟酌。',
+  '镇口的路牌换了新漆，方向没变。',
+  '你把钢笔留在桌上。第二天它自己写完了报告。',
+  '有人在你背后翻页。你没有回头。',
+  '海水退去，露出三十一个脚印，其中一个是你。',
+  '你学会了在说成语之前，先在心里数到三十一。',
+  '卷宗很厚。最厚的那一页，是你。',
+  '雾港镇照常天亮。只有你知道，天亮也需要有人签字。'
+];
+
+const END_TAILS = [
+  /* 001–020 · 无言之镇 */
+  '封条贴得很正。你不知道自己封住了什么，但今晚应该能睡着。',
+  '你把半页残卷压进封条下面。纸角露在外面，像一句没说完的话。',
+  '你封住井口时，听见里面有人轻轻说了一声谢谢。你没敢应。',
+  '四卷残页拼成的名字被你念反。海面安静下来，像被按住的喉咙。',
+  '你封了井，却漏了一条缝。夜里风从缝里进来，带着咸味。',
+  '封条压住半页真相。剩下半页你烧了，灰落在鞋面上，像盐。',
+  '你按着律令的纹路把封条抹平。手心的汗把墨迹晕开了一点。',
+  '完整的名被拆成四句，分别贴在四扇门上。镇子终于不再复读。',
+  '你贴完封条，才发现自己贴反了。没人敢揭，也没人敢说。',
+  '半页残卷在封条下发热。你按住它，像按住一只还在跳的心脏。',
+  '你封住井口，井里的声音却从你嘴里出来，替你把话说完。',
+  '四页拼齐的那一刻，你忘了自己要封的是海，还是自己。',
+  '封条上多了一个指印，不是你的。你决定当作没看见。',
+  '你把残卷吞了下去。封条贴好时，胃里有人在念说明书。',
+  '井口被封住了。你每天仍往井里送饭，送三十二份。',
+  '完整的真相在你脑子里展开。你把它折好，塞回井里。',
+  '你封住井口，然后坐在旁边等。等谁来揭，等谁来替你签。',
+  '半页残卷自己烧了起来。封条没粘住，井口一直开着。',
+  '你用最后的力气把封条按平。井底传来掌声，很整齐。',
+  '你看完了完整的真相。现在轮到你被写进下一页。',
+  /* 021–040 · 新王警官 */
+  '警徽别得很正。第一宗案子没有尸体，只有一间空审讯室。',
+  '你把半页残卷压在玻璃板下。第二天它自己翻了个面。',
+  '你开始用四字词写结案报告。它们执行得很好，只是越来越不像人话。',
+  '四卷残页成了新的办案手册。第一条：不要读完第四页。',
+  '你接了班，也接了那本永远写不完的值班表。',
+  '半页残卷锁进抽屉。钥匙丢进井里，第二天挂在门上。',
+  '你审完最后一个活人。笔录上，嫌疑人一栏写着你的名字。',
+  '完整卷宗归档。你把「王守义」三个字，从封面挪到了扉页。',
+  '你坐上椅子，听见走廊里有人立正。你没有回头。',
+  '残卷在抽屉里发烫。你假装那是暖气。',
+  '你开始替井底的人做笔录。他们说的每句话，你都觉得耳熟。',
+  '四页拼齐，你终于看懂：新王警官只是第三十二个称呼。',
+  '你忘了自己什么时候换的制服。镜子里的肩章，比你更合身。',
+  '半页残卷从抽屉里爬出来，替你写完了第一份报告。',
+  '你审自己审了一夜。天亮时，笔录多了一页，签的是「王警官」。',
+  '完整的案卷写完，封面上没有你的名字，但每个人都叫你王警官。',
+  '椅子在等你。你坐下去，发现它一直是温的。',
+  '残卷贴在你背上，像一张没撕干净的膏药。',
+  '你听见三十二个声音同时说「坐好」。你坐好了。',
+  '最后一页是你。你被压在最底下，成了新的值班表。',
+  /* 041–060 · 离岸的回响 */
+  '船开了。雾港镇缩成一行小字，很快被浪抹掉。',
+  '你带走半页真相。剩下半页，留给了下一班船。',
+  '你回头看了一眼。镇子没有追来，只是把你记进了潮汐表。',
+  '四卷残页缝进船票。你发誓不再打开，除非海先开口。',
+  '船票是单程的。你数了三遍，码头还是比你先消失。',
+  '半页残卷在行李里发烫。你把它扔进海，它朝岸游了回去。',
+  '你在船上听说雾港又失踪一人。日期那一栏，是你离开的那天。',
+  '完整的真相被你折成四折，垫在船票下面。船速忽然快了一倍。',
+  '你不确定船开往哪里。但码头在后退，这就够了。',
+  '残卷上的字被海水泡开，浮成一张脸。你把它按回纸里。',
+  '海面很平。你知道，平不是因为安全，是因为深。',
+  '四页拼齐，船开始下沉。你这才明白，有些岸是给回头的人准备的。',
+  '船板在脚下起伏，像呼吸。你告诉自己那是浪。',
+  '半页残卷在你胸口发亮。同船的人都说，你像一盏灯。',
+  '你听见水下有人敲船底。三下，停顿，三下。',
+  '完整的真相读完后，你发现自己一直站在码头上，没有上船。',
+  '你买了一张票，检票口没有灯。船还是开了。',
+  '残卷烧完了，船票上的字才显出来：不设终点。',
+  '海把你送回了岸边。你认不出这是雾港，还是井底。',
+  '你读完了最后一页。船、海、镇子一起合上，像一本卷宗。',
+  /* 061–080 · 以我为烛 */
+  '灯点起来了。镇上所有窗都没亮，只有你这一盏。',
+  '你烧掉半页残卷。火光里浮出几个名字，其中一个是你。',
+  '你把自己的一截记忆当灯芯。照亮的是一口井，井底坐着三十一个人。',
+  '四卷残页一起烧起来。你第一次看清「谕令者」没有脸。',
+  '灯油够烧一夜。你算了算，刚好够照到井口。',
+  '半页残卷在火里卷曲，发出很轻的哭声。你没有把火拨小。',
+  '你举着灯走进井底。三十一个人同时抬头，像一排灯芯。',
+  '完整的真相烧成灰。灰落在你手背上，烫出一个名字。',
+  '你把火点着，才发现灯罩里没有灯芯。烧的是你的手指。',
+  '残卷烧到一半，火苗忽然朝你弯腰，像在行礼。',
+  '你照亮了井底，也照亮了自己站在井底这件事。',
+  '四页烧完，井口合拢。你听见有人在上面吹灭了灯。',
+  '你烧掉了名字、警号、来时的路。剩下来的部分正好当灯芯。',
+  '半页残卷在火里替你说话。它说的每一句，都比你真。',
+  '你看见三十二盏灯同时亮起。第三十二盏，在你胸腔里。',
+  '完整的真相亮得刺眼。你闭上眼睛，光就从眼眶里流出来。',
+  '火很小。你把自己凑近了一点，镇上就亮了一点。',
+  '残卷先烧完，然后是船票、警徽、你的影子。',
+  '你听见有人在数灯。数到三十二，声音停了，火还在烧。',
+  '最后一页被火读完。你成了灯本身，不再需要有人点。',
+  /* 081–100 · 不完整的证词 */
+  '你交上去的证词缺了一页。没人追问，所有人都松了口气。',
+  '半页残卷被你漏在附录外。它后来出现在别人的卷宗里。',
+  '每句话都对得上现场，连起来却指向一个不存在的凶手。案子结了。',
+  '四卷残页拼出完整真相。你在最后一行写：此处字迹不清。',
+  '你把最关键的一句删了。纸面留下凹痕，像一道很浅的伤。',
+  '半页残卷被你折进衬衫口袋。走路时，它轻轻敲你的肋骨。',
+  '你写的真相太完整，于是你划掉了最后一段，让它重新可疑。',
+  '四页齐了。你没有拼，而是抽出其中一页，扔进井里。',
+  '你反复读自己的证词，读到后来，开始相信那个更温和的版本。',
+  '残卷上的字开始自己挪动，替你补全句子。你没有阻止。',
+  '你交上去的卷宗有三十一页。清点时，多出第三十二页。',
+  '完整的真相被装订成册。封面写着：不予采信。',
+  '纸上的字替你说话。你只负责点头，签得很工整。',
+  '半页残卷贴在你舌下。你每说一句真话，它就少一个字。',
+  '你在证词里留下三个空白。审判时，空白开始回答。',
+  '四页拼好又拆开。你决定只交一页，剩下的吞进肚子。',
+  '签名栏是空的。你签了，笔迹却像王守义。',
+  '残卷在你手里化成灰。灰落在证词上，正好补上缺的那句。',
+  '你听见有人在庭上朗读你的证词。读到一半，他换成了你的声音。',
+  '最后一页没有字。你把自己的名字写上去，它就成了唯一证据。'
+];
+
+const GRAND_VERDICT = '阅读即呼吸。你读了它，它就活了一次。';
+const GRAND_TEXT = `你读完了第零页。
+
+那一页上没有字。或者说，字在你读的瞬间才生成——它们不描述案情，它们描述正在读这一页的人：你的呼吸、你的迟疑、你此刻想把屏幕关掉的冲动。
+
+你忽然明白谕令者为什么从不杀人。它靠「被读」活着。每一份卷宗被翻开，都是一次献祭；每一个试图查明真相的人，都在替它把句子读得更完整。
+
+三十一份卷宗，其实是三十一次呼吸。
+
+而你现在手里这一页，是第三十二次。页脚有一行小字，不属于任何已知的字体：
+
+「谢谢你读到这里。现在，轮到你写下一句了。」
+
+你没有写。你合上了卷宗——或者，你以为你合上了。`;
+
+/* =========================================================
+   引擎
+   ========================================================= */
+document.getElementById('stage');
+const stageEl = document.getElementById('stage');
+let S = null;
+let META = loadMeta();
+let DRAFT = { arch:'field', name:'', inv:55, will:55, luck:55 };
+let audioCtx = null, audioGain = null, audioOn = false;
+let lastNode = '';
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+  });
+}
+function nl2p(s){
+  return String(s || '').split('\n').filter(function(x){ return x.trim() !== ''; })
+    .map(function(x){ return '<p>' + esc(x) + '</p>'; }).join('');
+}
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+function shuffle(a){
+  var b = a.slice();
+  for(var i = b.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = b[i]; b[i] = b[j]; b[j] = t;
+  }
+  return b;
+}
+function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+/* ---------- 存档 ---------- */
+function loadMeta(){
+  try{
+    var m = JSON.parse(localStorage.getItem(META_KEY) || 'null');
+    if(m && Object.prototype.toString.call(m.unlocked) === '[object Array]'){
+      var legacyA = {1:3,2:84,3:47,4:68,5:34,6:100};
+      var legacyB = {105:3,106:84,107:47,108:68,109:34,110:100};
+      var raw = (m.extra || []).map(function(x){ return legacyB[x] || legacyA[x] || x; }).filter(function(x){ return typeof x === 'number' && x >= 1 && x <= 100; });
+      var all = (m.unlocked || []).concat(raw).filter(function(x, i, arr){ return typeof x === 'number' && x >= 1 && x <= 100 && arr.indexOf(x) === i; });
+      return { unlocked:all, grand:!!m.grand, arch:(m.arch || []).filter(function(x){ return typeof x === 'number'; }), extra:raw.filter(function(x, i, arr){ return arr.indexOf(x) === i; }), runs:m.runs || 0 };
+    }
+  }catch(e){}
+  return { unlocked:[], grand:false, arch:[], extra:[], runs:0 };
+}
+function saveMeta(){
+  try{ localStorage.setItem(META_KEY, JSON.stringify(META)); }catch(e){}
+}
+function saveRun(){
+  if(!S || S.node === 'create' || S.node === 'ending') return;
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){}
+}
+function clearRun(){
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+}
+function loadRun(){
+  try{
+    var s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    if(s && s.node && s.node !== 'create' && s.node !== 'ending' && s.node !== 'title') return s;
+  }catch(e){}
+  return null;
+}
+
+/* ---------- HUD ---------- */
+function updateHud(){
+  var ids = ['hInv','hWill','hLuck','hTime'];
+  if(!S || S.node === 'create'){
+    ids.forEach(function(id){ var el = document.getElementById(id); if(el) el.textContent = '—'; });
+    var sn = document.getElementById('hSan');
+    if(sn){ sn.textContent = '80'; sn.style.color = 'var(--green)'; }
+    var b0 = document.getElementById('sanbar'); if(b0) b0.style.width = '100%';
+    var f0 = document.getElementById('hBuff'); if(f0) f0.textContent = '';
+    return;
+  }
+  document.getElementById('hInv').textContent = S.inv;
+  document.getElementById('hWill').textContent = S.will;
+  document.getElementById('hLuck').textContent = S.luck;
+  document.getElementById('hTime').textContent = S.time;
+  var hs = document.getElementById('hSan');
+  hs.textContent = S.san;
+  hs.style.color = S.san >= 60 ? 'var(--green)' : (S.san >= 30 ? 'var(--gold)' : 'var(--red)');
+  document.getElementById('sanbar').style.width = Math.round(S.san / S.maxSan * 100) + '%';
+  var parts = [];
+  if(S.buff.inv) parts.push('侦查 +' + S.buff.inv);
+  if(S.buff.will) parts.push('意志 +' + S.buff.will);
+  if(S.buff.luck) parts.push('幸运 +' + S.buff.luck);
+  if(S.san < 30) parts.push('低理智 · 判定 -10');
+  if(S.shield) parts.push('护盾 ' + S.shield);
+  document.getElementById('hBuff').textContent = parts.join(' · ');
+}
+
+/* ---------- 小工具 ---------- */
+function toast(msg){
+  var old = document.querySelector('.toast');
+  if(old) old.remove();
+  var d = document.createElement('div');
+  d.className = 'toast';
+  d.textContent = msg;
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, 3200);
+}
+function showWhisper(){
+  var d = document.createElement('div');
+  d.className = 'whisper';
+  d.textContent = pick(WHISPERS);
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, 4300);
+}
+
+/* ---------- 跑团状态 ---------- */
+function addLog(text){
+  if(!S) return;
+  S.log.push('第 ' + (13 - S.time) + ' 时段 · ' + text);
+  if(S.log.length > 90) S.log.shift();
+}
+function coreCount(){
+  if(!S) return 0;
+  return S.clues.filter(function(id){ return id.indexOf('c_') === 0; }).length;
+}
+function giveClue(id){
+  if(!id || !CLUES[id] || !S) return false;
+  if(S.clues.indexOf(id) >= 0) return false;
+  S.clues.push(id);
+  addLog('获得线索：' + CLUES[id].name);
+  return true;
+}
+function randomNormalClues(n){
+  var pool = Object.keys(CLUES).filter(function(id){
+    return id.indexOf('c_') !== 0 && S.clues.indexOf(id) < 0;
+  });
+  var out = [];
+  for(var i = 0; i < n && pool.length; i++){
+    var j = Math.floor(Math.random() * pool.length);
+    out.push(pool.splice(j, 1)[0]);
+  }
+  return out;
+}
+function loseSan(n){
+  if(!S || n <= 0) return 0;
+  var d = Math.max(1, n - Math.floor(S.will / 30));
+  if(S.shield > 0){
+    var ab = Math.min(S.shield, d);
+    S.shield -= ab; d -= ab;
+  }
+  S.san = clamp(S.san - d, 0, S.maxSan);
+  S.sanLost += d;
+  return d;
+}
+function sanPenalty(){
+  return (S && S.san < 30) ? 10 : 0;
+}
+function healSan(n){
+  if(!S) return;
+  S.san = clamp(S.san + n, 0, S.maxSan);
+}
+
+function initRun(){
+  readDraft();
+  var arch = ARCHETYPES[DRAFT.arch] || ARCHETYPES.field;
+  var order = shuffle(SITE_ORDER);
+  var coreIds = shuffle(['c_name','c_contract','c_zero','c_writer']);
+  var coreMap = {};
+  order.slice(0, 4).forEach(function(sid, i){ coreMap[sid] = coreIds[i]; });
+  var omens = {};
+  order.forEach(function(sid){ omens[sid] = pick(OMENS); });
+
+  S = {
+    name: (DRAFT.name || '').trim() || '无名侦探',
+    arch: DRAFT.arch,
+    inv: clamp(DRAFT.inv + arch.inv, 5, 99),
+    will: clamp(DRAFT.will + arch.will, 5, 99),
+    luck: clamp(DRAFT.luck + arch.luck, 5, 99),
+    san: 80, maxSan: 80, time: START_TIME,
+    done: [], clues: [], items: [arch.item],
+    buff: {inv:0, will:0, luck:0}, shield: 0,
+    mapOrder: order, coreMap: coreMap, omens: omens,
+    eventsSeen: [], nights: {n1:false, n2:false, n3:false},
+    ded: {qs:[], score:-1, done:false},
+    flags: {}, tooLate: false, over: false, sanLost: 0,
+    node: 'hub', curSite: '', curEvent: '', curNight: '',
+    result: null, log: [], restCount: 0, ending: null
+  };
+  META.runs = (META.runs || 0) + 1;
+  saveMeta();
+  addLog('抵达雾港镇。上级只留了一句话：查清王守义。');
+  saveRun();
+  render();
+  toast('雾合上了。你有 ' + START_TIME + ' 个时段。');
+}
+
+/* ---------- 渲染 ---------- */
+function render(){
+  if(S && S.node !== 'create' && S.node !== 'ending') saveRun();
+  updateHud();
+  document.body.classList.toggle('low-san', !!(S && S.san <= 30));
+  if(!S){ renderTitle(); lastNode = 'title'; return; }
+  switch(S.node){
+    case 'create': renderCreate(); break;
+    case 'hub': renderHub(); break;
+    case 'site': renderSite(); break;
+    case 'result': renderResult(); break;
+    case 'event': renderEvent(); break;
+    case 'night': renderNight(); break;
+    case 'ded': renderDed(); break;
+    case 'final': renderFinal(); break;
+    case 'ending': renderEnding(); break;
+    default: renderTitle();
+  }
+  if(S.node !== lastNode){ lastNode = S.node; window.scrollTo(0, 0); }
+}
+
+function renderTitle(){
+  var saved = loadRun();
+  var html = '<div class="hero">';
+  html += '<div class="sigil"><span>雾</span></div>';
+  html += '<div class="k">COC 风 · 单人跑团 · 100 幕 + 隐藏终幕</div>';
+  html += '<h1>雾港回响</h1>';
+  html += '<div class="s">百幕 · 王警官案件卷宗</div>';
+  html += '<div class="epi">「它把你说出的每一个成语，都当成不可违抗的命令。」</div>';
+  html += '<div class="intro">' + nl2p('三个月前，雾港镇的海底浮起了一个东西。镇上的人叫它「谕令者」。\n\n它不杀人，也不现身。它只是听——听人说话，尤其听成语。然后，它按字面执行。\n\n王守义，镇警局的老警官，是第一个被它盯上的人。你，是上级派来的第三十二个调查员。') + '</div>';
+  html += '<div class="herobtns">';
+  html += '<button class="btn gold" data-a="start">开始调查</button>';
+  if(saved) html += '<button class="btn" data-a="resume">继续上一次</button>';
+  html += '<button class="btn" data-a="gallery">结局回廊</button>';
+  html += '</div>';
+  html += '<div class="meta">已解锁 <b>' + META.unlocked.length + '</b> / 100 条结局 · 雾中还有 <b>' + (100 - META.unlocked.length) + '</b> 条未被看见<br>' + (META.grand ? '第 101 号已经显现。' : '另有 1 幕，不在 100 条之内。') + ' 另有 3 幕，只向特定出身显现（' + META.arch.length + ' / 3）；6 幕异闻已计入 100 条。</div>';
+  html += '</div>';
+  var rules = [
+    ['掷骰','标「判定」的选项会掷 d100。小于等于对应属性即成功；失败通常仍会推进，但多掉理智。'],
+    ['幸运','判定失败时自动再掷一次幸运豁免：成功则完全免除该次理智损失，失败则照常承受。'],
+    ['侦查','达到 65 时，每次勘察现场都会额外补一条该现场尚未掌握的线索，即使判定失败也算。'],
+    ['理智','SAN 低于 30 时所有判定 -10。意志每 30 点减免 1 点理智损失；休息、占卜、推理全对可回复理智。'],
+    ['占卜','花 1 个时段与 4 点理智，换一条你还没见过的线索，并让下一次某类判定 +20。'],
+    ['时段','一局 12 个时段。勘察现场、休息、占卜、推理各消耗 1 段。时段耗尽会被迫结案。'],
+    ['线索','每个现场有三条路线：安全走访、判定勘察、深层高危。越深的地方，越可能翻到「残卷」。'],
+    ['推理','花 1 个时段做三题，全局只能做一次。每答对一题获得一条洞察线索；答对两题真相层级 +1，全对再恢复 5 点理智。'],
+    ['结局','终局有五种抉择。抉择 × 理智状态 × 真相层级，决定你落在 100 条结局中的哪一条。'],
+    ['隐藏','100 条之外还有第 101 幕。它不在任何提示里。你只能自己撞上它。']
+  ];
+  html += '<div class="rules">';
+  rules.forEach(function(r){ html += '<div class="rule"><h4>' + r[0] + '</h4><p>' + r[1] + '</p></div>'; });
+  html += '</div>';
+  stageEl.innerHTML = html;
+}
+
+function renderCreate(){
+  var a = ARCHETYPES[DRAFT.arch] || ARCHETYPES.field;
+  var html = '<div class="scene">';
+  html += '<div class="kick">建档 · 外调侦探</div>';
+  html += '<h2>你叫什么名字</h2>';
+  html += '<div class="sub">雾港镇 · 王守义失联第九十三天</div>';
+  html += '<div class="body">' + nl2p('上级把卷宗推过来时，只说了一句：「去看看。」\n\n你是外调来的第三十二个人。前三十一个，名字都在卷宗最后一页。\n\n现在，填好你的档案。') + '</div>';
+  html += '<div class="namerow"><label>姓名</label><input class="cin" id="cName" maxlength="12" placeholder="无名侦探" value="' + esc(DRAFT.name) + '"></div>';
+  html += '<div class="archs">';
+  Object.keys(ARCHETYPES).forEach(function(k){
+    var ar = ARCHETYPES[k];
+    html += '<button class="arch ' + (DRAFT.arch === k ? 'sel' : '') + '" data-a="arch" data-id="' + k + '"><b>' + ar.name + '</b><span>' + ar.desc + '</span></button>';
+  });
+  html += '</div>';
+  html += '<div class="crow" style="grid-template-columns:66px 1fr 74px 44px"><div class="cl">侦查 INV</div><div class="cd">勘察、追踪、物证。</div><input class="cin" id="cInv" type="number" inputmode="numeric" min="30" max="90" value="' + DRAFT.inv + '"><button class="dbtn" data-a="dice" data-id="inv">⚂</button></div>';
+  html += '<div class="crow" style="grid-template-columns:66px 1fr 74px 44px"><div class="cl">意志 WIL</div><div class="cd">抗侵蚀、直视异常。</div><input class="cin" id="cWill" type="number" inputmode="numeric" min="30" max="90" value="' + DRAFT.will + '"><button class="dbtn" data-a="dice" data-id="will">⚂</button></div>';
+  html += '<div class="crow" style="grid-template-columns:66px 1fr 74px 44px"><div class="cl">幸运 LCK</div><div class="cd">躲开不该看的东西。</div><input class="cin" id="cLuck" type="number" inputmode="numeric" min="30" max="90" value="' + DRAFT.luck + '"><button class="dbtn" data-a="dice" data-id="luck">⚂</button></div>';
+  var f = finalStats(a);
+  var avg = Math.round((f.inv + f.will + f.luck) / 3);
+  var grade = avg >= 75 ? 'A' : (avg >= 65 ? 'B' : (avg >= 55 ? 'C' : 'D'));
+  var gc = avg >= 75 ? 1 : (avg >= 65 ? 2 : (avg >= 55 ? 3 : 4));
+  html += '<div class="sumwrap"><div class="sumhead"><span>最终数值 · 含出身加成</span><span class="grade g' + gc + '" id="sumGrade">综合 ' + avg + ' · ' + grade + '</span></div>';
+  html += '<div class="sumgrid">';
+  html += '<div><span>侦查 INV</span><b id="sumInv">' + f.inv + '</b></div>';
+  html += '<div><span>意志 WIL</span><b id="sumWill">' + f.will + '</b></div>';
+  html += '<div><span>幸运 LCK</span><b id="sumLuck">' + f.luck + '</b></div>';
+  html += '<div class="hi"><span>综合</span><b id="sumAll">' + avg + '</b></div>';
+  html += '</div>';
+  var base = (Number(DRAFT.inv) || 0) + (Number(DRAFT.will) || 0) + (Number(DRAFT.luck) || 0);
+  html += '<div class="sumnote' + (base > POINT_CAP ? ' over' : '') + '" id="sumNote">基础合计 ' + base + ' / ' + POINT_CAP + (base > POINT_CAP ? ' · 已超出' : '') + '</div>';
+  html += '</div>';
+  html += '<div class="qr">出身加成：侦查 ' + (a.inv >= 0 ? '+' : '') + a.inv + ' · 意志 ' + (a.will >= 0 ? '+' : '') + a.will + ' · 幸运 ' + (a.luck >= 0 ? '+' : '') + a.luck + '<br>最终值 = 输入值 + 出身加成（最高 99，加成可把单项推过 90）。出身加成不计入合计上限；三项基础值合计上限 ' + POINT_CAP + '。理智 SAN 固定 80。<br>属性被动：侦查 ≥65 勘察现场额外补一条线索；意志每 30 点减免 1 点理智损失；幸运豁免成功时完全免除该次理智损失。</div>';
+  html += '<div class="endbtns"><button class="btn" data-a="rollall">一键掷骰</button><button class="btn gold" data-a="confirm">确认建档</button><button class="btn" data-a="toTitle">返回标题</button></div>';
+  html += '</div>';
+  stageEl.innerHTML = html;
+}
+
+function readDraft(){
+  var n = document.getElementById('cName');
+  if(n) DRAFT.name = n.value;
+  ['inv','will','luck'].forEach(function(k){
+    var el = document.getElementById('c' + k.charAt(0).toUpperCase() + k.slice(1));
+    if(el && el.value !== ''){
+      var v = parseInt(el.value, 10);
+      if(!isNaN(v)) DRAFT[k] = v;
+    }
+  });
+}
+
+function finalStats(a){
+  a = a || ARCHETYPES[DRAFT.arch] || ARCHETYPES.field;
+  return {
+    inv: clamp((parseInt(DRAFT.inv, 10) || 0) + a.inv, 5, 99),
+    will: clamp((parseInt(DRAFT.will, 10) || 0) + a.will, 5, 99),
+    luck: clamp((parseInt(DRAFT.luck, 10) || 0) + a.luck, 5, 99)
+  };
+}
+
+function updateSums(){
+  if(!document.getElementById('sumInv')) return;
+  readDraft();
+  var f = finalStats();
+  var avg = Math.round((f.inv + f.will + f.luck) / 3);
+  var grade = avg >= 75 ? 'A' : (avg >= 65 ? 'B' : (avg >= 55 ? 'C' : 'D'));
+  var gc = avg >= 75 ? 1 : (avg >= 65 ? 2 : (avg >= 55 ? 3 : 4));
+  document.getElementById('sumInv').textContent = f.inv;
+  document.getElementById('sumWill').textContent = f.will;
+  document.getElementById('sumLuck').textContent = f.luck;
+  document.getElementById('sumAll').textContent = avg;
+  var g = document.getElementById('sumGrade');
+  if(g){ g.textContent = '综合 ' + avg + ' · ' + grade; g.className = 'grade g' + gc; }
+  var base = (DRAFT.inv || 0) + (DRAFT.will || 0) + (DRAFT.luck || 0);
+  var note = document.getElementById('sumNote');
+  if(note){
+    note.textContent = '基础合计 ' + base + ' / ' + POINT_CAP + (base > POINT_CAP ? ' · 已超出' : ' · 剩余 ' + (POINT_CAP - base));
+    note.className = 'sumnote' + (base > POINT_CAP ? ' over' : '');
+  }
+}
+
+function renderHub(){
+  var core = coreCount();
+  var html = '<div class="scene maphead">';
+  html += '<div class="kick">雾港镇 · 第 ' + (13 - S.time) + ' 时段</div>';
+  html += '<h2>雾里的十个地方</h2>';
+  html += '<div class="sub">' + (S.time > 0 ? ('还能走 ' + S.time + ' 个时段。每个现场消耗 1 段。') : '时段已经用尽。雾在合拢，你只能结案。') + '</div>';
+  html += '<div class="progress"><span>现场 <b>' + S.done.length + '/' + SITE_ORDER.length + '</b></span><span>线索 <b>' + S.clues.length + '</b></span><span>残卷 <b>' + core + '/4</b></span><span>推理 <b>' + (S.ded.score >= 0 ? S.ded.score + '/3' : '—') + '</b></span><span>SAN <b>' + S.san + '</b></span></div>';
+  html += '</div><div class="mapgrid">';
+  S.mapOrder.forEach(function(sid, i){
+    var st = SITES[sid];
+    var done = S.done.indexOf(sid) >= 0;
+    html += '<button class="site ' + (done ? 'done' : '') + '" ' + (done ? 'disabled' : 'data-a="enter" data-id="' + sid + '"') + '>';
+    html += '<span class="idx">' + (i + 1) + '</span>';
+    html += '<h3>' + esc(st.name) + '</h3>';
+    html += '<div class="omen">' + esc(S.omens[sid] || '') + '</div>';
+    html += '<span class="state">' + (done ? '已查' : '未查') + '</span>';
+    html += '</button>';
+  });
+  html += '</div><div class="actions">';
+  html += '<button class="act" data-a="rest" ' + (S.time <= 0 ? 'disabled' : '') + '><b>休息</b><span>1 时段 · 恢复理智</span></button>';
+  html += '<button class="act" data-a="divine" ' + (S.time <= 0 ? 'disabled' : '') + '><b>占卜</b><span>1 时段 · 4 理智</span></button>';
+  html += '<button class="act" data-a="ded" ' + (S.time <= 0 ? 'disabled' : '') + '><b>推理</b><span>1 时段 · 三题定卷</span></button>';
+  html += '<button class="act final" data-a="finalopen"><b>结案</b><span>做出终局抉择</span></button>';
+  html += '</div>';
+  stageEl.innerHTML = html;
+}
+
+function renderSite(){
+  var sid = S.curSite || S.mapOrder[0];
+  var site = SITES[sid];
+  if(!site){ S.node = 'hub'; render(); return; }
+  var html = '<div class="scene">';
+  html += '<div class="kick">' + esc(site.kicker) + ' · ' + esc(S.omens[sid] || '') + '</div>';
+  html += '<h2>' + esc(site.title) + '</h2>';
+  html += '<div class="sub">' + esc(site.sub) + '</div>';
+  html += '<div class="body">' + nl2p(site.body) + '</div>';
+  html += '<div class="ask"><div class="h">你可向 KP 提问</div>' + site.ask + '</div>';
+  html += '<div class="rail"><span class="chip" data-a="notes">笔记 · 线索 ' + S.clues.length + '</span><span class="chip gold" data-a="notes">残卷 ' + coreCount() + '/4</span></div>';
+  html += '<div class="opts">';
+  site.opts.forEach(function(o, idx){
+    var eff = o.roll ? Math.max(5, S[o.roll] + (S.buff[o.roll] || 0) - sanPenalty()) : 0;
+    var tag = o.tag + (o.roll ? (' · 目标 ≤ ' + eff) : '');
+    html += '<button class="opt ' + (o.deep ? 'deep' : (o.roll ? 'roll' : '')) + '" data-a="opt" data-id="' + sid + '" data-q="' + idx + '">';
+    html += '<span class="t">' + esc(o.t) + '</span><span class="tag">' + esc(tag) + '</span></button>';
+  });
+  html += '</div>';
+  html += '<div class="foot"><button class="tiny" data-a="leave">先离开 · 不消耗时段</button><span class="tiny" style="border:none;color:var(--dim)">' + esc(site.hint) + '</span></div>';
+  html += '</div>';
+  stageEl.innerHTML = html;
+}
+
+function renderResult(){
+  var r = S.result;
+  if(!r){ S.node = 'hub'; render(); return; }
+  var html = '<div class="scene">';
+  html += '<div class="kick">' + esc(r.kicker) + '</div>';
+  html += '<h2>' + esc(r.title) + '</h2>';
+  html += '<div class="sub">' + (r.roll ? ('D100 = ' + r.roll + ' / 目标 ' + r.eff + ' · ' + (r.ok ? '成功' : '失败')) : '路线结算');
+  if(r.luckRoll) html += ' · 幸运豁免 ' + r.luckRoll + ' / ' + S.luck + (r.luckSaved ? ' · 成功，免除额外损失' : ' · 失败');
+  html += '</div>';
+  html += '<div class="body">' + nl2p(r.body) + '</div>';
+  if(r.gained && r.gained.length){
+    html += '<div class="rail">';
+    r.gained.forEach(function(cid){
+      var c = CLUES[cid]; if(!c) return;
+      var core = cid.indexOf('c_') === 0;
+      html += '<span class="chip ' + (core ? 'gold' : '') + '">' + (core ? '残卷 · ' : '') + esc(c.name) + '</span>';
+    });
+    html += '</div>';
+  }
+  if(r.sanLost > 0) html += '<div class="qr wrong"><span class="m">−</span>理智 ' + r.sanLost + '</div>';
+  html += '<div class="endbtns"><button class="btn gold" data-a="cont">继续调查</button></div>';
+  html += '</div>';
+  stageEl.innerHTML = html;
+}
+
+function renderEvent(){
+  var ev = null;
+  EVENTS.forEach(function(e){ if(e.id === S.curEvent) ev = e; });
+  if(!ev){ goOn(); return; }
+  var html = '<div class="scene">';
+  html += '<div class="kick">' + esc(ev.kicker) + '</div>';
+  html += '<h2>' + esc(ev.title) + '</h2>';
+  html += '<div class="sub">雾自己走过来，挡在你和下一个现场之间。</div>';
+  html += '<div class="body">' + nl2p(ev.body) + '</div>';
+  html += '<div class="opts">';
+  ev.opts.forEach(function(o, idx){
+    html += '<button class="opt" data-a="eventpick" data-q="' + idx + '"><span class="t">' + esc(o.t) + '</span><span class="tag">理智 −' + o.san + (o.clues && o.clues.length ? ' · 可能获得线索' : '') + '</span></button>';
+  });
+  html += '</div></div>';
+  stageEl.innerHTML = html;
+}
+
+function renderNight(){
+  var n = null;
+  NIGHTS.forEach(function(x){ if(x.id === S.curNight) n = x; });
+  if(!n){ goOn(); return; }
+  var html = '<div class="scene">';
+  html += '<div class="kick">' + esc(n.kicker) + '</div>';
+  html += '<h2>' + esc(n.title) + '</h2>';
+  html += '<div class="sub">旅馆的灯关不掉。你决定不睡了。</div>';
+  html += '<div class="body">' + nl2p(n.body) + '</div>';
+  html += '<div class="opts">';
+  n.opts.forEach(function(o, idx){
+    html += '<button class="opt deep" data-a="nightpick" data-q="' + idx + '"><span class="t">' + esc(o.t) + '</span><span class="tag">理智 −' + o.san + (o.core ? ' · 可能翻到残卷' : (o.clues && o.clues.length ? ' · 可能获得线索' : '')) + '</span></button>';
+  });
+  html += '</div></div>';
+  stageEl.innerHTML = html;
+}
+
+function renderDed(){
+  if(!S.ded || !S.ded.qs.length){ enterDed(); return; }
+  if(S.ded.done){
+    var ok = S.ded.score;
+    var html = '<div class="scene"><div class="kick">推理 · 结果</div><h2>三题定卷</h2>';
+    html += '<div class="score"><b>' + ok + '</b><span>/ 3 题答对</span></div>';
+    html += '<div class="qr ' + (ok >= 2 ? 'right' : 'wrong') + '">' + (ok >= 2 ? '你抓住了案子的骨架。真相层级 +1。' : '你的推断有几处对不上。卷宗没有给你加分。') + '</div>';
+    if(S.ded.reward && (S.ded.reward.clues.length || S.ded.reward.heal || S.ded.reward.core)){
+      var rw = S.ded.reward;
+      var rn = rw.clues.map(function(id){ return CLUES[id].name; }).join('、');
+      html += '<div class="qr right">洞察：' + (rn ? ('获得线索「' + esc(rn) + '」') : '没有新的线索') + (rw.heal ? (' · 理智 +' + rw.heal) : '') + (rw.core ? (' · 残卷「' + esc(CLUES[rw.core].name) + '」+1') : '') + '。</div>';
+    }else{
+      html += '<div class="qr">洞察：这次没有答对，卷宗没给你新的线索。</div>';
+    }
+    html += '<div class="qr">推理的价值：每答对 1 题 → 1 条洞察线索；答对 ≥2 题 → 结案时真相层级 +1；3 题全对 → 额外补 1 卷残卷、理智 +5，并取得读到「第零页」的资格。</div>';
+    S.ded.qs.forEach(function(q, i){
+      var right = q.sel >= 0 && q.opts[q.sel] === q.correct;
+      html += '<div class="qblock"><div class="qh"><span>Q' + (i + 1) + '</span>' + esc(q.q) + '</div>';
+      html += '<div class="qr ' + (right ? 'right' : 'wrong') + '"><span class="m">' + (right ? '✓' : '×') + '</span>正确答案：' + esc(q.correct) + '</div>';
+      html += '<div class="qr">' + esc(q.exp) + '</div></div>';
+    });
+    html += '<div class="endbtns"><button class="btn gold" data-a="dedback">返回地图</button></div></div>';
+    stageEl.innerHTML = html;
+    return;
+  }
+  var out = '<div class="scene"><div class="kick">推理 · 三题</div><h2>把卷宗拼起来</h2>';
+  out += '<div class="sub">从你已知的现场里，推断那些没写进报告的东西。</div>';
+  S.ded.qs.forEach(function(q, i){
+    out += '<div class="qblock"><div class="qh"><span>Q' + (i + 1) + '</span>' + esc(q.q) + '</div>';
+    q.opts.forEach(function(opt, oi){
+      out += '<div class="line ' + (q.sel === oi ? 'sel' : '') + '" data-a="dedpick" data-q="' + i + '" data-o="' + oi + '"><input type="radio" ' + (q.sel === oi ? 'checked' : '') + ' readonly><span>' + esc(opt) + '</span></div>';
+    });
+    out += '</div>';
+  });
+  out += '<div class="endbtns"><button class="btn gold" data-a="dedsubmit">提交推理</button></div></div>';
+  stageEl.innerHTML = out;
+}
+
+function caseRecap(){
+  var names = S.done.map(function(id){ return SITES[id] ? SITES[id].name : ''; }).filter(Boolean);
+  var siteText = names.length ? (names.slice(0, 5).join('、') + (names.length > 5 ? ' 等' : '')) : '还什么都没来得及查';
+  var last = S.clues.length ? CLUES[S.clues[S.clues.length - 1]] : null;
+  var core = coreCount();
+  var txt = '你走过 ' + siteText + '，一共 ' + S.done.length + ' 个现场。卷宗里躺着 ' + S.clues.length + ' 条线索';
+  if(last) txt += '，最上面那条是「' + last.name + '」';
+  txt += '。';
+  txt += core >= 4 ? '四卷残页已经拼齐，纸上的字开始互相认识。' : ('残卷还差 ' + (4 - core) + ' 卷，拼不上的地方像被牙齿咬过。');
+  return txt;
+}
+
+function renderFinal(){
+  var html = '<div class="scene">';
+  html += '<div class="kick">终局 · 结案</div>';
+  html += '<h2>你要如何写下最后一份卷宗</h2>';
+  html += '<div class="sub">已查现场 ' + S.done.length + '/' + SITE_ORDER.length + ' · 线索 ' + S.clues.length + ' · 残卷 ' + coreCount() + '/4 · 推理 ' + (S.ded.score >= 0 ? S.ded.score + '/3' : '未做') + ' · SAN ' + S.san + '</div>';
+  html += '<div class="body">' + nl2p('雾已经贴到窗上。你把所有纸张摊开，钢笔吸满墨。\n\n' + caseRecap() + '\n\n你可以写一个让所有人都能活下去的答案，也可以写一个只有你自己看得懂的答案。\n\n签下去以后，这一局就结束了。') + '</div>';
+  html += '<div class="opts">';
+  CHOICES.forEach(function(c, i){
+    var lock = choiceLock(i);
+    var archTag = archEndingFor(i, S.san) ? ' · <span style="color:var(--gold)">出身共鸣</span>' : '';
+    if(i === 4 && coreCount() === 4 && S.ded.score >= 3 && S.san >= 60){
+      archTag += (S.items.indexOf('zero') >= 0 ? ' · <span style="color:var(--gold)">第零页在响</span>' : ' · <span style="color:var(--gold)">似乎还差一页</span>');
+    }
+    html += '<button class="opt ' + (i === 4 ? 'deep' : '') + '" data-a="final" data-id="' + i + '">';
+    html += '<span class="t">' + c.title + '</span>';
+    html += '<span class="tag">' + c.hint + archTag + (lock ? (' · <span style="color:var(--red)">' + lock + '</span>') : '') + '</span>';
+    html += '</button>';
+  });
+  html += '</div></div>';
+  stageEl.innerHTML = html;
+}
+
+function renderEnding(){
+  var e = S.ending;
+  if(!e){ renderTitle(); return; }
+  var remain = 100 - META.unlocked.length;
+  var stats = '<div class="estats">' +
+    '<div>现场<b>' + S.done.length + '/' + SITE_ORDER.length + '</b></div>' +
+    '<div>残卷<b>' + e.core + '/4</b></div>' +
+    '<div>推理<b>' + (S.ded.score >= 0 ? S.ded.score + '/3' : '—') + '</b></div>' +
+    '<div>最终理智<b>' + S.san + '</b></div></div>';
+  var unlockNote = e.grand
+    ? '<div class="unlock">隐藏终幕已记录。它不在 100 条之内，也不会告诉你还有没有别的。</div>'
+    : (e.extra
+      ? '<div class="unlock">' + (e.isNew ? '异闻幕已记录。它不在 100 条之内，也不属于任何出身。' : '这一幕你曾经见过。属性或推理差一点，它就不会出现。') + '</div>'
+      : (e.arch
+        ? '<div class="unlock">' + (e.isNew ? '出身专属结局已记录。回廊的「档案之外」多了一格。' : '这一幕你曾经见过。换个出身，它不会这样写。') + '</div>'
+        : '<div class="unlock">' + (e.isNew ? ('新的雾散开了一角。回廊已记录 ' + META.unlocked.length + ' / 100 条结局。') : ('这条雾你曾经见过。回廊仍是 ' + META.unlocked.length + ' / 100。')) + '</div>'));
+  var eid = e.grand ? '不在 100 条之内 · 第 101 号' : (e.extra ? ('异闻幕 · 第 ' + e.id + ' 号') : (e.arch ? ('档案之外 · 第 ' + e.id + ' 号') : ('第 ' + e.id + ' 号结局 · ' + ('00' + e.id).slice(-3) + ' / 100')));
+  var fog = e.grand ? '100 条迷雾之外，你找到了第 101 条。' : (e.extra ? '这是异闻幕：只有在特定属性、推理或理智条件下才会出现。' : (e.arch ? '这是只属于某个出身的幕。换一种出身，结尾会不一样。' : ('雾中还有 <b>' + remain + '</b> 条结局未被你看见。' + (META.grand ? '<br>第 101 号已经显现。' : '<br>另有 1 幕，不在 100 条之内。'))));
+  var html = '<div class="ending ' + (e.grand ? 'tone-void' : CHOICES[e.choice].tone) + '">';
+  html += '<div class="end-kick">' + (e.grand ? 'THE 101ST · 隐藏终幕' : (e.extra ? 'ANOMALY · 异闻幕' : (e.arch ? 'ARCHIVE · 出身专属' : 'ENDING · 雾港回响'))) + '</div>';
+  html += '<h2>' + esc(e.title) + '</h2>';
+  html += '<div class="eid">' + eid + '</div>';
+  html += '<blockquote>' + esc(e.verdict) + '</blockquote>';
+  html += '<div class="ebody">' + nl2p(e.body) + '</div>';
+  html += stats + unlockNote;
+  html += '<div class="fogcount">' + fog + '</div>';
+  html += '<div class="endbtns">';
+  html += '<button class="btn gold" data-a="gallery">结局回廊</button>';
+  html += '<button class="btn" data-a="again">再来一局</button>';
+  html += '<button class="btn" data-a="toTitle">回到标题</button>';
+  html += '</div></div>';
+  stageEl.innerHTML = html;
+}
+
+/* ---------- 选择与结算 ---------- */
+function choiceLock(i){
+  if(i === 0){
+    if(S.tooLate) return '雾已合拢，来不及了';
+    if(S.clues.length < 6) return '线索不足 6 条';
+  }
+  if(i === 3){
+    if(S.san < 20) return '理智低于 20';
+    if(S.clues.length < 5) return '线索不足 5 条';
+  }
+  if(i === 4 && coreCount() < 4) return '残卷未齐（' + coreCount() + '/4）';
+  return '';
+}
+
+function chooseOpt(sid, idx){
+  var site = SITES[sid];
+  if(!site || S.done.indexOf(sid) >= 0) return;
+  var o = site.opts[idx];
+  if(!o) return;
+  if(o.roll) rollDice(sid, idx);
+  else resolveOpt(sid, idx, null);
+}
+
+function resolveOpt(sid, idx, dice){
+  var site = SITES[sid];
+  var o = site.opts[idx];
+  var clues = [], text = '', ok = true, roll = null, eff = 0, coreId = null;
+  var luckSaved = false, luckRoll = null;
+  if(dice){
+    roll = dice.roll; ok = dice.ok; eff = dice.eff;
+    if(!ok){
+      luckRoll = 1 + Math.floor(Math.random() * 100);
+      luckSaved = luckRoll <= S.luck;
+    }
+  }
+  if(o.roll){
+    text = ok ? o.ok : o.fail;
+    clues = (ok ? (o.okClues || []) : (o.failClues || [])).slice();
+    if(o.deep && ok){
+      var unseen = ['c_name','c_contract','c_zero','c_writer'].filter(function(cid){
+        return S.clues.indexOf(cid) < 0;
+      });
+      if(unseen.length){
+        coreId = pick(unseen);
+        clues.unshift(coreId);
+      }else{
+        clues = clues.concat(randomNormalClues(1));
+      }
+    }
+  }else{
+    text = o.ok;
+    clues = (o.okClues || []).slice();
+  }
+  var sanCost = (o.san || 0) + (dice && !ok && !luckSaved ? (o.extraSan || 0) : 0);
+  if(luckSaved) sanCost = 0;
+  var lost = loseSan(sanCost);
+  var gained = [];
+  clues.forEach(function(cid){ if(giveClue(cid)) gained.push(cid); });
+  if(S.inv >= 65){
+    var pool = [site.checkClue, site.safeClue];
+    for(var pi = 0; pi < pool.length; pi++){
+      var ic = pool[pi];
+      if(ic && S.clues.indexOf(ic) < 0 && giveClue(ic)){
+        gained.push(ic);
+        text += '\n\n侦查直觉：你还注意到「' + CLUES[ic].name + '」，这是别人容易漏掉的东西。';
+        break;
+      }
+    }
+  }
+  if(S.done.indexOf(sid) < 0) S.done.push(sid);
+  S.time = Math.max(0, S.time - 1);
+  S.curSite = sid;
+  S.result = {
+    kicker: site.name + ' · ' + (dice ? ('D100 ' + roll + ' / ' + eff) : '安全路线'),
+    title: site.title,
+    body: text,
+    gained: gained, coreId: coreId,
+    roll: roll, eff: eff, ok: ok, sanLost: lost,
+    luckRoll: luckRoll, luckSaved: luckSaved,
+    after: 'siteevent'
+  };
+  addLog('完成现场「' + site.name + '」，' + (dice ? (ok ? '判定成功' : '判定失败') : '安全走访') + '。');
+  S.node = 'result';
+  saveRun();
+  render();
+}
+
+function rollDice(sid, idx){
+  var o = SITES[sid].opts[idx];
+  var stat = o.roll;
+  var eff = Math.max(5, S[stat] + (S.buff[stat] || 0) - sanPenalty());
+  S.buff[stat] = 0;
+  var roll = 1 + Math.floor(Math.random() * 100);
+  var ok = roll <= eff;
+  var ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = '<div class="dice"><div class="dl">D100 判定 · ' + STAT_LABEL[stat] + '</div>' +
+    '<div class="dn" id="dnum">?</div><div class="ds">目标 ≤ ' + eff + '</div>' +
+    '<div class="dv" id="dver">掷骰中……</div>' +
+    '<div class="dt" id="dtext">雾把骰子接住了。</div>' +
+    '<button class="btn gold" id="diceGo" style="margin-top:12px;display:none">继续</button></div>';
+  document.body.appendChild(ov);
+  var num = document.getElementById('dnum');
+  var n = 0;
+  var timer = setInterval(function(){
+    num.textContent = 1 + Math.floor(Math.random() * 100);
+    n++;
+    if(n > 13){
+      clearInterval(timer);
+      num.textContent = roll;
+      num.className = 'dn ' + (ok ? 'ok' : 'fail');
+      var dv = document.getElementById('dver');
+      dv.textContent = ok ? '成功' : '失败';
+      dv.className = 'dv ' + (ok ? 'ok' : 'fail');
+      document.getElementById('dtext').textContent = ok
+        ? (o.deep ? '你摸到了不该摸的东西。' : '你看见了自己想看见的。')
+        : '雾里有什么东西，替你把结论改掉了。';
+      var go = document.getElementById('diceGo');
+      go.style.display = 'inline-block';
+      go.onclick = function(){
+        ov.remove();
+        resolveOpt(sid, idx, {roll:roll, ok:ok, eff:eff});
+      };
+    }
+  }, 55);
+}
+
+function continueResult(){
+  var after = S.result ? S.result.after : 'onward';
+  S.result = null;
+  if(after === 'siteevent') maybeEvent();
+  else goOn();
+}
+
+function maybeEvent(){
+  if(!S) return;
+  if(S.time <= 0 || S.eventsSeen.length >= 5 || Math.random() > 0.42){ goOn(); return; }
+  var pool = EVENTS.filter(function(e){ return S.eventsSeen.indexOf(e.id) < 0; });
+  if(!pool.length){ goOn(); return; }
+  var ev = pick(pool);
+  S.eventsSeen.push(ev.id);
+  S.curEvent = ev.id;
+  S.node = 'event';
+  S.result = null;
+  saveRun();
+  render();
+}
+
+function goOn(){
+  if(!S) return;
+  if(S.time <= 0){
+    S.tooLate = true;
+    addLog('时段耗尽，雾合拢了。');
+    S.node = 'final';
+    saveRun();
+    render();
+    return;
+  }
+  if(S.done.length >= 2 && !S.nights.n1){ S.nights.n1 = true; S.curNight = 'n1'; S.node = 'night'; saveRun(); render(); return; }
+  if(S.done.length >= 4 && !S.nights.n2){ S.nights.n2 = true; S.curNight = 'n2'; S.node = 'night'; saveRun(); render(); return; }
+  if(S.done.length >= 6 && !S.nights.n3){ S.nights.n3 = true; S.curNight = 'n3'; S.node = 'night'; saveRun(); render(); return; }
+  S.node = 'hub';
+  saveRun();
+  render();
+}
+
+function chooseEvent(idx){
+  var ev = null;
+  EVENTS.forEach(function(e){ if(e.id === S.curEvent) ev = e; });
+  if(!ev) return;
+  var o = ev.opts[idx];
+  if(!o) return;
+  var lost = loseSan(o.san || 0);
+  var gained = [];
+  (o.clues || []).forEach(function(cid){ if(giveClue(cid)) gained.push(cid); });
+  addLog('遭遇：' + ev.title);
+  S.result = {
+    kicker: ev.kicker, title: ev.title, body: o.ok,
+    gained: gained, coreId: null, roll: null, eff: 0, ok: true,
+    sanLost: lost, after: 'onward'
+  };
+  S.node = 'result';
+  saveRun();
+  render();
+}
+
+function chooseNight(idx){
+  var n = null;
+  NIGHTS.forEach(function(x){ if(x.id === S.curNight) n = x; });
+  if(!n) return;
+  var o = n.opts[idx];
+  if(!o) return;
+  var lost = loseSan(o.san || 0);
+  var gained = [], coreId = null;
+  (o.clues || []).forEach(function(cid){ if(giveClue(cid)) gained.push(cid); });
+  if(o.core){
+    var un = Object.keys(CLUES).filter(function(id){
+      return id.indexOf('c_') === 0 && S.clues.indexOf(id) < 0;
+    });
+    if(un.length){
+      coreId = pick(un);
+      if(giveClue(coreId)) gained.push(coreId);
+      else coreId = null;
+    }
+  }
+  addLog('夜访：' + n.title);
+  S.result = {
+    kicker: n.kicker, title: n.title, body: o.ok,
+    gained: gained, coreId: coreId, roll: null, eff: 0, ok: true,
+    sanLost: lost, after: 'onward'
+  };
+  S.node = 'result';
+  saveRun();
+  render();
+}
+
+function doRest(){
+  if(!S || S.time <= 0) return;
+  S.time--;
+  var before = S.san;
+  var heal = 8 + Math.floor(Math.random() * 7);
+  healSan(heal);
+  var actual = S.san - before;
+  S.restCount++;
+  var extras = '';
+  var gained = [];
+  if(before < 30 && Math.random() < 0.5){
+    loseSan(4);
+    extras += '\n\n你闭上眼，立刻听见井底有人替你数呼吸。数到三十一，你惊醒，手心全是水。';
+  }
+  if(META.unlocked.length >= 6 && S.items.indexOf('zero') < 0){
+    S.items.push('zero');
+    extras += '\n\n枕边多了一页纸。没有字，边缘却很整齐，像从某本卷宗里撕下来的第零页。你把它收进内袋。';
+    addLog('获得物品：第零页。');
+  }
+  addLog('休息。恢复 ' + Math.max(0, actual) + ' 点理智。');
+  S.result = {
+    kicker: '旅馆 · 第 ' + (13 - S.time) + ' 时段', title: '睡一会儿',
+    body: '你合上眼。雾在窗外走来走去，像在替你守夜。\n\n理智恢复 ' + Math.max(0, actual) + ' 点。' + extras,
+    gained: gained, coreId: null, roll: null, eff: 0, ok: true,
+    sanLost: 0, after: 'onward'
+  };
+  S.node = 'result';
+  saveRun();
+  render();
+}
+
+function doDivine(){
+  if(!S || S.time <= 0) return;
+  S.time--;
+  var lost = loseSan(4);
+  var pool = Object.keys(CLUES).filter(function(id){
+    return id.indexOf('c_') < 0 && S.clues.indexOf(id) < 0;
+  });
+  var gained = [], line = '';
+  if(pool.length){
+    var c = pick(pool);
+    if(giveClue(c)){ gained.push(c); line = '盐水在碗底聚成一小片，映出一处你还没去过的地方。'; }
+    else line = '水面很平。它什么也不肯再给你了。';
+  }else{
+    healSan(5);
+    line = '水面很平。它没再给你线索，却把你心里那块石头挪开了一点。理智 +5。';
+  }
+  var stat = pick(['inv','will','luck']);
+  var statName = STAT_LABEL[stat];
+  S.buff[stat] = (S.buff[stat] || 0) + 20;
+  var remain = 4 - coreCount();
+  var coreline = remain > 0 ? ('雾里还有 ' + remain + ' 卷残页，没有被你翻开。') : '四卷残页都已在你手里。雾在退。';
+  addLog('占卜：下一次' + statName + '判定 +20。');
+  S.result = {
+    kicker: '占卜 · 海盐与井水', title: '问雾',
+    body: line + '\n\n碗里的水立起来一小截，像一根手指，指向你：下一次' + statName + '判定 +20。\n\n' + coreline,
+    gained: gained, coreId: null, roll: null, eff: 0, ok: true,
+    sanLost: lost, after: 'onward'
+  };
+  S.node = 'result';
+  saveRun();
+  render();
+}
+
+function enterDed(){
+  if(!S || S.time <= 0) return;
+  if(S.ded && S.ded.score >= 0){ toast('推理只能做一次。'); return; }
+  S.time--;
+  var bank = shuffle(DED_BANK).slice(0, 3);
+  S.ded = {
+    qs: bank.map(function(item){
+      var correct = item.opts[item.a];
+      return { q:item.q, opts:shuffle(item.opts.slice()), correct:correct, exp:item.exp, sel:-1 };
+    }),
+    score: -1, done: false
+  };
+  addLog('开始推理：三题定卷。');
+  S.node = 'ded';
+  S.result = null;
+  saveRun();
+  render();
+}
+
+function submitDed(){
+  if(!S || !S.ded || !S.ded.qs.length) return;
+  if(S.ded.qs.some(function(q){ return q.sel < 0; })){ toast('还有题目没有作答。'); return; }
+  var ok = 0;
+  S.ded.qs.forEach(function(q){
+    if(q.sel >= 0 && q.opts[q.sel] === q.correct) ok++;
+  });
+  S.ded.score = ok;
+  S.ded.done = true;
+  var insight = [];
+  var pool = Object.keys(CLUES).filter(function(id){ return id.indexOf('c_') < 0 && S.clues.indexOf(id) < 0; });
+  for(var i = 0; i < ok && pool.length; i++){
+    var c = pick(pool);
+    if(giveClue(c)) insight.push(c);
+    pool = pool.filter(function(x){ return x !== c; });
+  }
+  var healed = ok === 3 ? 5 : 0;
+  if(healed) healSan(healed);
+  var coreId = null;
+  if(ok === 3){
+    var cpool = Object.keys(CLUES).filter(function(id){ return id.indexOf('c_') === 0 && S.clues.indexOf(id) < 0; });
+    if(cpool.length){
+      coreId = pick(cpool);
+      if(!giveClue(coreId)) coreId = null;
+    }
+  }
+  S.ded.reward = { clues: insight, heal: healed, core: coreId };
+  addLog('推理完成：' + ok + '/3' + (insight.length ? '，洞察线索 +' + insight.length : '') + (healed ? '，理智 +' + healed : '') + (coreId ? '，残卷 +1' : '') + '。');
+  saveRun();
+  render();
+}
+
+function openFinal(){
+  if(!S) return;
+  S.node = 'final';
+  S.result = null;
+  saveRun();
+  render();
+}
+
+function chooseFinal(i){
+  if(!S) return;
+  var lock = choiceLock(i);
+  if(lock){ toast(lock); return; }
+  var c = CHOICES[i];
+  var preSan = S.san;
+  S.san = clamp(S.san - c.cost, 0, S.maxSan);
+  S.sanLost += c.cost;
+  var sanB = S.san >= 60 ? 0 : (S.san >= 45 ? 1 : (S.san >= 30 ? 2 : (S.san >= 15 ? 3 : 4)));
+  var core = coreCount();
+  var truth = Math.min(3, core + (S.ded.score >= 2 ? 1 : 0));
+  var grand = (i === 4 && core === 4 && preSan >= 60 && S.ded.score >= 3 && S.items.indexOf('zero') >= 0 && META.unlocked.length >= 6);
+  var arch = grand ? null : archEndingFor(i, preSan);
+  var extra = (grand || arch) ? null : extraEndingFor(i, preSan);
+  if(grand){
+    META.grand = true;
+    saveMeta();
+    S.ending = {
+      grand:true, id:101, title:'第 101 号 · 第零页',
+      body: GRAND_TEXT, verdict: GRAND_VERDICT,
+      choice:i, sanB:sanB, truth:truth, core:core, isNew:true
+    };
+  }else if(arch){
+    var aNew = META.arch.indexOf(arch.id) < 0;
+    if(aNew){
+      META.arch.push(arch.id);
+      META.arch.sort(function(a, b){ return a - b; });
+      saveMeta();
+    }
+    S.ending = {
+      grand:false, arch:true, id:arch.id, title:arch.title,
+      body:arch.body, verdict:arch.verdict,
+      choice:i, sanB:sanB, truth:truth, core:core, isNew:aNew
+    };
+  }else if(extra){
+    var xNew = META.unlocked.indexOf(extra.id) < 0;
+    if(xNew){
+      META.unlocked.push(extra.id);
+      META.unlocked.sort(function(a, b){ return a - b; });
+    }
+    if(META.extra.indexOf(extra.id) < 0){
+      META.extra.push(extra.id);
+      META.extra.sort(function(a, b){ return a - b; });
+    }
+    saveMeta();
+    S.ending = {
+      grand:false, extra:true, id:extra.id, title:extra.title,
+      body:extra.body, verdict:extra.verdict,
+      choice:i, sanB:sanB, truth:truth, core:core, isNew:xNew
+    };
+  }else{
+    var id = i * 20 + sanB * 4 + truth + 1;
+    var isNew = META.unlocked.indexOf(id) < 0;
+    if(isNew){
+      META.unlocked.push(id);
+      META.unlocked.sort(function(a, b){ return a - b; });
+      saveMeta();
+    }
+    S.ending = {
+      grand:false, id:id,
+      title: c.title + ' · ' + TRUTH_NAMES[truth] + '（' + SAN_NAMES[sanB] + '）',
+      body: [OPEN_PARAS[i][Math.min(sanB, 3)], TRUTH_PARAS[i][truth], END_TAILS[id - 1]].join('\n\n'),
+      verdict: VERDICTS[(id - 1) % VERDICTS.length],
+      choice:i, sanB:sanB, truth:truth, core:core, isNew:isNew
+    };
+  }
+  S.node = 'ending';
+  S.over = true;
+  clearRun();
+  render();
+}
+
+/* ---------- 弹窗 ---------- */
+function openModal(title, html){
+  var old = document.getElementById('modalOv');
+  if(old) old.remove();
+  var ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.id = 'modalOv';
+  ov.innerHTML = '<div class="modal"><div class="mhead"><h3>' + esc(title) + '</h3><button class="x" data-a="closemodal">×</button></div><div class="mbody">' + html + '</div></div>';
+  document.body.appendChild(ov);
+}
+
+function endingMeta(id){
+  var sx = null;
+  for(var si = 0; si < EXTRA_ENDINGS.length; si++){
+    if(EXTRA_ENDINGS[si].id === id){ sx = EXTRA_ENDINGS[si]; break; }
+  }
+  if(sx && META.extra.indexOf(id) >= 0) return { c:0, sanB:0, truth:0, title:sx.title };
+  var n = id - 1;
+  var c = Math.floor(n / 20);
+  var rem = n % 20;
+  var sanB = Math.floor(rem / 4);
+  var truth = rem % 4;
+  return {
+    c:c, sanB:sanB, truth:truth,
+    title: CHOICES[c].title + ' · ' + TRUTH_NAMES[truth] + '（' + SAN_NAMES[sanB] + '）'
+  };
+}
+
+function openGallery(){
+  var cells = '';
+  [ARCH_ENDINGS.field, ARCH_ENDINGS.mind, ARCH_ENDINGS.luck].forEach(function(a){
+    var on = META.arch.indexOf(a.id) >= 0;
+    cells += '<div class="gcell ' + (on ? 'on' : '') + '"><b>第 ' + a.id + ' 号</b><span>' + (on ? esc(a.title) : '出身幕 · 未记录') + '</span></div>';
+  });
+  cells += '<div class="gcell grand ' + (META.grand ? 'on' : '') + '"><b>第 101 号</b><span>' + (META.grand ? '第零页 · 已显现' : '隐藏幕 · 未显现') + '</span></div>';
+  for(var id = 1; id <= 100; id++){
+    var on = META.unlocked.indexOf(id) >= 0;
+    var m = endingMeta(id);
+    cells += '<div class="gcell ' + (on ? 'on' : '') + '"><b>#' + ('00' + id).slice(-3) + '</b><span>' + (on ? esc(m.title) : '？？') + '</span></div>';
+  }
+  var remain = 100 - META.unlocked.length;
+  var html = '<div class="sec"><h4>雾中结局 · 已记录 ' + META.unlocked.length + ' / 100</h4>';
+  var anomOn = META.extra.length;
+  var exHtml = '<div class="galnote" style="text-align:left">异闻幕（嵌在第 3 / 34 / 47 / 68 / 84 / 100 号格子里）· 已记录 ' + anomOn + ' / 6<br>';
+  EXTRA_ENDINGS.forEach(function(x){
+    var xon = META.extra.indexOf(x.id) >= 0;
+    exHtml += '<b>第 ' + x.id + ' 号</b> · ' + (xon ? esc(x.title) : ('未记录 · ' + esc(x.hint))) + '<br>';
+  });
+  exHtml += '</div>';
+  html += exHtml + '<div class="grid100">' + cells + '</div>';
+  html += '<div class="galnote">顶部四格是 100 条之外的幕：第 101 号隐藏幕，以及只向特定出身显现的 102–104（已记录 ' + META.arch.length + ' / 3）。<br>雾中还有 <b style="color:var(--gold)">' + remain + '</b> 条结局未被你看见。' + (META.grand ? '<br>第 101 号已经显现。' : '<br>另有 1 幕，不在 100 条之内。') + '</div></div>';
+  openModal('结局回廊', html);
+}
+
+function openNotes(){
+  if(!S) return;
+  var html = '<div class="sec"><h4>线索 · ' + S.clues.length + '</h4>';
+  if(!S.clues.length){
+    html += '<div class="clueitem"><div class="cd">还没有。雾里什么也没给你。</div></div>';
+  }
+  S.clues.forEach(function(id){
+    var c = CLUES[id]; if(!c) return;
+    var core = id.indexOf('c_') === 0;
+    html += '<div class="clueitem"><div class="cn">' + (core ? '【残卷】' : '') + esc(c.name) + '</div><div class="cd">' + esc(c.desc) + '</div></div>';
+  });
+  html += '</div><div class="sec"><h4>物品</h4>';
+  if(!S.items.length){
+    html += '<div class="itemrow"><div class="ii"><div class="in">空</div><div class="id">口袋里只有雾。</div></div></div>';
+  }
+  S.items.forEach(function(id, idx){
+    var it = ITEMS[id]; if(!it) return;
+    html += '<div class="itemrow"><div class="ii"><div class="in">' + esc(it.name) + '</div><div class="id">' + esc(it.desc) + '</div></div><button class="use" data-a="useItem" data-q="' + idx + '">使用</button></div>';
+  });
+  html += '</div><div class="sec"><h4>调查日志</h4>';
+  if(!S.log.length) html += '<div class="clueitem"><div class="cd">空白。</div></div>';
+  S.log.slice(-24).reverse().forEach(function(l){
+    html += '<div class="clueitem"><div class="cd">' + esc(l) + '</div></div>';
+  });
+  html += '</div>';
+  openModal('侦探笔记', html);
+}
+
+function useItem(idx){
+  if(!S) return;
+  var id = S.items[idx];
+  if(!id) return;
+  var it = ITEMS[id];
+  if(!it) return;
+  if(it.use === 'buffInv'){
+    S.buff.inv += 20; S.items.splice(idx, 1); toast('下一次侦查判定 +20');
+  }else if(it.use === 'buffWill'){
+    S.buff.will += 15; S.items.splice(idx, 1); toast('下一次意志判定 +15');
+  }else if(it.use === 'heal'){
+    healSan(15); S.items.splice(idx, 1); toast('理智恢复 15');
+  }else if(it.use === 'shield'){
+    S.shield += 8; S.items.splice(idx, 1); toast('护身符亮了，可抵挡 8 点理智损失');
+  }else if(it.use === 'clue'){
+    var arr = randomNormalClues(1);
+    if(arr.length){
+      giveClue(arr[0]);
+      S.items.splice(idx, 1);
+      toast('磁带里录着：' + CLUES[arr[0]].name);
+    }else{
+      toast('磁带转了很久，什么也没录下。');
+    }
+  }else if(it.use === 'readZero'){
+    toast('纸上没有字。它不是给人读的。');
+    return;
+  }
+  saveRun();
+  var ov = document.getElementById('modalOv');
+  if(ov) ov.remove();
+  updateHud();
+  openNotes();
+}
+
+/* ---------- 音效 ---------- */
+function toggleAudio(){
+  try{
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC){ toast('此浏览器不支持环境音。'); return; }
+    if(!audioCtx){
+      audioCtx = new AC();
+      audioGain = audioCtx.createGain();
+      audioGain.gain.value = 0;
+      var lp = audioCtx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 300;
+      var o1 = audioCtx.createOscillator();
+      o1.type = 'sine'; o1.frequency.value = 54;
+      var o2 = audioCtx.createOscillator();
+      o2.type = 'sine'; o2.frequency.value = 81.5;
+      var o3 = audioCtx.createOscillator();
+      o3.type = 'triangle'; o3.frequency.value = 109;
+      o1.connect(lp); o2.connect(lp); o3.connect(lp);
+      lp.connect(audioGain);
+      audioGain.connect(audioCtx.destination);
+      o1.start(); o2.start(); o3.start();
+    }
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    audioOn = !audioOn;
+    audioGain.gain.setTargetAtTime(audioOn ? 0.03 : 0, audioCtx.currentTime, 0.6);
+    var btn = document.getElementById('audioBtn');
+    if(btn) btn.classList.toggle('on', audioOn);
+  }catch(e){ toast('环境音没能打开。'); }
+}
+
+/* ---------- 交互分发 ---------- */
+function handleAction(a, id, q, o, el){
+  switch(a){
+    case 'start':
+    case 'again':
+      DRAFT = { arch:'field', name:'', inv:55, will:55, luck:55 };
+      S = { node:'create' };
+      clearRun();
+      render();
+      break;
+    case 'resume':
+      var r = loadRun();
+      if(r){ S = r; render(); toast('接上了上一次的雾。'); }
+      else toast('没有找到存档。');
+      break;
+    case 'toTitle':
+      S = null;
+      render();
+      break;
+    case 'gallery':
+      openGallery();
+      break;
+    case 'notes':
+      openNotes();
+      break;
+    case 'audio':
+      toggleAudio();
+      break;
+    case 'closemodal':
+      var ov = document.getElementById('modalOv');
+      if(ov) ov.remove();
+      break;
+    case 'arch':
+      readDraft();
+      DRAFT.arch = id;
+      render();
+      break;
+    case 'dice':
+      readDraft();
+      var others = ['inv','will','luck'].filter(function(k){ return k !== id; });
+      var room = POINT_CAP - (DRAFT[others[0]] || 0) - (DRAFT[others[1]] || 0);
+      var hi = Math.min(90, room);
+      if(hi < 30){ toast('剩余点数不足（可分配上限 ' + Math.max(hi, 0) + '），请先降低其他两项。'); break; }
+      DRAFT[id] = 30 + Math.floor(Math.random() * (hi - 29));
+      render();
+      break;
+    case 'rollall':
+      readDraft();
+      var total = 150 + Math.floor(Math.random() * 31);
+      var left = total - 90;
+      var add = [0, 0, 0];
+      while(left > 0){
+        var i = Math.floor(Math.random() * 3);
+        if(add[i] < 60){ add[i]++; left--; }
+      }
+      DRAFT.inv = 30 + add[0];
+      DRAFT.will = 30 + add[1];
+      DRAFT.luck = 30 + add[2];
+      render();
+      break;
+    case 'confirm':
+      readDraft();
+      var bad = ['inv','will','luck'].filter(function(k){ return DRAFT[k] < 30 || DRAFT[k] > 90; });
+      if(bad.length){ toast('三项属性需在 30–90 之间。'); render(); break; }
+      var sum = DRAFT.inv + DRAFT.will + DRAFT.luck;
+      if(sum > POINT_CAP){ toast('三项基础值合计不能超过 ' + POINT_CAP + '（当前 ' + sum + '，超出 ' + (sum - POINT_CAP) + '）。'); render(); break; }
+      initRun();
+      break;
+    case 'enter':
+      if(S && S.done.indexOf(id) < 0){
+        S.curSite = id;
+        S.node = 'site';
+        render();
+      }
+      break;
+    case 'leave':
+      if(S){ S.node = 'hub'; render(); }
+      break;
+    case 'opt':
+      if(S) chooseOpt(id, parseInt(q, 10));
+      break;
+    case 'cont':
+      if(S) continueResult();
+      break;
+    case 'rest':
+      doRest();
+      break;
+    case 'divine':
+      doDivine();
+      break;
+    case 'ded':
+      enterDed();
+      break;
+    case 'dedpick':
+      if(S && S.ded && S.ded.qs[parseInt(q, 10)]){
+        S.ded.qs[parseInt(q, 10)].sel = parseInt(o, 10);
+        var keepY = window.scrollY;
+        render();
+        window.scrollTo(0, keepY);
+      }
+      break;
+    case 'dedsubmit':
+      submitDed();
+      break;
+    case 'dedback':
+      goOn();
+      break;
+    case 'eventpick':
+      if(S) chooseEvent(parseInt(q, 10));
+      break;
+    case 'nightpick':
+      if(S) chooseNight(parseInt(q, 10));
+      break;
+    case 'finalopen':
+      openFinal();
+      break;
+    case 'final':
+      chooseFinal(parseInt(id, 10));
+      break;
+    case 'useItem':
+      useItem(parseInt(q, 10));
+      break;
+  }
+}
+
+document.addEventListener('input', function(e){
+  var id = e.target && e.target.id;
+  if(id && id.charAt(0) === 'c' && id !== 'cName') updateSums();
+});
+
+document.addEventListener('click', function(e){
+  if(e.target && e.target.id === 'modalOv'){ e.target.remove(); return; }
+  var el = e.target && e.target.closest ? e.target.closest('[data-a]') : null;
+  if(!el) return;
+  handleAction(el.getAttribute('data-a'), el.getAttribute('data-id'), el.getAttribute('data-q'), el.getAttribute('data-o'), el);
+});
+
+render();
+setInterval(function(){
+  if(S && S.node !== 'ending' && S.san <= 35 && Math.random() < 0.55) showWhisper();
+}, 17000);
+</script>
+</body>
+</html>
