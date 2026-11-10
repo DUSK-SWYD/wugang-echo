@@ -206,6 +206,7 @@
   .estats b{display:block;font-family:var(--serif);font-size:17px;color:var(--teal);letter-spacing:0}
   .unlock{margin:14px auto 0;max-width:520px;padding:8px 12px;border:1px dashed var(--gold-dim);
     border-radius:8px;font-family:var(--sans);font-size:11.5px;color:var(--gold);line-height:1.7}
+  .unlock.growth{border-style:solid;border-color:var(--teal);color:var(--teal);background:rgba(95,182,168,.06)}
   .fogcount{margin-top:12px;font-family:var(--sans);font-size:11px;color:var(--dim);letter-spacing:.08em}
   .fogcount b{color:var(--gold)}
   .endbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:20px}
@@ -330,6 +331,10 @@
   .use{font-family:var(--sans);font-size:11px;border:1px solid var(--line2);background:transparent;
     color:var(--gold);border-radius:6px;padding:6px 10px;cursor:pointer;min-height:34px}
   .use:disabled{opacity:.4;color:var(--dim)}
+  .gsec{margin:10px 0 14px}
+  .ghead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 0 6px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .ghead b{font-size:13.5px;color:var(--gold);letter-spacing:.06em}
+  .ghead span{font-size:11px;color:var(--muted)}
   .grid100{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
   .gcell{border:1px solid var(--line);border-radius:6px;padding:6px 4px;background:rgba(8,15,19,.7);
     min-height:52px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
@@ -342,6 +347,42 @@
   .gcell.grand.on{border-style:solid;border-color:var(--gold);box-shadow:0 0 30px rgba(201,162,75,.12)}
   .gcell.grand span{font-size:11px;color:var(--gold)}
   .galnote{font-family:var(--sans);font-size:10.5px;color:var(--dim);line-height:1.7;margin-top:8px}
+
+  /* ---- 低理智 · 弹幕与印记 ---- */
+  .sigilbar{display:none;gap:5px;flex-wrap:wrap;margin-top:6px}
+  .sigilbar.on{display:flex}
+  .sgchip{font-family:var(--sans);font-size:10px;color:#d8b7b0;border:1px solid rgba(212,86,75,.38);
+    background:rgba(40,10,10,.5);border-radius:20px;padding:3px 9px;cursor:pointer;min-height:26px;
+    display:inline-flex;align-items:center;gap:5px;line-height:1.2}
+  .sgchip b{font-family:var(--serif);color:var(--red);font-weight:600}
+  .sgchip:active{background:rgba(212,86,75,.2)}
+  .dmlayer{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+  .dm{position:absolute;left:100%;white-space:nowrap;font-family:var(--sans);font-size:11.5px;
+    letter-spacing:.06em;color:rgba(226,142,132,.9);background:rgba(14,4,5,.62);
+    border:1px solid rgba(212,86,75,.28);border-radius:20px;padding:5px 11px;cursor:pointer;
+    pointer-events:auto;box-shadow:0 0 18px rgba(0,0,0,.4);will-change:transform}
+  .dm:active{background:rgba(212,86,75,.3);color:#fff}
+  .dm b{font-family:var(--serif);color:var(--red);margin-right:4px}
+  @keyframes dmmove{from{transform:translate3d(0,0,0)}to{transform:translate3d(calc(-100vw - 110%),0,0)}}
+  .forced{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:120;
+    width:min(520px,88vw);background:rgba(8,10,12,.94);border:1px solid rgba(212,86,75,.45);
+    border-left:3px solid var(--red);border-radius:10px;padding:14px 16px;
+    font-family:var(--sans);font-size:12px;color:#d9c3c0;line-height:1.8;
+    box-shadow:0 24px 70px rgba(0,0,0,.7);animation:forcedin .3s ease,forcedout .8s 4.8s forwards}
+  .forced .fh{font-size:9px;letter-spacing:.3em;color:var(--red);margin-bottom:5px}
+  .forced .fs{color:var(--gold);letter-spacing:.06em;margin-top:6px}
+  @keyframes forcedin{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  @keyframes forcedout{to{opacity:0;transform:translate(-50%,-54%)}}
+  .siggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .sigcard{border:1px solid var(--line);border-radius:8px;padding:8px 6px;text-align:center;
+    background:rgba(8,15,19,.7);cursor:pointer;min-height:74px}
+  .sigcard b{display:block;font-family:var(--serif);font-size:13px;color:var(--dim)}
+  .sigcard span{display:block;font-family:var(--sans);font-size:8.5px;color:var(--dim);line-height:1.45;margin-top:3px}
+  .sigcard.on{border-color:rgba(212,86,75,.42);background:rgba(40,10,10,.42)}
+  .sigcard.on b{color:var(--red)} .sigcard.on span{color:#c7b3ae}
+  .sigcard.bound{border-color:rgba(201,162,75,.5);background:rgba(201,162,75,.07)}
+  .sigcard.bound b{color:var(--gold)}
+  .gcell{cursor:pointer}
 
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));
     z-index:140;background:#0d1a20;border:1px solid var(--gold-dim);border-radius:8px;
@@ -382,6 +423,7 @@
 </head>
 <body>
 <div class="fog fog-a"></div><div class="fog fog-b"></div><div class="scan"></div>
+<div class="dmlayer" id="dmLayer"></div>
 
 <header class="top">
   <div class="inner">
@@ -408,6 +450,7 @@
     <div class="sanbox">
       <div class="sanhead"><span>理智 SAN</span><b id="hSan">80</b><span class="spacer"></span><span class="buff" id="hBuff"></span></div>
       <div class="bar"><i id="sanbar"></i></div>
+      <div class="sigilbar" id="sigilBar"></div>
     </div>
   </div>
 
@@ -424,6 +467,15 @@ const SAVE_KEY = 'wugang_baimu_run_v1';
 const META_KEY = 'wugang_baimu_meta_v1';
 const START_TIME = 12;
 const POINT_CAP = 180;
+const GROWTH_IDS = [1, 9, 25, 33, 41, 65];
+function pointCap(){
+  return POINT_CAP + (META && META.bonus ? META.bonus : 0);
+}
+function statGrade(){
+  if(!S) return 'C';
+  var avg = Math.round((S.inv + S.will + S.luck) / 3);
+  return avg >= 80 ? 'S' : (avg >= 70 ? 'A' : (avg >= 60 ? 'B' : 'C'));
+}
 
 const STAT_LABEL = {inv:'侦查 INV', will:'意志 WIL', luck:'幸运 LCK'};
 const ARCHETYPES = {
@@ -431,6 +483,99 @@ const ARCHETYPES = {
   mind:{name:'审讯派', inv:-5, will:10, luck:0, item:'sedative', desc:'听过太多谎话，意志比常人硬。意志 +10，侦查 -5。自带镇静剂。'},
   luck:{name:'流浪者', inv:0, will:-5, luck:10, item:'charm', desc:'总在最后一刻躲开不该看的东西。幸运 +10，意志 -5。自带护身符。'}
 };
+
+/* 九枚印记：出身 × 推理层级。三柱神决定「印记终幕」。 */
+const SIGILS = [
+  {id:'scales', arch:'field', tier:0, glyph:'鳞', name:'鳞之印记', deity:'深潜者 · 达贡的眷族', rank:'深潜者', stat:'inv', fx:'inv',
+   line:'你的掌纹裂成细密的鳞。海在纸背下面呼吸。',
+   desc:'下一次侦查判定 +10+5×强度，并恢复强度点理智。',
+   endTitle:'鳞之下',
+   endBody:'你在结案栏写下自己的名字。墨水没有干，先变成了海水。\n\n第二天，雾港镇多了一个从不打伞的人。他的鞋永远是湿的，口袋里装着三十一份卷宗，每一份的落款都是你的笔迹。有人问他王守义去哪了，他张开嘴，只发出一声很长的潮响。',
+   verdict:'臣服不是终点，是调职。你被调去了更深的地方，继续办同一桩案子。'},
+  {id:'fungi', arch:'field', tier:1, glyph:'菌', name:'菌之印记', deity:'米·戈 · 犹格斯之星', rank:'米·戈', stat:'inv', fx:'clue',
+   line:'灰白的菌丝从卷宗缝里钻出来，替你翻页。',
+   desc:'获得 1 条线索；强度不低于 3 时获得 2 条。',
+   endTitle:'菌丝托管',
+   endBody:'米·戈把工具摊在桌上：一把锯子，一只玻璃罐，一张写着「自愿」的表格。你签了字。\n\n它们说大脑离开颅骨以后会更清醒。后来的很多年，你在一只罐子里继续办案，能同时读完三十一份卷宗。你仍记得自己是谁——这是它们唯一没有取走的东西，也是最残忍的。',
+   verdict:'你保住了理智，代价是它从此被装在一个盒子里。'},
+  {id:'gate', arch:'field', tier:2, glyph:'门', name:'门之印记', deity:'犹格·索托斯 · 万物归一者', rank:'三柱神', stat:'inv', fx:'core', outer:true,
+   line:'门印落在你胸口，像一枚从未上锁的锁孔。',
+   desc:'强度不低于 3 且残卷未齐时，直接取得一卷残卷；否则获得 1 条线索并使下一次侦查 +10。',
+   endTitle:'门后之人',
+   endBody:'门印在你胸口打开时，没有声音。你看见所有时间里的雾港：王守义第一次签下名字，第三十二份卷宗第一次被打印，以及此刻的你，正把名字交给门。\n\n你终于明白，结案不是结束一桩案子，而是把它从所有可能里删掉。你开始删。删到最后，只剩一扇门，和门后那个还在写字的你。',
+   verdict:'你成了门。所有来查案的人，最后都会从你身上经过。'},
+  {id:'teeth', arch:'mind', tier:0, glyph:'齿', name:'齿之印记', deity:'食尸鬼 · 墓园的食客', rank:'食尸鬼', stat:'will', fx:'heal',
+   line:'你开始听见咀嚼声，来自你自己的后槽牙。',
+   desc:'恢复 2×强度 点理智。',
+   endTitle:'齿间归档',
+   endBody:'你开始吃纸。先吃边角，再吃落款，最后吃那些没人签过名的空白页。\n\n食尸鬼在墓园里给你留了一个位置。你蹲在墓碑后面，把三十一份卷宗一页页嚼碎，尝出每一页的咸淡。王守义的那一份最咸。你再也不用写结案报告了——你把它吃掉了。',
+   verdict:'档案的尽头不是真相，是一种味道。'},
+  {id:'laugh', arch:'mind', tier:1, glyph:'笑', name:'笑之印记', deity:'奈亚拉托提普 · 千张脸', rank:'三柱神', stat:'will', fx:'all', outer:true,
+   line:'有人在窗外笑。你回头，镜子里的脸比你慢了半拍。',
+   desc:'三项判定各 +5×强度，但随后额外失去 2×强度 点理智。',
+   endTitle:'第一千张脸',
+   endBody:'奈亚拉托提普借给你一张脸。你戴上它，走进市局，签下结案，没有人多看你一眼。\n\n后来你换了很多张脸：上级、法医、失踪者、报案人。每一张脸都办过这桩案子。你终于明白，雾港镇从来没有一个侦探，只有一张不断换人的嘴。',
+   verdict:'你学会了用别人的嘴结案，也学会了不再记得自己的脸。'},
+  {id:'tide', arch:'mind', tier:2, glyph:'潮', name:'潮之印记', deity:'克苏鲁 · 沉睡的梦', rank:'旧日支配者', stat:'will', fx:'will',
+   line:'梦里有一座城，正从海底慢慢站起来。',
+   desc:'下一次意志判定 +10+5×强度；强度不低于 4 时额外恢复 6 点理智。',
+   endTitle:'潮底长眠',
+   endBody:'梦里那座海底城市给你留了编制。你下沉的时候，雾港镇正在你头顶合拢，像一只终于闭上的眼。\n\n你在下面继续值班。案卷是湿的，字是活的，王守义坐在隔壁工位，礼貌地点头。你们每天整理三十一份卷宗，等第三十二份自己游进来。',
+   verdict:'长眠是假的。你只是换了一个更深的办公室。'},
+  {id:'wing', arch:'luck', tier:0, glyph:'翼', name:'翼之印记', deity:'夜魇 · 无面之翼', rank:'夜魇', stat:'luck', fx:'luckfree',
+   line:'有翅膀的东西从你背后掠过，带走了你脸上的温度。',
+   desc:'下一次幸运判定 +8×强度，且这次祈福不消耗理智。',
+   endTitle:'无面夜航',
+   endBody:'夜魇从背后抱住你的时候，你以为是救援。它只是把你脸上的东西取走了。\n\n第二天，雾港镇贴满寻人启事，照片上是一张没有五官的脸。没有人认领。你跟着夜魇飞过海面，听见下面有人在数：三十一、三十二……你第一次觉得，那个数字与你无关。',
+   verdict:'无面者不会被结案，因为没有任何一份卷宗能写下他。'},
+  {id:'forest', arch:'luck', tier:1, glyph:'林', name:'林之印记', deity:'莎布·尼古拉丝 · 黑山羊之母', rank:'三柱神', stat:'luck', fx:'heal', outer:true,
+   line:'档案柜底下长出黑根，缠住你的脚踝。',
+   desc:'恢复 3×强度 点理智。',
+   endTitle:'林中之羊',
+   endBody:'黑色的根从档案柜底下长出来，缠住你的脚踝。莎布·尼古拉丝在你耳边说：生吧。\n\n你成了档案室的根系。每一份被销毁的卷宗都会在你身上重新长出来，像叶子一样。有人来查案时，你递给他一片叶子；他读着读着，就忘了自己为什么要来。',
+   verdict:'你没有死，你只是变成了所有被删掉的案子的土壤。'},
+  {id:'blind', arch:'luck', tier:2, glyph:'盲', name:'盲之印记', deity:'阿撒托斯 · 盲目痴愚之神', rank:'外神 · 万物之主', stat:'luck', fx:'allcost',
+   line:'笛声从你颅骨里面响起来，没有旋律，也不为任何人。',
+   desc:'三项判定各 +5×强度，但额外失去 3 点理智。',
+   endTitle:'盲奏终章',
+   endBody:'盲印落在你眼睛上时，你听见了笛声。那声音没有旋律，也不为任何人演奏。\n\n你开始在同一秒里翻阅所有卷宗。三十一份、三十二份、无穷份，全部同时结案。你的手还在写，字却先你一步写完了。雾港镇在这一秒里安静下来，像一张被合上的纸。',
+   verdict:'万事同时结案。包括你。'}
+];
+const OUTER_IDS = SIGILS.filter(function(x){ return x.outer; }).map(function(x){ return x.id; });
+/* 九枚印记各占 100 条结局中的一个位置：臣服后写入对应编号，不再另开 102–110。 */
+const BOUND_SLOTS = [19,24,38,44,57,63,79,87,95];
+const BOUND_BY_SIGIL = {};
+SIGILS.forEach(function(x, i){ BOUND_BY_SIGIL[x.id] = BOUND_SLOTS[i]; });
+function isBoundSlot(id){ return BOUND_SLOTS.indexOf(id) >= 0; }
+function boundTitle(v){
+  if(v === 'triple') return '三柱神 · 空壳';
+  var s = sigilById(v);
+  return s ? s.endTitle : '？？';
+}
+const TRIPLE_TEXT = '门、笑、林，三枚柱神印记在你身上连成一条线。你不再是一个人，你是它们共用的一页纸。\n\n所有别的印记都暗了下去。你看不见它们了——它们不配与这三位并列。最后一份卷宗自己翻开，里面没有案情，只有一行你的名字，和三个空着的签名栏。\n\n你签完第三个名字，理性归零。雾港镇从地图上消失的那一秒，没有人听见潮声。';
+const TRIPLE_VERDICT = '三柱神齐。你已不属于任何一桩案子，你是案子本身。';
+
+const FORCED_TEXTS = [
+  '第〇三一号：已封缄。落款处生着鳃。',
+  '证词不合海的心意，已由祂替你改口。',
+  '此案不可再读。纸会读回来。',
+  '你签过字了。墨水是从你耳后取的。',
+  '调查终止。批示来自一张没有舌头的嘴。',
+  '第三十二份不存在。重复：不存在。',
+  '归档时刻：十一时十七分。钟在咀嚼。',
+  '你听见自己在隔壁回答：是。那个声音有回声，你没有。',
+  '名字已录入。现在轮到你被写。',
+  '停止数数。停止数数。停止数数。它们在你背后一起数。',
+  '雾港不需要第二个侦探。它需要一个容器。',
+  '所有窗口亮着同一盏灯。灯芯是你的名字。',
+  '卷宗在你手里变软，像一层蜕下来的皮。',
+  '有人在纸背敲了三下。第三下之后，你的名字少了一笔。'
+];
+const DM_TEXTS = [
+  '已封缄','祂在看','签在这里','第31号','11:17','你听见了吗','三十二','名字给我',
+  '别数了','潮在纸里','抬头','它在你背后','盖章','回廊在呼吸','第三页是湿的','不要读出声'
+];
+const DM_GLYPHS = ['断','案','签','封','潮','门','齿','盲','林','笑','鳞','菌','翼'];
 
 const CLUES = {
   n_teng:{name:'藤连黑海',desc:'瓜藤的尽头不是土，是黑海。藤是活物的神经末梢，而你在它的一根血管上走。'},
@@ -1213,24 +1358,115 @@ const EXTRA_ENDINGS = [
   },
   {
     id:100, title:'第 100 号 · 井底来客',
-    hint:'传闻：带着四卷残页、理智将尽的人，会在井边遇见自己。',
+    hint:'传闻：综合达到 C 级、带着四卷残页且理智将尽的人，会在井边遇见自己。',
     verdict:'你找了很久的失踪者，最后发现名单第一行就是自己。',
     body:`你带着四卷残页走到井边时，已经分不清自己是来查案还是来赴约。
 
 你朝井下看。井里的人也朝上看，他有你的脸，但比你安静得多。
 
 他伸手，你把残页递下去。交换完成的那一刻，你想起自己其实一直住在下面。`
+  },
+  {
+    id:10, title:'第 10 号 · 西瓜的重量',
+    hint:'传闻：查过瓜田、手里又攥着足够多线索的人，会听见瓜里有人说话。',
+    verdict:'有些甜味不是长出来的，是从很深的地方渗上来的。',
+    body:`你把老陈的瓜一个个搬回证物室。切开第一个，里面没有瓤，只有一圈一圈的藤，缠着一小截舌头。
+
+第二个瓜里是一张被海水泡软的纸条，上面写着：「别捞。」
+
+你切到第三十一个时，刀口自己停住了。瓜皮上浮出王守义的脸，他张嘴，没有声音，只有瓜籽一颗颗落下来，在桌上拼成两个字：结案。
+
+你把所有瓜封进冷库。那年镇上的西瓜格外甜，没人知道甜味是从哪来的。`
+  },
+  {
+    id:12, title:'第 12 号 · 物证之镇',
+    hint:'传闻：综合达到 S 级、把每一件东西都归好档的人，最后会把自己也归进去。',
+    verdict:'结案报告最后一栏：无异常。签名处的墨，比别处厚一点。',
+    body:`你把每一样东西都摆在桌上，按时间、按地点、按潮汐排好。三十一件物证，一件不多，一件不少。
+
+然后你让全镇闭嘴。不是靠广播，是靠这份卷宗——它在每一家门前放了一页，写着：你说过的话，已经有人替你负责了。
+
+雾退的那天，盐场的盐山也塌了。你蹲下去检查碎盐，发现每一粒结晶里都封着一句没说完的话。你把它们装进证物袋，编号从三十二开始。
+
+从此雾港镇再没发生过怪事。所有的怪事，都被你归档了。`
+  },
+  {
+    id:29, title:'第 29 号 · 购物车里的判决',
+    hint:'传闻：在法庭上运气特别好的人，会收到一份包邮的判决书。',
+    verdict:'正义也许会迟到，但快递显示：已签收。',
+    body:`法庭的电脑又跳到了那个页面。你本来只是想关掉它，手指却点进了购物车。
+
+三十一件商品，每一件都是一份判决：有罪、无罪、缓刑、失踪。收件地址统一写着「雾港镇枯井，井底第三十二层」。
+
+你点了结算。页面没有问你要钱，只问：「是否代签？」
+
+你签了。签收人那一栏，你的笔迹慢慢变成了王守义的。
+
+第二天，镇上每个人都收到了一个包裹。拆开是空的，但他们都松了口气，像刚被宣判无罪。`
+  },
+  {
+    id:39, title:'第 39 号 · 第三十二份笔录',
+    hint:'传闻：综合达到 A 级、推理答对两题以上的人，会被请去审一个很熟的嫌疑人。',
+    verdict:'笔录归档。被审人一栏是空的，审讯人一栏排着三十二个名字。',
+    body:`你坐上审讯席。灯管嗡嗡响，单向玻璃后面是海。
+
+第一个被带进来的人是你自己。你问了三个问题，答得都很流利。第四个问题你犹豫了，笔录上却已经写好了答案。
+
+「你到底是谁？」你听见自己问。
+
+「审讯者。」对面答。
+
+于是你明白了：王守义从来不是被同化的那个人，他是第一个学会反过来审讯的人。你接过他的笔，把第三十二份笔录的落款改成自己的名字。雾在窗外站了很久，最后敬了个礼。`
+  },
+  {
+    id:58, title:'第 58 号 · 第三十二张船票',
+    hint:'传闻：综合达到 B 级、在理智尚存时离开的人，会在检票口听见一个数字。',
+    verdict:'海图上有这座镇。但所有的航线，都不经过它。',
+    body:`你在开船前五分钟登上甲板。检票的人没有脸，接过你的票，撕下票根。
+
+「三十一号。」他说。
+
+「不。」你把另一张票递过去，「我的是三十二。」
+
+他低头看了很久，久到船已经离港。那张票上原本空着的乘客姓名，此刻慢慢浮出字来：不是你的名字，是「王守义」三个字。
+
+你没有下船。你只是把票折好，放进内袋。船尾的雾港镇一盏盏熄了灯，从三十一数到一，数得很慢，像在送你。`
+  },
+  {
+    id:71, title:'第 71 号 · 两小时的木马',
+    hint:'传闻：在木马上待到理智将尽的人，会看见另一个自己还在排队。',
+    verdict:'时间没有折叠，是你被折进了时间里。',
+    body:`你在旋转木马上坐了两小时。表停在十一点十七分，木马没有电，却一直在转。
+
+下来的时候，镇上已经过了两周。瓜田荒了，草垛烧成了灰，法庭的电脑还亮着。你看见队伍最前面站着一个人，背影和你一模一样。
+
+他回头，对你笑了一下，然后走上木马。你没有喊他。
+
+你走到队尾，重新排队。音乐响了，木马又开始转。你忽然想起，自己好像已经排了很久。`
   }
 ];
 
+function extraById(id){
+  for(var k = 0; k < EXTRA_ENDINGS.length; k++){
+    if(EXTRA_ENDINGS[k].id === id) return EXTRA_ENDINGS[k];
+  }
+  return null;
+}
+
 function extraEndingFor(i, preSan){
   if(!S) return null;
-  if(i === 0 && S.will >= 85 && preSan >= 50) return EXTRA_ENDINGS[0];
-  if(i === 4 && S.inv >= 85 && S.clues.length >= 14) return EXTRA_ENDINGS[1];
-  if(i === 2 && S.luck >= 85) return EXTRA_ENDINGS[2];
-  if(i === 3 && S.ded && S.ded.score === 3) return EXTRA_ENDINGS[3];
-  if(i === 1 && S.ded && S.ded.done && S.ded.score === 0 && S.done.length >= 6) return EXTRA_ENDINGS[4];
-  if(S.san <= 10 && coreCount() === 4) return EXTRA_ENDINGS[5];
+  if(i === 0 && S.will >= 85 && preSan >= 50) return extraById(3);
+  if(i === 0 && statGrade() === 'S' && S.clues.length >= 10) return extraById(12);
+  if(i === 2 && S.luck >= 85) return extraById(47);
+  if(i === 2 && statGrade() === 'B' && preSan >= 50) return extraById(58);
+  if(i === 3 && S.ded && S.ded.score === 3) return extraById(68);
+  if(i === 4 && S.inv >= 85 && S.clues.length >= 14) return extraById(84);
+  if(i === 1 && S.ded && S.ded.done && S.ded.score === 0 && S.done.length >= 6) return extraById(34);
+  if(i === 1 && statGrade() === 'A' && S.ded && S.ded.score >= 2) return extraById(39);
+  if(S.done.indexOf('gua') >= 0 && S.clues.length >= 8) return extraById(10);
+  if(S.done.indexOf('fa') >= 0 && S.luck >= 70) return extraById(29);
+  if(S.done.indexOf('horse') >= 0 && S.san <= 25) return extraById(71);
+  if(S.san <= 10 && coreCount() === 4 && statGrade() === 'C') return extraById(100);
   return null;
 }
 
@@ -1471,20 +1707,26 @@ const END_TAILS = [
   '最后一页没有字。你把自己的名字写上去，它就成了唯一证据。'
 ];
 
-const GRAND_VERDICT = '阅读即呼吸。你读了它，它就活了一次。';
+const GRAND_VERDICT = '你读完了它，于是它完整了一次；从今往后，轮到它读你。';
 const GRAND_TEXT = `你读完了第零页。
 
-那一页上没有字。或者说，字在你读的瞬间才生成——它们不描述案情，它们描述正在读这一页的人：你的呼吸、你的迟疑、你此刻想把屏幕关掉的冲动。
+字不是印上去的。它们从纸背慢慢浮出来，像海底的灯一盏盏亮起。你看见雾港镇在纸里：瓜田的藤蔓缠住整条海岸，草垛烧成一只巨大的眼睛，枯井垂直穿过地心，法庭的电脑亮着，购物车里躺着三十一件没有主人的判决。
 
-你忽然明白谕令者为什么从不杀人。它靠「被读」活着。每一份卷宗被翻开，都是一次献祭；每一个试图查明真相的人，都在替它把句子读得更完整。
+三十一份卷宗，三十一次呼吸。王守义不是第一个失踪的人，他是第一个被写进目录的人。你现在读到的每一个字，都是他当年没来得及说出口的半句话。
 
-三十一份卷宗，其实是三十一次呼吸。
+你听见海在纸外翻页。谕令者没有形体，它是一句永远说不完的话；每一个调查它的人，都是它临时借来的舌头。你查得越深，它说得越完整。
 
-而你现在手里这一页，是第三十二次。页脚有一行小字，不属于任何已知的字体：
+但这一次，句子停在你的名字上。
 
-「谢谢你读到这里。现在，轮到你写下一句了。」
+你看见自己的名字被写在页脚，墨迹还没干。小李站在旁边，制服上全是盐；他问你：「结不结案？」你听见镇上的窗一扇扇打开，三十一盏灯从海底升起来，像一场迟到了三个月的日出。
 
-你没有写。你合上了卷宗——或者，你以为你合上了。`;
+你没有签。你抬起笔，在「谕令者」三个字上划了一道。那道划痕穿过纸背，穿过海床，穿过所有副本；雾港镇第一次安静得像一个真正的镇子。
+
+然后你听见第零页翻到背面。背面只有一句话，字迹是王守义的：
+
+「看破真相的人，真相就不完整。现在，它完整了。」
+
+你合上卷宗。海平线上，第三十二盏灯亮了。`;
 
 /* =========================================================
    引擎
@@ -1526,10 +1768,25 @@ function loadMeta(){
       var legacyB = {105:3,106:84,107:47,108:68,109:34,110:100};
       var raw = (m.extra || []).map(function(x){ return legacyB[x] || legacyA[x] || x; }).filter(function(x){ return typeof x === 'number' && x >= 1 && x <= 100; });
       var all = (m.unlocked || []).concat(raw).filter(function(x, i, arr){ return typeof x === 'number' && x >= 1 && x <= 100 && arr.indexOf(x) === i; });
-      return { unlocked:all, grand:!!m.grand, arch:(m.arch || []).filter(function(x){ return typeof x === 'number'; }), extra:raw.filter(function(x, i, arr){ return arr.indexOf(x) === i; }), runs:m.runs || 0 };
+      return { unlocked:all, grand:!!m.grand, arch:(m.arch || []).filter(function(x){ return typeof x === 'number'; }), extra:raw.filter(function(x, i, arr){ return arr.indexOf(x) === i; }), runs:m.runs || 0,
+        bonus:Math.max(0, Math.min(60, Number(m.bonus) || 0)),
+        growth:(m.growth || []).filter(function(x){ return GROWTH_IDS.indexOf(x) >= 0; }),
+        collected:(m.collected || []).filter(function(x){ return SIGILS.some(function(s){ return s.id === x; }); }),
+        submit:(m.submit || []).filter(function(x){ return SIGILS.some(function(s){ return s.id === x; }); }),
+        bound:(m.bound || []).filter(function(x){ return SIGILS.some(function(s){ return s.id === x; }); }),
+        boundAt:(function(){
+          var o = m.boundAt || {}, r = {};
+          Object.keys(o).forEach(function(k){
+            var n = Number(k);
+            if(BOUND_SLOTS.indexOf(n) < 0) return;
+            if(o[k] === 'triple' || SIGILS.some(function(s){ return s.id === o[k]; })) r[n] = o[k];
+          });
+          return r;
+        })(),
+        outerDone:!!m.outerDone };
     }
   }catch(e){}
-  return { unlocked:[], grand:false, arch:[], extra:[], runs:0 };
+  return { unlocked:[], grand:false, arch:[], extra:[], runs:0, bonus:0, growth:[], collected:[], submit:[], bound:[], boundAt:{}, outerDone:false };
 }
 function saveMeta(){
   try{ localStorage.setItem(META_KEY, JSON.stringify(META)); }catch(e){}
@@ -1572,9 +1829,23 @@ function updateHud(){
   if(S.buff.inv) parts.push('侦查 +' + S.buff.inv);
   if(S.buff.will) parts.push('意志 +' + S.buff.will);
   if(S.buff.luck) parts.push('幸运 +' + S.buff.luck);
-  if(S.san < 30) parts.push('低理智 · 判定 -10');
+  if(sanBonus() > 0) parts.push('清明 · 判定 +' + sanBonus());
+  if(sanPenalty() > 0) parts.push(sanName() + ' · 判定 -' + sanPenalty());
   if(S.shield) parts.push('护盾 ' + S.shield);
   document.getElementById('hBuff').textContent = parts.join(' · ');
+  var sb = document.getElementById('sigilBar');
+  if(sb){
+    var vis = visibleSigils();
+    if(S.san <= 50 && vis.length){
+      sb.className = 'sigilbar on';
+      sb.innerHTML = vis.map(function(x){
+        return '<span class="sgchip" data-a="sigilinfo" data-id="' + x.id + '"><b>' + x.glyph + '</b>' + x.name.replace('之印记', '') + '</span>';
+      }).join('');
+    }else{
+      sb.className = 'sigilbar';
+      sb.innerHTML = '';
+    }
+  }
 }
 
 /* ---------- 小工具 ---------- */
@@ -1625,6 +1896,7 @@ function randomNormalClues(n){
 }
 function loseSan(n){
   if(!S || n <= 0) return 0;
+  var before = S.san;
   var d = Math.max(1, n - Math.floor(S.will / 30));
   if(S.shield > 0){
     var ab = Math.min(S.shield, d);
@@ -1632,14 +1904,157 @@ function loseSan(n){
   }
   S.san = clamp(S.san - d, 0, S.maxSan);
   S.sanLost += d;
+  if(before >= 50 && S.san < 50){
+    if(!S.dmSeen){ S.dmSeen = true; S.dmPending = true; }
+    setTimeout(function(){ showForced('雾从纸缝里长出来，带着盐和鳃的味道。有人替你把下一页翻开了。', '低理智 · 弹幕已出现 · 点击它'); }, 600);
+  }
+  if(before > 30 && S.san <= 30 && S.san > 0) setTimeout(function(){ showForced(pick(FORCED_TEXTS), '崩解 · 印记开始显现'); }, 900);
+  if(before > 0 && S.san <= 0) setTimeout(function(){ showForced('理性归零。本案由你承办，也由你结案。', '空壳 · 祂在等你签字'); }, 900);
   return d;
 }
 function sanPenalty(){
-  return (S && S.san < 30) ? 10 : 0;
+  if(!S) return 0;
+  var v = S.san;
+  return v >= 60 ? 0 : (v >= 45 ? 5 : (v >= 30 ? 10 : (v >= 15 ? 16 : 24)));
+}
+function sanBonus(){
+  if(!S) return 0;
+  return S.san >= 70 ? 5 : (S.san >= 60 ? 3 : 0);
+}
+function sanName(){
+  if(!S) return '清醒';
+  var v = S.san;
+  return v >= 60 ? '清醒' : (v >= 45 ? '动摇' : (v >= 30 ? '崩解' : (v >= 15 ? '沦陷' : '空壳')));
 }
 function healSan(n){
   if(!S) return;
   S.san = clamp(S.san + n, 0, S.maxSan);
+}
+function sigilById(id){
+  for(var i = 0; i < SIGILS.length; i++){ if(SIGILS[i].id === id) return SIGILS[i]; }
+  return null;
+}
+function ownedSigils(){
+  if(!S || !S.sigils) return [];
+  return SIGILS.filter(function(x){ return S.sigils.indexOf(x.id) >= 0; });
+}
+function visibleSigils(){
+  var list = ownedSigils();
+  return META.outerDone ? list.filter(function(x){ return x.outer; }) : list;
+}
+function dedTier(){
+  if(!S || !S.ded || S.ded.score < 0) return 0;
+  return S.ded.score >= 3 ? 2 : (S.ded.score >= 2 ? 1 : 0);
+}
+function sigilBonus(stat){
+  if(!S || S.san > 50) return 0;
+  var n = 0;
+  ownedSigils().forEach(function(x){ if(x.stat === stat) n += 6; });
+  return n;
+}
+function prayPower(){
+  return S ? clamp(Math.ceil(S.san / 10), 1, 5) : 1;
+}
+
+/* ---------- 低理智：弹幕 / 强制结案 / 印记 ---------- */
+var DM_TIMER = null, DM_GAP = 0, DM_BURST = 1;
+function dmGap(){
+  if(!S || S.san > 50) return 0;
+  var t = Math.max(0, S.san);
+  return Math.round((t - 8) * (t >= 8 ? 300 : 200));
+}
+function stopDanmaku(clear){
+  if(DM_TIMER){ clearInterval(DM_TIMER); DM_TIMER = null; }
+  DM_GAP = 0;
+  DM_BURST = 1;
+  if(clear){
+    var l = document.getElementById('dmLayer');
+    if(l) l.innerHTML = '';
+  }
+}
+function syncDanmaku(){
+  var live = S && ['hub','site','result','event','night','ded','final'].indexOf(S.node) >= 0 && S.san <= 50;
+  if(!live){ stopDanmaku(true); return; }
+  if(S.san < 50 && !S.dmSeen){ S.dmSeen = true; S.dmPending = true; }
+  var gap = dmGap();
+  var burst = gap < 0 ? Math.min(3, 1 + Math.floor(-gap / 500)) : 1;
+  var tick = gap <= 0 ? 300 : gap;
+  if(DM_TIMER && tick === DM_GAP && burst === DM_BURST){
+    if(S.dmPending){ S.dmPending = false; setTimeout(spawnDanmaku, 250); }
+    return;
+  }
+  stopDanmaku(false);
+  DM_GAP = tick;
+  DM_BURST = burst;
+  DM_TIMER = setInterval(function(){
+    for(var i = 0; i < DM_BURST; i++) spawnDanmaku();
+  }, tick);
+  if(S.dmPending){ S.dmPending = false; setTimeout(spawnDanmaku, 250); }
+  else setTimeout(function(){ for(var i = 0; i < DM_BURST; i++) spawnDanmaku(); }, 500);
+}
+function spawnDanmaku(){
+  if(!S || S.san > 50) return;
+  if(['hub','site','result','event','night','ded','final'].indexOf(S.node) < 0) return;
+  var layer = document.getElementById('dmLayer');
+  if(!layer || layer.children.length >= 26) return;
+  var d = document.createElement('div');
+  d.className = 'dm';
+  d.setAttribute('data-a', 'dm');
+  d.innerHTML = '<b>' + pick(DM_GLYPHS) + '</b>' + esc(pick(DM_TEXTS));
+  d.style.top = (2 + Math.random() * 92) + 'vh';
+  var dur = (S.san <= 15 ? 9 : (S.san <= 30 ? 12 : 17)) + Math.random() * 4;
+  d.style.animation = 'dmmove ' + dur.toFixed(1) + 's linear forwards';
+  d.addEventListener('animationend', function(){ if(d.parentNode) d.remove(); });
+  layer.appendChild(d);
+}
+function showForced(main, sub){
+  var old = document.querySelector('.forced');
+  if(old) old.remove();
+  var d = document.createElement('div');
+  d.className = 'forced';
+  d.innerHTML = '<div class="fh">封缄 · 祂已代签</div>' + esc(main) + (sub ? ('<div class="fs">' + esc(sub) + '</div>') : '');
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, 6000);
+}
+function grantSigil(){
+  if(!S) return null;
+  if(!S.sigils) S.sigils = [];
+  var pool = SIGILS.filter(function(x){ return S.sigils.indexOf(x.id) < 0; });
+  if(!pool.length){
+    var st = pick(['inv','will','luck']);
+    S.buff[st] = (S.buff[st] || 0) + 8;
+    addLog('印记重复：下一次' + STAT_LABEL[st] + '判定 +8。');
+    return null;
+  }
+  var t = dedTier();
+  var weights = pool.map(function(x){
+    if(x.arch === S.arch && x.tier === t) return 5;
+    if(x.arch === S.arch) return 2;
+    return 1;
+  });
+  var total = 0;
+  weights.forEach(function(w){ total += w; });
+  var r = Math.random() * total, acc = 0, s = pool[0];
+  for(var i = 0; i < pool.length; i++){
+    acc += weights[i];
+    if(r <= acc){ s = pool[i]; break; }
+  }
+  S.sigils.push(s.id);
+  if(META.collected.indexOf(s.id) < 0){
+    META.collected.push(s.id);
+    saveMeta();
+  }
+  addLog('获得印记：' + s.name + '（' + s.deity + '）。');
+  return s;
+}
+function onDanmaku(el){
+  if(!S || !el) return;
+  el.remove();
+  var chance = S.san <= 15 ? 0.92 : (S.san <= 30 ? 0.74 : 0.55);
+  var sig = Math.random() < chance ? grantSigil() : null;
+  showForced(pick(FORCED_TEXTS), sig ? ('印记显现：' + sig.glyph + ' · ' + sig.name) : '低语重复了一遍，没有留下新的东西。');
+  updateHud();
+  if(sig) toast('获得印记：' + sig.name + '（' + sig.deity + '）');
 }
 
 function initRun(){
@@ -1664,6 +2079,8 @@ function initRun(){
     mapOrder: order, coreMap: coreMap, omens: omens,
     eventsSeen: [], nights: {n1:false, n2:false, n3:false},
     ded: {qs:[], score:-1, done:false},
+    sigils: [],
+    dmSeen: false, dmPending: false,
     flags: {}, tooLate: false, over: false, sanLost: 0,
     node: 'hub', curSite: '', curEvent: '', curNight: '',
     result: null, log: [], restCount: 0, ending: null
@@ -1679,9 +2096,11 @@ function initRun(){
 /* ---------- 渲染 ---------- */
 function render(){
   if(S && S.node !== 'create' && S.node !== 'ending') saveRun();
+  if(S && !S.sigils) S.sigils = [];
+  if(S && S.dmSeen === undefined){ S.dmSeen = false; S.dmPending = false; }
   updateHud();
   document.body.classList.toggle('low-san', !!(S && S.san <= 30));
-  if(!S){ renderTitle(); lastNode = 'title'; return; }
+  if(!S){ renderTitle(); lastNode = 'title'; stopDanmaku(true); return; }
   switch(S.node){
     case 'create': renderCreate(); break;
     case 'hub': renderHub(); break;
@@ -1694,6 +2113,7 @@ function render(){
     case 'ending': renderEnding(); break;
     default: renderTitle();
   }
+  syncDanmaku();
   if(S.node !== lastNode){ lastNode = S.node; window.scrollTo(0, 0); }
 }
 
@@ -1711,7 +2131,7 @@ function renderTitle(){
   if(saved) html += '<button class="btn" data-a="resume">继续上一次</button>';
   html += '<button class="btn" data-a="gallery">结局回廊</button>';
   html += '</div>';
-  html += '<div class="meta">已解锁 <b>' + META.unlocked.length + '</b> / 100 条结局 · 雾中还有 <b>' + (100 - META.unlocked.length) + '</b> 条未被看见<br>' + (META.grand ? '第 101 号已经显现。' : '另有 1 幕，不在 100 条之内。') + ' 另有 3 幕，只向特定出身显现（' + META.arch.length + ' / 3）；6 幕异闻已计入 100 条。</div>';
+  html += '<div class="meta">已解锁 <b>' + META.unlocked.length + '</b> / 100 条结局 · 雾中还有 <b>' + (100 - META.unlocked.length) + '</b> 条未被看见<br>' + (META.grand ? '第 101 号已经显现。' : '另有 1 幕，不在 100 条之内。') + ' ' + EXTRA_ENDINGS.length + ' 幕异闻已计入 100 条。' + (META.bonus ? '<br>永久属性上限 <b>+' + META.bonus + '</b>（当前 ' + pointCap() + '）。' : '') + '</div>';
   html += '</div>';
   var rules = [
     ['掷骰','标「判定」的选项会掷 d100。小于等于对应属性即成功；失败通常仍会推进，但多掉理智。'],
@@ -1722,7 +2142,9 @@ function renderTitle(){
     ['时段','一局 12 个时段。勘察现场、休息、占卜、推理各消耗 1 段。时段耗尽会被迫结案。'],
     ['线索','每个现场有三条路线：安全走访、判定勘察、深层高危。越深的地方，越可能翻到「残卷」。'],
     ['推理','花 1 个时段做三题，全局只能做一次。每答对一题获得一条洞察线索；答对两题真相层级 +1，全对再恢复 5 点理智。'],
-    ['结局','终局有五种抉择。抉择 × 理智状态 × 真相层级，决定你落在 100 条结局中的哪一条。'],
+    ['结局','100 条结局按五种终局归类，不再按出身拆分。理智状态 × 真相层级决定同一终局里的具体落点。'],
+    ['成长','部分简单结局会永久提升三项总和上限 +10，最多 +60。它们只需要带着 0 卷残页走到某个终局。'],
+    ['评级','综合 S ≥80、A ≥70、B ≥60、C <60。部分异闻要求特定评级；基础上限 180 时最高只能到 B，得先靠成长结局把上限堆高。'],
     ['隐藏','100 条之外还有第 101 幕。它不在任何提示里。你只能自己撞上它。']
   ];
   html += '<div class="rules">';
@@ -1750,8 +2172,8 @@ function renderCreate(){
   html += '<div class="crow" style="grid-template-columns:66px 1fr 74px 44px"><div class="cl">幸运 LCK</div><div class="cd">躲开不该看的东西。</div><input class="cin" id="cLuck" type="number" inputmode="numeric" min="30" max="90" value="' + DRAFT.luck + '"><button class="dbtn" data-a="dice" data-id="luck">⚂</button></div>';
   var f = finalStats(a);
   var avg = Math.round((f.inv + f.will + f.luck) / 3);
-  var grade = avg >= 75 ? 'A' : (avg >= 65 ? 'B' : (avg >= 55 ? 'C' : 'D'));
-  var gc = avg >= 75 ? 1 : (avg >= 65 ? 2 : (avg >= 55 ? 3 : 4));
+  var grade = avg >= 80 ? 'S' : (avg >= 70 ? 'A' : (avg >= 60 ? 'B' : 'C'));
+  var gc = avg >= 80 ? 1 : (avg >= 70 ? 2 : (avg >= 60 ? 3 : 4));
   html += '<div class="sumwrap"><div class="sumhead"><span>最终数值 · 含出身加成</span><span class="grade g' + gc + '" id="sumGrade">综合 ' + avg + ' · ' + grade + '</span></div>';
   html += '<div class="sumgrid">';
   html += '<div><span>侦查 INV</span><b id="sumInv">' + f.inv + '</b></div>';
@@ -1760,9 +2182,10 @@ function renderCreate(){
   html += '<div class="hi"><span>综合</span><b id="sumAll">' + avg + '</b></div>';
   html += '</div>';
   var base = (Number(DRAFT.inv) || 0) + (Number(DRAFT.will) || 0) + (Number(DRAFT.luck) || 0);
-  html += '<div class="sumnote' + (base > POINT_CAP ? ' over' : '') + '" id="sumNote">基础合计 ' + base + ' / ' + POINT_CAP + (base > POINT_CAP ? ' · 已超出' : '') + '</div>';
+  var cap = pointCap();
+  html += '<div class="sumnote' + (base > cap ? ' over' : '') + '" id="sumNote">基础合计 ' + base + ' / ' + cap + (base > cap ? ' · 已超出' : '') + '</div>';
   html += '</div>';
-  html += '<div class="qr">出身加成：侦查 ' + (a.inv >= 0 ? '+' : '') + a.inv + ' · 意志 ' + (a.will >= 0 ? '+' : '') + a.will + ' · 幸运 ' + (a.luck >= 0 ? '+' : '') + a.luck + '<br>最终值 = 输入值 + 出身加成（最高 99，加成可把单项推过 90）。出身加成不计入合计上限；三项基础值合计上限 ' + POINT_CAP + '。理智 SAN 固定 80。<br>属性被动：侦查 ≥65 勘察现场额外补一条线索；意志每 30 点减免 1 点理智损失；幸运豁免成功时完全免除该次理智损失。</div>';
+  html += '<div class="qr">出身加成：侦查 ' + (a.inv >= 0 ? '+' : '') + a.inv + ' · 意志 ' + (a.will >= 0 ? '+' : '') + a.will + ' · 幸运 ' + (a.luck >= 0 ? '+' : '') + a.luck + '<br>最终值 = 输入值 + 出身加成（最高 99，加成可把单项推过 90）。出身加成不计入合计上限；三项基础值合计上限 ' + cap + (META.bonus ? '（基础 180 + 永久加成 ' + META.bonus + '）' : '') + '。理智 SAN 固定 80。<br>属性被动：侦查 ≥65 勘察现场额外补一条线索；意志每 30 点减免 1 点理智损失；幸运豁免成功时完全免除该次理智损失。</div>';
   html += '<div class="endbtns"><button class="btn" data-a="rollall">一键掷骰</button><button class="btn gold" data-a="confirm">确认建档</button><button class="btn" data-a="toTitle">返回标题</button></div>';
   html += '</div>';
   stageEl.innerHTML = html;
@@ -1794,8 +2217,8 @@ function updateSums(){
   readDraft();
   var f = finalStats();
   var avg = Math.round((f.inv + f.will + f.luck) / 3);
-  var grade = avg >= 75 ? 'A' : (avg >= 65 ? 'B' : (avg >= 55 ? 'C' : 'D'));
-  var gc = avg >= 75 ? 1 : (avg >= 65 ? 2 : (avg >= 55 ? 3 : 4));
+  var grade = avg >= 80 ? 'S' : (avg >= 70 ? 'A' : (avg >= 60 ? 'B' : 'C'));
+  var gc = avg >= 80 ? 1 : (avg >= 70 ? 2 : (avg >= 60 ? 3 : 4));
   document.getElementById('sumInv').textContent = f.inv;
   document.getElementById('sumWill').textContent = f.will;
   document.getElementById('sumLuck').textContent = f.luck;
@@ -1805,8 +2228,9 @@ function updateSums(){
   var base = (DRAFT.inv || 0) + (DRAFT.will || 0) + (DRAFT.luck || 0);
   var note = document.getElementById('sumNote');
   if(note){
-    note.textContent = '基础合计 ' + base + ' / ' + POINT_CAP + (base > POINT_CAP ? ' · 已超出' : ' · 剩余 ' + (POINT_CAP - base));
-    note.className = 'sumnote' + (base > POINT_CAP ? ' over' : '');
+    var cap = pointCap();
+    note.textContent = '基础合计 ' + base + ' / ' + cap + (base > cap ? ' · 已超出' : ' · 剩余 ' + (cap - base));
+    note.className = 'sumnote' + (base > cap ? ' over' : '');
   }
 }
 
@@ -1830,7 +2254,8 @@ function renderHub(){
   });
   html += '</div><div class="actions">';
   html += '<button class="act" data-a="rest" ' + (S.time <= 0 ? 'disabled' : '') + '><b>休息</b><span>1 时段 · 恢复理智</span></button>';
-  html += '<button class="act" data-a="divine" ' + (S.time <= 0 ? 'disabled' : '') + '><b>占卜</b><span>1 时段 · 4 理智</span></button>';
+  var dvLabel = (S.san <= 50 && visibleSigils().length) ? '1 时段 · 向印记祈福' : '1 时段 · 4 理智';
+  html += '<button class="act" data-a="divine" ' + (S.time <= 0 ? 'disabled' : '') + '><b>占卜</b><span>' + dvLabel + '</span></button>';
   html += '<button class="act" data-a="ded" ' + (S.time <= 0 ? 'disabled' : '') + '><b>推理</b><span>1 时段 · 三题定卷</span></button>';
   html += '<button class="act final" data-a="finalopen"><b>结案</b><span>做出终局抉择</span></button>';
   html += '</div>';
@@ -1850,7 +2275,7 @@ function renderSite(){
   html += '<div class="rail"><span class="chip" data-a="notes">笔记 · 线索 ' + S.clues.length + '</span><span class="chip gold" data-a="notes">残卷 ' + coreCount() + '/4</span></div>';
   html += '<div class="opts">';
   site.opts.forEach(function(o, idx){
-    var eff = o.roll ? Math.max(5, S[o.roll] + (S.buff[o.roll] || 0) - sanPenalty()) : 0;
+    var eff = o.roll ? Math.max(5, S[o.roll] + (S.buff[o.roll] || 0) + sanBonus() - sanPenalty() + sigilBonus(o.roll)) : 0;
     var tag = o.tag + (o.roll ? (' · 目标 ≤ ' + eff) : '');
     html += '<button class="opt ' + (o.deep ? 'deep' : (o.roll ? 'roll' : '')) + '" data-a="opt" data-id="' + sid + '" data-q="' + idx + '">';
     html += '<span class="t">' + esc(o.t) + '</span><span class="tag">' + esc(tag) + '</span></button>';
@@ -1974,12 +2399,12 @@ function renderFinal(){
   var html = '<div class="scene">';
   html += '<div class="kick">终局 · 结案</div>';
   html += '<h2>你要如何写下最后一份卷宗</h2>';
-  html += '<div class="sub">已查现场 ' + S.done.length + '/' + SITE_ORDER.length + ' · 线索 ' + S.clues.length + ' · 残卷 ' + coreCount() + '/4 · 推理 ' + (S.ded.score >= 0 ? S.ded.score + '/3' : '未做') + ' · SAN ' + S.san + '</div>';
+  html += '<div class="sub">已查现场 ' + S.done.length + '/' + SITE_ORDER.length + ' · 线索 ' + S.clues.length + ' · 残卷 ' + coreCount() + '/4 · 推理 ' + (S.ded.score >= 0 ? S.ded.score + '/3' : '未做') + ' · SAN ' + S.san + (S.sigils && S.sigils.length ? (' · 印记 ' + S.sigils.length) : '') + '</div>';
   html += '<div class="body">' + nl2p('雾已经贴到窗上。你把所有纸张摊开，钢笔吸满墨。\n\n' + caseRecap() + '\n\n你可以写一个让所有人都能活下去的答案，也可以写一个只有你自己看得懂的答案。\n\n签下去以后，这一局就结束了。') + '</div>';
   html += '<div class="opts">';
   CHOICES.forEach(function(c, i){
     var lock = choiceLock(i);
-    var archTag = archEndingFor(i, S.san) ? ' · <span style="color:var(--gold)">出身共鸣</span>' : '';
+    var archTag = '';
     if(i === 4 && coreCount() === 4 && S.ded.score >= 3 && S.san >= 60){
       archTag += (S.items.indexOf('zero') >= 0 ? ' · <span style="color:var(--gold)">第零页在响</span>' : ' · <span style="color:var(--gold)">似乎还差一页</span>');
     }
@@ -1988,6 +2413,9 @@ function renderFinal(){
     html += '<span class="tag">' + c.hint + archTag + (lock ? (' · <span style="color:var(--red)">' + lock + '</span>') : '') + '</span>';
     html += '</button>';
   });
+  if(S.sigils && S.sigils.length){
+    html += '<button class="opt deep" data-a="submitopen"><span class="t">异变臣服 · 把名字交给印记</span><span class="tag">身上有 ' + S.sigils.length + ' 枚印记 · 印记终幕并入 100 条</span></button>';
+  }
   html += '</div></div>';
   stageEl.innerHTML = html;
 }
@@ -2001,22 +2429,31 @@ function renderEnding(){
     '<div>残卷<b>' + e.core + '/4</b></div>' +
     '<div>推理<b>' + (S.ded.score >= 0 ? S.ded.score + '/3' : '—') + '</b></div>' +
     '<div>最终理智<b>' + S.san + '</b></div></div>';
-  var unlockNote = e.grand
+  var unlockNote = e.bound
+    ? '<div class="unlock">印记终幕已并入第 ' + e.id + ' 号，回廊中这一格已经亮起。</div>'
+    : (e.grand
     ? '<div class="unlock">隐藏终幕已记录。它不在 100 条之内，也不会告诉你还有没有别的。</div>'
     : (e.extra
-      ? '<div class="unlock">' + (e.isNew ? '异闻幕已记录。它不在 100 条之内，也不属于任何出身。' : '这一幕你曾经见过。属性或推理差一点，它就不会出现。') + '</div>'
+      ? '<div class="unlock">' + (e.isNew ? '异闻幕已记录，计入 100 条。它不按出身划分，只看你走成了什么样。' : '这一幕你曾经见过。属性、推理或理智差一点，它就不会出现。') + '</div>'
       : (e.arch
-        ? '<div class="unlock">' + (e.isNew ? '出身专属结局已记录。回廊的「档案之外」多了一格。' : '这一幕你曾经见过。换个出身，它不会这样写。') + '</div>'
-        : '<div class="unlock">' + (e.isNew ? ('新的雾散开了一角。回廊已记录 ' + META.unlocked.length + ' / 100 条结局。') : ('这条雾你曾经见过。回廊仍是 ' + META.unlocked.length + ' / 100。')) + '</div>'));
-  var eid = e.grand ? '不在 100 条之内 · 第 101 号' : (e.extra ? ('异闻幕 · 第 ' + e.id + ' 号') : (e.arch ? ('档案之外 · 第 ' + e.id + ' 号') : ('第 ' + e.id + ' 号结局 · ' + ('00' + e.id).slice(-3) + ' / 100')));
-  var fog = e.grand ? '100 条迷雾之外，你找到了第 101 条。' : (e.extra ? '这是异闻幕：只有在特定属性、推理或理智条件下才会出现。' : (e.arch ? '这是只属于某个出身的幕。换一种出身，结尾会不一样。' : ('雾中还有 <b>' + remain + '</b> 条结局未被你看见。' + (META.grand ? '<br>第 101 号已经显现。' : '<br>另有 1 幕，不在 100 条之内。'))));
-  var html = '<div class="ending ' + (e.grand ? 'tone-void' : CHOICES[e.choice].tone) + '">';
-  html += '<div class="end-kick">' + (e.grand ? 'THE 101ST · 隐藏终幕' : (e.extra ? 'ANOMALY · 异闻幕' : (e.arch ? 'ARCHIVE · 出身专属' : 'ENDING · 雾港回响'))) + '</div>';
+        ? '<div class="unlock">' + (e.isNew ? '异闻已记录。回廊的「异闻幕」多了一行。' : '这一幕你曾经见过。换个走法，它不会这样写。') + '</div>'
+        : '<div class="unlock">' + (e.isNew ? ('新的雾散开了一角。回廊已记录 ' + META.unlocked.length + ' / 100 条结局。') : ('这条雾你曾经见过。回廊仍是 ' + META.unlocked.length + ' / 100。')) + '</div>')));
+  var growNote = e.growth
+    ? '<div class="unlock growth">永久属性上限 +10：今后建档三项总和上限提升到 ' + (180 + (e.bonus || 0)) + '。综合评级因此可以继续向上，S 级需要把上限堆满。</div>'
+    : '';
+  var eid = e.bound
+    ? ('第 ' + e.id + ' 号结局 · 印记终幕')
+    : (e.grand ? '不在 100 条之内 · 第 101 号' : (e.extra ? ('异闻幕 · 第 ' + e.id + ' 号') : ('第 ' + e.id + ' 号结局 · ' + ('00' + e.id).slice(-3) + ' / 100')));
+  var fog = e.bound
+    ? ('九枚印记中，你已臣服 <b>' + (META.bound || []).length + '</b> 枚。' + (META.outerDone ? '<br>三柱神已齐，其它印记不再显现。' : ''))
+    : (e.grand ? '100 条迷雾之外，你找到了第 101 条。' : (e.extra ? '这是异闻幕：只有在特定属性、推理或理智条件下才会出现。' : (e.arch ? '这是只属于某个出身的幕。换一种出身，结尾会不一样。' : ('雾中还有 <b>' + remain + '</b> 条结局未被你看见。' + (META.grand ? '<br>第 101 号已经显现。' : '<br>另有 1 幕，不在 100 条之内。')))));
+  var html = '<div class="ending ' + ((e.grand || e.bound) ? 'tone-void' : CHOICES[e.choice].tone) + '">';
+  html += '<div class="end-kick">' + (e.bound ? 'BOUND · 异变臣服' : (e.grand ? 'THE 101ST · 隐藏终幕' : (e.extra ? 'ANOMALY · 异闻幕' : 'ENDING · 雾港回响'))) + '</div>';
   html += '<h2>' + esc(e.title) + '</h2>';
   html += '<div class="eid">' + eid + '</div>';
   html += '<blockquote>' + esc(e.verdict) + '</blockquote>';
   html += '<div class="ebody">' + nl2p(e.body) + '</div>';
-  html += stats + unlockNote;
+  html += stats + growNote + unlockNote;
   html += '<div class="fogcount">' + fog + '</div>';
   html += '<div class="endbtns">';
   html += '<button class="btn gold" data-a="gallery">结局回廊</button>';
@@ -2116,7 +2553,7 @@ function resolveOpt(sid, idx, dice){
 function rollDice(sid, idx){
   var o = SITES[sid].opts[idx];
   var stat = o.roll;
-  var eff = Math.max(5, S[stat] + (S.buff[stat] || 0) - sanPenalty());
+  var eff = Math.max(5, S[stat] + (S.buff[stat] || 0) + sanBonus() - sanPenalty() + sigilBonus(stat));
   S.buff[stat] = 0;
   var roll = 1 + Math.floor(Math.random() * 100);
   var ok = roll <= eff;
@@ -2275,6 +2712,11 @@ function doRest(){
 
 function doDivine(){
   if(!S || S.time <= 0) return;
+  if(S.san <= 50 && visibleSigils().length){ openPrayModal(); return; }
+  divinePlain();
+}
+function divinePlain(){
+  if(!S || S.time <= 0) return;
   S.time--;
   var lost = loseSan(4);
   var pool = Object.keys(CLUES).filter(function(id){
@@ -2299,6 +2741,85 @@ function doDivine(){
     kicker: '占卜 · 海盐与井水', title: '问雾',
     body: line + '\n\n碗里的水立起来一小截，像一根手指，指向你：下一次' + statName + '判定 +20。\n\n' + coreline,
     gained: gained, coreId: null, roll: null, eff: 0, ok: true,
+    sanLost: lost, after: 'onward'
+  };
+  S.node = 'result';
+  saveRun();
+  render();
+}
+
+function openPrayModal(){
+  if(!S || S.time <= 0) return;
+  var p = prayPower();
+  var html = '<div class="sec"><h4>向印记祈福 · 强度 ' + p + '</h4>';
+  html += '<div class="galnote" style="text-align:left">理智越低，印记越清楚，回应却越弱。祈福消耗 1 时段；理智高于 50 时，印记不再回应。</div><div class="siggrid">';
+  visibleSigils().forEach(function(s){
+    html += '<div class="sigcard on" data-a="pray" data-id="' + s.id + '"><b>' + s.glyph + ' · ' + s.name + '</b><span>' + s.deity + '<br>' + esc(s.desc) + '</span></div>';
+  });
+  html += '</div><div class="galnote"><span class="sgchip" data-a="divineplain" style="cursor:pointer">不祈福 · 普通占卜</span></div></div>';
+  openModal('占卜 · 盐与潮', html);
+}
+function praySigil(id){
+  var s = sigilById(id);
+  if(!s || !S || S.time <= 0) return;
+  var ov = document.getElementById('modalOv'); if(ov) ov.remove();
+  S.time--;
+  var p = prayPower();
+  var noCost = (s.fx === 'luckfree');
+  var lost = noCost ? 0 : loseSan(4);
+  var gained = [], coreId = null, extra = '', bufftxt = [];
+  if(s.fx === 'inv'){
+    S.buff.inv += 10 + 5 * p;
+    healSan(p);
+    bufftxt.push('侦查 +' + (10 + 5 * p));
+    extra = '海水顺着你的指节流进纸页，替你翻到该看的那一页。理智 +' + p + '。';
+  }else if(s.fx === 'clue'){
+    var n = p >= 3 ? 2 : 1;
+    randomNormalClues(n).forEach(function(c){ if(giveClue(c)) gained.push(c); });
+    extra = gained.length ? ('被水泡开的字重新排好，露出 ' + gained.length + ' 条线索。') : '纸上什么也没有，连水痕都是旧的。';
+  }else if(s.fx === 'core'){
+    var cpool = ['c_name','c_contract','c_zero','c_writer'].filter(function(c){ return S.clues.indexOf(c) < 0; });
+    if(p >= 3 && cpool.length){
+      coreId = pick(cpool);
+      if(giveClue(coreId)) gained.push(coreId);
+      extra = '门开了一线，你抽出一卷残页。';
+    }else{
+      randomNormalClues(1).forEach(function(c){ if(giveClue(c)) gained.push(c); });
+      S.buff.inv += 10;
+      bufftxt.push('侦查 +10');
+      extra = p >= 3 ? '门后是空的，只有一条线索被推了出来。' : '门只开了一条缝。你看见一页，却拿不到。';
+    }
+  }else if(s.fx === 'heal'){
+    var h = (s.id === 'forest' ? 3 : 2) * p;
+    healSan(h);
+    extra = '你身上的裂口里长出细小的根。理智 +' + h + '。';
+  }else if(s.fx === 'all'){
+    S.buff.inv += p * 5; S.buff.will += p * 5; S.buff.luck += p * 5;
+    var back = loseSan(2 * p);
+    bufftxt.push('全判定 +' + (p * 5));
+    extra = '它借给你很多张嘴，也借走了 ' + back + ' 点理智。';
+  }else if(s.fx === 'will'){
+    S.buff.will += 10 + 5 * p;
+    bufftxt.push('意志 +' + (10 + 5 * p));
+    extra = '你听见自己的心跳慢下来，像潮水退去。' + (p >= 4 ? '理智 +6。' : '');
+    if(p >= 4) healSan(6);
+  }else if(s.fx === 'luckfree'){
+    S.buff.luck += p * 8;
+    bufftxt.push('幸运 +' + (p * 8));
+    extra = '它替你挡掉了一次本该发生的坏事。这次祈福没有索取理智。';
+  }else if(s.fx === 'allcost'){
+    S.buff.inv += p * 5; S.buff.will += p * 5; S.buff.luck += p * 5;
+    var back2 = loseSan(3);
+    bufftxt.push('全判定 +' + (p * 5));
+    extra = '笛声没有停。你的手先于你写完了一行字。理智 -' + back2 + '。';
+  }
+  addLog('向' + s.name + '祈福（强度 ' + p + '）。' + (bufftxt.length ? bufftxt.join('、') + '。' : ''));
+  var body = s.line + '\n\n' + extra
+    + (bufftxt.length ? ('\n\n下一次判定：' + bufftxt.join(' · ') + '。') : '')
+    + (lost ? ('\n\n这次祈福耗去 ' + lost + ' 点理智。') : '');
+  S.result = {
+    kicker: '占卜 · 向' + s.name + '祈福', title: s.deity,
+    body: body, gained: gained, coreId: coreId, roll: null, eff: 0, ok: true,
     sanLost: lost, after: 'onward'
   };
   S.node = 'result';
@@ -2377,27 +2898,15 @@ function chooseFinal(i){
   var core = coreCount();
   var truth = Math.min(3, core + (S.ded.score >= 2 ? 1 : 0));
   var grand = (i === 4 && core === 4 && preSan >= 60 && S.ded.score >= 3 && S.items.indexOf('zero') >= 0 && META.unlocked.length >= 6);
-  var arch = grand ? null : archEndingFor(i, preSan);
-  var extra = (grand || arch) ? null : extraEndingFor(i, preSan);
+  var arch = null;
+  var extra = grand ? null : extraEndingFor(i, preSan);
   if(grand){
     META.grand = true;
     saveMeta();
     S.ending = {
       grand:true, id:101, title:'第 101 号 · 第零页',
-      body: GRAND_TEXT, verdict: GRAND_VERDICT,
+      body: caseRecap() + '\n\n' + GRAND_TEXT, verdict: GRAND_VERDICT,
       choice:i, sanB:sanB, truth:truth, core:core, isNew:true
-    };
-  }else if(arch){
-    var aNew = META.arch.indexOf(arch.id) < 0;
-    if(aNew){
-      META.arch.push(arch.id);
-      META.arch.sort(function(a, b){ return a - b; });
-      saveMeta();
-    }
-    S.ending = {
-      grand:false, arch:true, id:arch.id, title:arch.title,
-      body:arch.body, verdict:arch.verdict,
-      choice:i, sanB:sanB, truth:truth, core:core, isNew:aNew
     };
   }else if(extra){
     var xNew = META.unlocked.indexOf(extra.id) < 0;
@@ -2412,11 +2921,19 @@ function chooseFinal(i){
     saveMeta();
     S.ending = {
       grand:false, extra:true, id:extra.id, title:extra.title,
-      body:extra.body, verdict:extra.verdict,
+      body: caseRecap() + '\n\n' + extra.body, verdict:extra.verdict,
       choice:i, sanB:sanB, truth:truth, core:core, isNew:xNew
     };
   }else{
     var id = i * 20 + sanB * 4 + truth + 1;
+    if(isBoundSlot(id)) id -= 1;
+    var growNew = false;
+    if(GROWTH_IDS.indexOf(id) >= 0 && META.growth.indexOf(id) < 0){
+      META.growth.push(id);
+      META.bonus = Math.min(60, (META.bonus || 0) + 10);
+      saveMeta();
+      growNew = true;
+    }
     var isNew = META.unlocked.indexOf(id) < 0;
     if(isNew){
       META.unlocked.push(id);
@@ -2426,9 +2943,10 @@ function chooseFinal(i){
     S.ending = {
       grand:false, id:id,
       title: c.title + ' · ' + TRUTH_NAMES[truth] + '（' + SAN_NAMES[sanB] + '）',
-      body: [OPEN_PARAS[i][Math.min(sanB, 3)], TRUTH_PARAS[i][truth], END_TAILS[id - 1]].join('\n\n'),
+      body: [caseRecap(), OPEN_PARAS[i][Math.min(sanB, 3)], TRUTH_PARAS[i][truth], END_TAILS[id - 1]].join('\n\n'),
       verdict: VERDICTS[(id - 1) % VERDICTS.length],
-      choice:i, sanB:sanB, truth:truth, core:core, isNew:isNew
+      choice:i, sanB:sanB, truth:truth, core:core, isNew:isNew,
+      growth:growNew, bonus:META.bonus
     };
   }
   S.node = 'ending';
@@ -2465,29 +2983,128 @@ function endingMeta(id){
   };
 }
 
-function openGallery(){
-  var cells = '';
-  [ARCH_ENDINGS.field, ARCH_ENDINGS.mind, ARCH_ENDINGS.luck].forEach(function(a){
-    var on = META.arch.indexOf(a.id) >= 0;
-    cells += '<div class="gcell ' + (on ? 'on' : '') + '"><b>第 ' + a.id + ' 号</b><span>' + (on ? esc(a.title) : '出身幕 · 未记录') + '</span></div>';
+function openSubmit(){
+  if(!S || !S.sigils || !S.sigils.length) return;
+  var html = '<div class="sec"><h4>选择要臣服的印记</h4><div class="siggrid">';
+  ownedSigils().forEach(function(s){
+    html += '<div class="sigcard on" data-a="submitsig" data-id="' + s.id + '"><b>' + s.glyph + ' · ' + s.name + '</b><span>' + esc(s.deity) + '</span></div>';
   });
-  cells += '<div class="gcell grand ' + (META.grand ? 'on' : '') + '"><b>第 101 号</b><span>' + (META.grand ? '第零页 · 已显现' : '隐藏幕 · 未显现') + '</span></div>';
-  for(var id = 1; id <= 100; id++){
-    var on = META.unlocked.indexOf(id) >= 0;
-    var m = endingMeta(id);
-    cells += '<div class="gcell ' + (on ? 'on' : '') + '"><b>#' + ('00' + id).slice(-3) + '</b><span>' + (on ? esc(m.title) : '？？') + '</span></div>';
+  html += '</div><div class="galnote" style="text-align:left">臣服不可撤回。三枚柱神印记都被臣服后，其它印记将不再显现，理智归零。</div></div>';
+  openModal('异变臣服', html);
+}
+function submitSigil(id){
+  var s = sigilById(id);
+  if(!s || !S) return;
+  var ov = document.getElementById('modalOv'); if(ov) ov.remove();
+  if(META.submit.indexOf(id) < 0) META.submit.push(id);
+  if(META.bound.indexOf(id) < 0) META.bound.push(id);
+  var allOuter = OUTER_IDS.every(function(x){ return META.submit.indexOf(x) >= 0; });
+  var triple = allOuter && !META.outerDone;
+  if(allOuter) META.outerDone = true;
+  if(triple) S.san = 0;
+  var slot = BOUND_BY_SIGIL[id];
+  var ci = Math.floor((slot - 1) / 20);
+  var rest = (slot - 1) % 20;
+  var sb = Math.floor(rest / 4);
+  var tr = rest % 4;
+  var base = [caseRecap(), OPEN_PARAS[ci][Math.min(sb, 3)], TRUTH_PARAS[ci][tr], END_TAILS[slot - 1]].join('\n\n');
+  var isNew = META.unlocked.indexOf(slot) < 0;
+  if(isNew){
+    META.unlocked.push(slot);
+    META.unlocked.sort(function(a, b){ return a - b; });
   }
+  if(META.boundAt) META.boundAt[slot] = triple ? 'triple' : id;
+  S.ending = {
+    bound:true, id:slot, sigil:id,
+    title: triple ? '三柱神 · 空壳' : s.endTitle,
+    verdict: triple ? TRIPLE_VERDICT : s.verdict,
+    body: base + '\n\n' + (triple ? TRIPLE_TEXT : s.endBody),
+    choice:ci, sanB:sb, truth:tr, core:coreCount(), isNew:isNew
+  };
+  saveMeta();
+  S.over = true;
+  S.node = 'ending';
+  clearRun();
+  render();
+}
+function showSigilInfo(id){
+  var s = sigilById(id);
+  if(!s) return;
+  var on = META.collected.indexOf(id) >= 0;
+  var bd = META.bound.indexOf(id) >= 0;
+  var html = '<div class="sec"><h4>' + (on ? (s.glyph + ' · ' + s.name) : '未显现的印记') + '</h4>';
+  if(on){
+    html += '<div class="galnote">' + esc(s.deity) + (s.rank ? ' · <span style="color:var(--red)">' + esc(s.rank) + '</span>' : '') + '</div>';
+    html += '<div class="galnote">' + esc(s.line) + '</div>';
+    html += '<div class="galnote">被动：理智不高于 50 时，' + STAT_LABEL[s.stat] + ' +6。</div>';
+    html += '<div class="galnote">祈福：' + esc(s.desc) + '</div>';
+  }else{
+    html += '<div class="galnote">它还没有在你身上留下痕迹。理智跌到 50 以下后，点击屏幕上的弹幕，才有机会遇见它。</div>';
+  }
+  if(bd) html += '<div class="galnote" style="color:var(--gold)">你已向它臣服。</div>';
+  html += '</div>';
+  openModal('印记', html);
+}
+function showGalleryCell(id){
+  var on = (id === 101) ? META.grand : (META.unlocked.indexOf(id) >= 0);
+  if(!on){
+    var lockHint = isBoundSlot(id)
+      ? '这一格不接受普通结案。只有把名字交给印记，它才会亮。'
+      : '这一条还没有被写出来。它等在某一档理智、某一条线索、或某一次选择后面。';
+    openModal('第 ' + id + ' 号', '<div class="sec"><h4>雾没有散</h4><div class="galnote">' + lockHint + '</div></div>');
+    return;
+  }
+  if(id === 101){
+    openModal('结局回廊', '<div class="sec"><h4>第零页</h4><div class="galnote">第 101 号 · 隐藏终幕</div><div class="galnote">它不在 100 条之内，也不会告诉你还有没有别的。</div></div>');
+    return;
+  }
+  var bv = META.boundAt ? META.boundAt[id] : null;
+  var m = endingMeta(id);
+  var html = '<div class="sec"><h4>' + esc(bv ? boundTitle(bv) : m.title) + '</h4>';
+  html += '<div class="galnote">第 ' + id + ' 号 · 已记录</div>';
+  html += '<div class="galnote">' + (bv ? '印记终幕。九枚印记之一已经并入这一格。' : '它由你的选择、理智与推理共同写成。') + '</div></div>';
+  openModal('结局回廊', html);
+}
+
+function openGallery(){
   var remain = 100 - META.unlocked.length;
   var html = '<div class="sec"><h4>雾中结局 · 已记录 ' + META.unlocked.length + ' / 100</h4>';
+  html += '<div class="gsec"><div class="ghead"><b>隐藏幕 · 第 101 号</b><span>' + (META.grand ? '已显现' : '未显现') + '</span></div>';
+  html += '<div class="grid100"><div class="gcell grand ' + (META.grand ? 'on' : '') + '" data-a="gcell" data-id="101"><b>#101</b><span>' + (META.grand ? '第零页' : '？？') + '</span></div></div></div>';
+  CHOICES.forEach(function(ch, c){
+    var got = 0, g = '';
+    for(var k = 1; k <= 20; k++){
+      var id = c * 20 + k;
+      var on = META.unlocked.indexOf(id) >= 0;
+      if(on) got++;
+      var m = endingMeta(id);
+      var bv = META.boundAt ? META.boundAt[id] : null;
+      var label = on ? (bv ? boundTitle(bv) : m.title.replace(/^[^·]+·\s*/, '')) : '？？';
+      g += '<div class="gcell ' + (on ? 'on' : '') + '" data-a="gcell" data-id="' + id + '"><b>#' + ('00' + id).slice(-3) + '</b><span>' + (on ? esc(label) : '？？') + '</span></div>';
+    }
+    html += '<div class="gsec"><div class="ghead"><b>' + esc(ch.title) + '</b><span>' + got + ' / 20</span></div><div class="grid100">' + g + '</div></div>';
+  });
   var anomOn = META.extra.length;
-  var exHtml = '<div class="galnote" style="text-align:left">异闻幕（嵌在第 3 / 34 / 47 / 68 / 84 / 100 号格子里）· 已记录 ' + anomOn + ' / 6<br>';
+  var exHtml = '<div class="gsec"><div class="ghead"><b>异闻幕</b><span>' + anomOn + ' / ' + EXTRA_ENDINGS.length + '</span></div><div class="galnote" style="text-align:left">这些结局不按身份划分，任何人满足条件都可能撞见。<br>';
   EXTRA_ENDINGS.forEach(function(x){
     var xon = META.extra.indexOf(x.id) >= 0;
     exHtml += '<b>第 ' + x.id + ' 号</b> · ' + (xon ? esc(x.title) : ('未记录 · ' + esc(x.hint))) + '<br>';
   });
-  exHtml += '</div>';
-  html += exHtml + '<div class="grid100">' + cells + '</div>';
-  html += '<div class="galnote">顶部四格是 100 条之外的幕：第 101 号隐藏幕，以及只向特定出身显现的 102–104（已记录 ' + META.arch.length + ' / 3）。<br>雾中还有 <b style="color:var(--gold)">' + remain + '</b> 条结局未被你看见。' + (META.grand ? '<br>第 101 号已经显现。' : '<br>另有 1 幕，不在 100 条之内。') + '</div></div>';
+  exHtml += '</div></div>';
+  html += exHtml;
+  var sigList = META.outerDone ? SIGILS.filter(function(x){ return x.outer; }) : SIGILS;
+  var sigHtml = '<div class="gsec"><div class="ghead"><b>九枚印记</b><span>' + META.collected.length + ' / 9 · 臣服 ' + META.bound.length + '</span></div><div class="siggrid">';
+  sigList.forEach(function(s){
+    var on = META.collected.indexOf(s.id) >= 0;
+    var bd = META.bound.indexOf(s.id) >= 0;
+    sigHtml += '<div class="sigcard ' + (bd ? 'bound' : (on ? 'on' : '')) + '" data-a="sigilinfo" data-id="' + s.id + '"><b>' + (on ? s.glyph : '？') + '</b><span>' + (on ? esc(s.name) : '未显现') + (bd ? '<br>已臣服' : '') + '</span></div>';
+  });
+  sigHtml += '</div>';
+  sigHtml += '<div class="galnote" style="text-align:left">九枚印记各占 100 条结局中的一格。臣服后，对应的格子才会亮起。</div>';
+  if(META.outerDone) sigHtml += '<div class="galnote" style="text-align:left">三柱神已齐。其它印记不再显现。</div>';
+  sigHtml += '</div>';
+  html += sigHtml;
+  html += '<div class="galnote">雾中还有 <b style="color:var(--gold)">' + remain + '</b> 条结局未被你看见。' + (META.grand ? '<br>第 101 号已经显现。' : '<br>另有 1 幕，不在 100 条之内。') + '</div></div>';
   openModal('结局回廊', html);
 }
 
@@ -2624,7 +3241,7 @@ function handleAction(a, id, q, o, el){
     case 'dice':
       readDraft();
       var others = ['inv','will','luck'].filter(function(k){ return k !== id; });
-      var room = POINT_CAP - (DRAFT[others[0]] || 0) - (DRAFT[others[1]] || 0);
+      var room = pointCap() - (DRAFT[others[0]] || 0) - (DRAFT[others[1]] || 0);
       var hi = Math.min(90, room);
       if(hi < 30){ toast('剩余点数不足（可分配上限 ' + Math.max(hi, 0) + '），请先降低其他两项。'); break; }
       DRAFT[id] = 30 + Math.floor(Math.random() * (hi - 29));
@@ -2632,7 +3249,8 @@ function handleAction(a, id, q, o, el){
       break;
     case 'rollall':
       readDraft();
-      var total = 150 + Math.floor(Math.random() * 31);
+      var capAll = pointCap();
+      var total = Math.min(capAll, 150 + Math.floor(Math.random() * Math.max(1, capAll - 149)));
       var left = total - 90;
       var add = [0, 0, 0];
       while(left > 0){
@@ -2649,7 +3267,7 @@ function handleAction(a, id, q, o, el){
       var bad = ['inv','will','luck'].filter(function(k){ return DRAFT[k] < 30 || DRAFT[k] > 90; });
       if(bad.length){ toast('三项属性需在 30–90 之间。'); render(); break; }
       var sum = DRAFT.inv + DRAFT.will + DRAFT.luck;
-      if(sum > POINT_CAP){ toast('三项基础值合计不能超过 ' + POINT_CAP + '（当前 ' + sum + '，超出 ' + (sum - POINT_CAP) + '）。'); render(); break; }
+      if(sum > pointCap()){ toast('三项基础值合计不能超过 ' + pointCap() + '（当前 ' + sum + '，超出 ' + (sum - pointCap()) + '）。'); render(); break; }
       initRun();
       break;
     case 'enter':
@@ -2673,6 +3291,27 @@ function handleAction(a, id, q, o, el){
       break;
     case 'divine':
       doDivine();
+      break;
+    case 'divineplain':
+      divinePlain();
+      break;
+    case 'pray':
+      praySigil(id);
+      break;
+    case 'dm':
+      onDanmaku(el);
+      break;
+    case 'submitopen':
+      openSubmit();
+      break;
+    case 'submitsig':
+      submitSigil(id);
+      break;
+    case 'sigilinfo':
+      showSigilInfo(id);
+      break;
+    case 'gcell':
+      showGalleryCell(parseInt(id, 10));
       break;
     case 'ded':
       enterDed();
@@ -2723,8 +3362,8 @@ document.addEventListener('click', function(e){
 
 render();
 setInterval(function(){
-  if(S && S.node !== 'ending' && S.san <= 35 && Math.random() < 0.55) showWhisper();
-}, 17000);
+  if(S && S.node !== 'ending' && S.san <= 25 && Math.random() < 0.4) showWhisper();
+}, 21000);
 </script>
 </body>
 </html>
