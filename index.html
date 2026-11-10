@@ -383,6 +383,42 @@
   .sigcard.bound{border-color:rgba(201,162,75,.5);background:rgba(201,162,75,.07)}
   .sigcard.bound b{color:var(--gold)}
   .gcell{cursor:pointer}
+  .gcell:active{background:rgba(201,162,75,.16);border-color:var(--gold-dim)}
+  body.dizzy .wrap{animation:galdizzy .58s ease}
+  body.dizzy::after{content:"";position:fixed;inset:0;z-index:125;pointer-events:none;
+    background:radial-gradient(circle at 50% 46%,transparent 18%,rgba(3,8,10,.66) 100%);
+    animation:dizzyveil .58s ease forwards}
+  @keyframes galdizzy{
+    0%{filter:none;transform:none}
+    18%{filter:blur(1.5px);transform:scale(1.012) rotate(.35deg)}
+    42%{filter:blur(3.2px) saturate(1.25);transform:scale(.994) rotate(-.45deg)}
+    68%{filter:blur(1.2px);transform:scale(1.006) rotate(.22deg)}
+    100%{filter:none;transform:none}
+  }
+  @keyframes dizzyveil{0%{opacity:0}32%{opacity:1}100%{opacity:0}}
+  .dmlayer.up{z-index:130}
+  .dm.gal{left:50%;top:70%;white-space:normal;width:min(82vw,440px);
+    transform:translate(-50%,-50%);font-family:var(--serif);font-size:13px;line-height:1.72;
+    text-align:center;color:#e6d7c8;background:rgba(12,6,6,.92);border-color:rgba(201,162,75,.45);
+    border-radius:11px;padding:11px 15px;box-shadow:0 18px 60px rgba(0,0,0,.68);
+    animation:galfloat 5.4s ease forwards;z-index:131}
+  .dm.gal b{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.24em;
+    color:var(--gold);margin:0 0 4px}
+  .dm.gal .dmtext{display:block}
+  @keyframes galfloat{
+    0%{opacity:0;transform:translate(-50%,-42%) scale(.96);filter:blur(4px)}
+    16%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(0)}
+    78%{opacity:1;transform:translate(-50%,-56%) scale(1.01);filter:blur(0)}
+    100%{opacity:0;transform:translate(-50%,-74%) scale(1.03);filter:blur(3px)}
+  }
+  .dm .dmtext{display:inline-block;white-space:inherit}
+  .dm.writhe .dmtext{animation:squirm 1.5s ease-in-out infinite}
+  @keyframes squirm{
+    0%,100%{transform:translateY(0) skewX(0) scaleY(1)}
+    22%{transform:translateY(-1px) skewX(2deg) scaleY(1.07)}
+    47%{transform:translateY(1px) skewX(-2.6deg) scaleY(.94)}
+    71%{transform:translateY(-.5px) skewX(1.4deg) scaleY(1.03)}
+  }
 
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));
     z-index:140;background:#0d1a20;border:1px solid var(--gold-dim);border-radius:8px;
@@ -1998,9 +2034,9 @@ function spawnDanmaku(){
   var layer = document.getElementById('dmLayer');
   if(!layer || layer.children.length >= 26) return;
   var d = document.createElement('div');
-  d.className = 'dm';
+  d.className = 'dm' + (Math.random() < 0.3 ? ' writhe' : '');
   d.setAttribute('data-a', 'dm');
-  d.innerHTML = '<b>' + pick(DM_GLYPHS) + '</b>' + esc(pick(DM_TEXTS));
+  d.innerHTML = '<span class="dmtext"><b>' + pick(DM_GLYPHS) + '</b>' + esc(pick(DM_TEXTS)) + '</span>';
   d.style.top = (2 + Math.random() * 92) + 'vh';
   var dur = (S.san <= 15 ? 9 : (S.san <= 30 ? 12 : 17)) + Math.random() * 4;
   d.style.animation = 'dmmove ' + dur.toFixed(1) + 's linear forwards';
@@ -3045,6 +3081,48 @@ function showSigilInfo(id){
   html += '</div>';
   openModal('印记', html);
 }
+function synopsisFor(id){
+  if(id === 101) return '第零页翻开了：记录者终于看见自己，也看见是谁在写他。';
+  var bv = META.boundAt ? META.boundAt[id] : null;
+  if(bv){
+    if(bv === 'triple') return '门、笑、林在你身上连成一线。你签完第三个名字，雾港从地图上退走。';
+    var sg = sigilById(bv);
+    if(sg) return sg.deity + '。' + sg.verdict;
+  }
+  var m = endingMeta(id);
+  var tail = END_TAILS[id - 1] || '';
+  var first = tail.split(/[。！？]/)[0];
+  var line = first ? (first + '。') : '雾把这一页收走了，只留下你的名字。';
+  return m.title.replace(/^[^·]+·\s*/, '') + '：' + line;
+}
+function spawnGalleryDm(id, text){
+  var layer = document.getElementById('dmLayer');
+  if(!layer) return;
+  Array.prototype.slice.call(layer.querySelectorAll('.dm.gal')).forEach(function(n){ n.remove(); });
+  var d = document.createElement('div');
+  d.className = 'dm gal' + (Math.random() < 0.45 ? ' writhe' : '');
+  d.setAttribute('data-a', 'gdm');
+  d.setAttribute('data-id', String(id));
+  d.innerHTML = '<span class="dmtext"><b>第 ' + ('00' + id).slice(-3) + ' 号</b>' + esc(text) + '</span>';
+  layer.appendChild(d);
+  d.addEventListener('animationend', function(){ if(d.parentNode) d.remove(); });
+}
+function galleryPulse(id){
+  var on = (id === 101) ? META.grand : (META.unlocked.indexOf(id) >= 0);
+  document.body.classList.remove('dizzy');
+  void document.body.offsetWidth;
+  document.body.classList.add('dizzy');
+  setTimeout(function(){ document.body.classList.remove('dizzy'); }, 640);
+  var layer = document.getElementById('dmLayer');
+  if(layer) layer.classList.add('up');
+  setTimeout(function(){
+    var text = on ? synopsisFor(id)
+      : (isBoundSlot(id) ? '这一格不接受普通结案。只有把名字交给印记，它才会亮。'
+      : '第 ' + id + ' 号还没有被写出来。纸背有人用你的声音念了一个开头。');
+    spawnGalleryDm(id, text);
+  }, 420);
+  setTimeout(function(){ if(layer) layer.classList.remove('up'); }, 6400);
+}
 function showGalleryCell(id){
   var on = (id === 101) ? META.grand : (META.unlocked.indexOf(id) >= 0);
   if(!on){
@@ -3310,7 +3388,13 @@ function handleAction(a, id, q, o, el){
     case 'sigilinfo':
       showSigilInfo(id);
       break;
-    case 'gcell':
+    case 'gcell': {
+      var gid = parseInt(id, 10);
+      galleryPulse(gid);
+      setTimeout(function(){ showGalleryCell(gid); }, 520);
+      break;
+    }
+    case 'gdm':
       showGalleryCell(parseInt(id, 10));
       break;
     case 'ded':
