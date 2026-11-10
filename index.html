@@ -621,14 +621,14 @@
   @keyframes forcedin{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
   @keyframes forcedout{to{opacity:0;transform:translate(-50%,-54%)}}
   .siggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-  .sigcard{border:1px solid var(--line);border-radius:8px;padding:8px 6px;text-align:center;
+  .sigcell{border:1px solid var(--line);border-radius:8px;padding:8px 6px;text-align:center;
     background:rgba(8,15,19,.7);cursor:pointer;min-height:74px}
-  .sigcard b{display:block;font-family:var(--serif);font-size:13px;color:var(--dim)}
-  .sigcard span{display:block;font-family:var(--sans);font-size:8.5px;color:var(--dim);line-height:1.45;margin-top:3px}
-  .sigcard.on{border-color:rgba(212,86,75,.42);background:rgba(40,10,10,.42)}
-  .sigcard.on b{color:var(--red)} .sigcard.on span{color:#c7b3ae}
-  .sigcard.bound{border-color:rgba(201,162,75,.5);background:rgba(201,162,75,.07)}
-  .sigcard.bound b{color:var(--gold)}
+  .sigcell b{display:block;font-family:var(--serif);font-size:13px;color:var(--dim)}
+  .sigcell span{display:block;font-family:var(--sans);font-size:8.5px;color:var(--dim);line-height:1.45;margin-top:3px}
+  .sigcell.on{border-color:rgba(212,86,75,.42);background:rgba(40,10,10,.42)}
+  .sigcell.on b{color:var(--red)} .sigcell.on span{color:#c7b3ae}
+  .sigcell.bound{border-color:rgba(201,162,75,.5);background:rgba(201,162,75,.07)}
+  .sigcell.bound b{color:var(--gold)}
   .gcell{cursor:pointer}
   .gcell:active{background:rgba(201,162,75,.16);border-color:var(--gold-dim)}
   body.dizzy .wrap{animation:galdizzy .58s ease}
@@ -2524,17 +2524,25 @@ function dropSigilIds(ids, payTime){
     gone.push({who:pickLeaverName(), sig:sigilById(id)});
   });
   if(!gone.length) return [];
+  var realSan = 0, realTime = 0;
   if(payTime){
+    var timeBefore = S.time;
+    var sanBefore = S.san;
+    var cut = 0;
+    gone.forEach(function(){ cut += 1 + Math.floor(Math.random() * 31); });
+    if(cut > 0 && S.san > 0) loseSan(cut);
     S.time = Math.max(0, S.time - gone.length);
     if(S.time <= 0) S.tooLate = true;
-    S.lastSanNote = '失印清算 · 时段 −' + gone.length + '（当前 ' + S.time + '）';
-    S.lastSanKind = 'time';
+    realSan = sanBefore - S.san;
+    realTime = timeBefore - S.time;
+    S.lastSanNote = '失印清算 · 理智 −' + realSan + ' · 时段 −' + realTime + '（SAN ' + S.san + ' · 时段 ' + S.time + '）';
+    S.lastSanKind = 'loss';
   }
   var msg = gone.map(function(g){ return g.who + '离你而去，印记「' + (g.sig ? g.sig.name : '?') + '」熄灭'; }).join('；');
   S.lastSigilNote = '失印 · ' + gone.map(function(g){ return (g.sig ? g.sig.name : '?') + '（' + g.who + '）'; }).join('、');
   S.lastSigilKind = 'loss';
-  addLog(msg + (payTime ? '。每失去一枚印记，时段 −1。' : '。'));
-  setTimeout(function(){ toast(msg + (payTime ? '。时段 −' + gone.length + '。' : '。')); }, 420);
+  addLog(msg + (payTime ? '。每失去一枚印记，理智随机 -1~31，时段 −1。' : '。'));
+  setTimeout(function(){ toast(msg + (payTime ? '。理智 −' + realSan + '，时段 −' + realTime + '。' : '。')); }, 420);
   showSigilLossCard(gone);
   return gone;
 }
@@ -2963,8 +2971,8 @@ function renderTitle(){
     ['成长','部分简单结局会永久提升三项总和上限 +10，最多 +60。它们只需要带着 0 卷残页走到某个终局。'],
     ['评级','综合 S ≥80、A ≥70、B ≥60、C <60。部分异闻要求特定评级；基础上限 180 时最高只能到 B，得先靠成长结局把上限堆高。'],
     ['印记','上一局结束时留在你身上的印记，会原样跟着进入下一局，每枚在开局随机夺走 1~31 点理智；图鉴只负责记录，不会自动把印记塞给你。理智归零后，每次扣理智改为消耗 1 个时段，文字开始错位。'],
-    ['三系','外神、旧神、古神三类互相排斥。某一类达到 2 枚时，其余两系全部熄灭；每失去一枚印记，时段 -1。若开局同时带着门、笑、林三枚外神印记，理智直接归零，所有印记尽失，图鉴也会被一并清空。'],
-    ['失印','恢复理智时，随机一枚印记熄灭，并有一位同行者离你而去；用这种方式失印不扣时段。'],
+    ['三系','外神、旧神、古神三类互相排斥。某一类达到 2 枚时，其余两系全部熄灭；每失去一枚印记，理智随机 -1~31，时段 -1。若开局同时带着门、笑、林三枚外神印记，理智直接归零，所有印记尽失，图鉴也会被一并清空。'],
+    ['失印','恢复理智时，随机一枚印记熄灭，并有一位同行者离你而去；用这种方式失印不扣理智、也不扣时段。'],
     ['末段','若你还没经历过任何事件，且时段只剩 1，雾里会走来一位属于你印记的神。祂会带走最后一个时段。'],
     ['回响','结案时身上带着的印记会改写结局的收尾与标题：同一格结局，带不同印记就是不同的一幕。回廊会标出替你收尾的那一枚。'],
     ['隐藏','100 条之外还有第 101 幕。它不在任何提示里。你只能自己撞上它。']
@@ -3665,7 +3673,7 @@ function openPrayModal(){
   var html = '<div class="sec"><h4>向印记祈福 · 强度 ' + p + '</h4>';
   html += '<div class="galnote" style="text-align:left">理智越低，印记越清楚，回应却越弱。祈福消耗 1 时段；理智高于 50 时，印记不再回应。</div><div class="siggrid">';
   visibleSigils().forEach(function(s){
-    html += '<div class="sigcard on" data-a="pray" data-id="' + s.id + '"><b>' + s.glyph + ' · ' + s.name + '</b><span>' + s.deity + '<br>' + esc(s.desc) + '</span></div>';
+    html += '<div class="sigcell on" data-a="pray" data-id="' + s.id + '"><b>' + s.glyph + ' · ' + s.name + '</b><span>' + s.deity + '<br>' + esc(s.desc) + '</span></div>';
   });
   html += '</div><div class="galnote"><span class="sgchip" data-a="divineplain" style="cursor:pointer">不祈福 · 普通占卜</span></div></div>';
   openModal('占卜 · 盐与潮', html);
@@ -3924,7 +3932,7 @@ function openSubmit(){
   if(!S || !S.sigils || !S.sigils.length) return;
   var html = '<div class="sec"><h4>选择要臣服的印记</h4><div class="siggrid">';
   ownedSigils().forEach(function(s){
-    html += '<div class="sigcard on" data-a="submitsig" data-id="' + s.id + '"><b>' + s.glyph + ' · ' + s.name + '</b><span>' + esc(s.deity) + '</span></div>';
+    html += '<div class="sigcell on" data-a="submitsig" data-id="' + s.id + '"><b>' + s.glyph + ' · ' + s.name + '</b><span>' + esc(s.deity) + '</span></div>';
   });
   html += '</div><div class="galnote" style="text-align:left">臣服不可撤回。三枚柱神印记都被臣服后，其它印记将不再显现，理智归零。</div></div>';
   openModal('异变臣服', html);
@@ -4088,7 +4096,7 @@ function openGallery(){
   sigList.forEach(function(s){
     var on = META.collected.indexOf(s.id) >= 0;
     var bd = META.bound.indexOf(s.id) >= 0;
-    sigHtml += '<div class="sigcard ' + (bd ? 'bound' : (on ? 'on' : '')) + '" data-a="sigilinfo" data-id="' + s.id + '"><b>' + (on ? s.glyph : '？') + '</b><span>' + (on ? esc(s.name) : '未显现') + (bd ? '<br>已臣服' : '') + '</span></div>';
+    sigHtml += '<div class="sigcell ' + (bd ? 'bound' : (on ? 'on' : '')) + '" data-a="sigilinfo" data-id="' + s.id + '"><b>' + (on ? s.glyph : '？') + '</b><span>' + (on ? esc(s.name) : '未显现') + (bd ? '<br>已臣服' : '') + '</span></div>';
   });
   sigHtml += '</div>';
   sigHtml += '<div class="galnote" style="text-align:left">九枚印记各占 100 条结局中的一格。臣服后，对应的格子才会亮起。</div>';
