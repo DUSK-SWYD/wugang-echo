@@ -223,6 +223,20 @@
   .qr.right{border-color:var(--green)} .qr.wrong{border-color:var(--red)}
   .qr .m{font-weight:700;margin-right:5px}
   .qr.right .m{color:var(--green)} .qr.wrong .m{color:var(--red)}
+  .sanloss-banner{position:relative;overflow:hidden;margin:12px 0;padding:13px 14px 11px;
+    border:1px solid rgba(212,86,75,.55);border-radius:10px;
+    background:linear-gradient(90deg,rgba(72,10,10,.82),rgba(20,8,8,.5));
+    text-align:center;animation:sanlosspulse 1.8s ease 2}
+  .sanloss-banner::before{content:'✕';position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    font-size:70px;line-height:1;color:rgba(212,86,75,.09);pointer-events:none}
+  .sanloss-banner b{display:block;font-family:var(--sans);font-size:27px;color:#ff8a7c;
+    letter-spacing:.1em;text-shadow:0 0 18px rgba(212,86,75,.5)}
+  .sanloss-banner small{display:block;margin-top:4px;font-family:var(--sans);font-size:10px;
+    color:var(--muted);letter-spacing:.1em}
+  .sanloss-banner em{display:block;margin-top:7px;font-family:var(--serif);font-style:normal;
+    font-size:10.5px;letter-spacing:.2em;line-height:1.7;color:rgba(240,196,188,.72);
+    text-shadow:0 0 9px rgba(180,30,30,.4)}
+  @keyframes sanlosspulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 1px rgba(212,86,75,.5),0 0 26px rgba(212,86,75,.25)}}
 
   .ending{position:relative;text-align:center;border:1px solid var(--line2);border-radius:15px;
     padding:32px 16px 26px;background:linear-gradient(180deg,rgba(17,29,36,.97),rgba(6,11,14,.99));
@@ -386,6 +400,27 @@
   /* ---- 低理智 · 弹幕与印记 ---- */
   .sigilbar{display:none;gap:5px;flex-wrap:wrap;margin-top:6px}
   .sigilbar.on{display:flex}
+  .sannote,.signote{display:none;margin-top:6px;font-family:var(--sans);font-size:10.5px;
+    letter-spacing:.03em;line-height:1.55;padding:5px 9px;border-radius:7px;
+    border:1px solid transparent;font-weight:600}
+  .sannote.on,.signote.on{display:block;animation:notein .38s ease}
+  .sannote.loss,.signote.loss{color:#ffc2b8;background:rgba(84,12,12,.72);border-color:rgba(212,86,75,.55);
+    box-shadow:0 0 14px rgba(212,86,75,.22);text-shadow:0 0 7px rgba(255,90,70,.42);
+    animation:notein .38s ease,notebreath 5.2s ease-in-out .38s infinite}
+  .sannote.gain,.signote.gain{color:#c8f2d2;background:rgba(10,46,22,.65);border-color:rgba(87,179,104,.55);
+    box-shadow:0 0 14px rgba(87,179,104,.2)}
+  .sannote.time{color:#f5e2ae;background:rgba(58,42,8,.7);border-color:rgba(201,162,75,.55);
+    box-shadow:0 0 14px rgba(201,162,75,.2)}
+  .signote.gain{color:#f5e2ae;background:rgba(52,36,8,.68);border-color:rgba(201,162,75,.55);
+    box-shadow:0 0 14px rgba(201,162,75,.2)}
+  @keyframes notebreath{
+    0%,100%{box-shadow:0 0 14px rgba(212,86,75,.22);border-color:rgba(212,86,75,.55)}
+    50%{box-shadow:0 0 24px rgba(212,86,75,.46);border-color:rgba(212,86,75,.8)}
+  }
+  .sannote.on::before,.signote.on::before{content:'▼ ';font-size:8px;opacity:.85}
+  .sannote.gain::before,.signote.gain::before{content:'▲ '}
+  .sannote.time::before{content:'◆ '}
+  @keyframes notein{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
   .sgchip{font-family:var(--sans);font-size:10px;color:#d8b7b0;border:1px solid rgba(212,86,75,.38);
     background:rgba(40,10,10,.5);border-radius:20px;padding:3px 9px;cursor:pointer;min-height:26px;
     display:inline-flex;align-items:center;gap:5px;line-height:1.2}
@@ -423,7 +458,7 @@
   .sanfloat{position:fixed;left:50%;top:36vh;transform:translate(-50%,0);z-index:90;
     pointer-events:none;font-family:var(--sans);font-size:24px;font-weight:700;
     letter-spacing:.08em;text-align:center;color:#ff8a7c;
-    text-shadow:0 0 18px currentColor;animation:sanfloat 2.8s ease forwards}
+    text-shadow:0 0 18px currentColor;animation:sanfloat 3.1s ease forwards}
   .sanfloat b{display:block;font-size:1em}
   .sanfloat small{display:block;margin-top:5px;font-size:10px;letter-spacing:.3em;
     font-weight:400;opacity:.85;color:inherit}
@@ -431,6 +466,23 @@
   .sanfloat.gain{color:#8fe0a2}
   .sanfloat.time{color:#e3c377}
   .sanfloat.big{font-size:38px}
+  .sanfloat.loss b{animation:sanglitch 1.7s steps(2,end) infinite;
+    text-shadow:0 0 18px rgba(255,60,40,.78),-1.6px 0 rgba(90,220,255,.5),1.6px 0 rgba(255,40,20,.5)}
+  @keyframes sanglitch{
+    0%,100%{transform:none;opacity:1}
+    42%{transform:translateX(-2px) skewX(-3deg);opacity:.94}
+    45%{transform:translateX(3px) skewX(4deg);opacity:.7}
+    47%{transform:translateX(-1px);opacity:1}
+    71%{opacity:.88}
+    73%{opacity:1}
+  }
+  .sanfloat em{display:block;margin-top:8px;font-family:var(--serif);font-style:normal;
+    font-size:10.5px;font-weight:400;letter-spacing:.22em;line-height:1.7;
+    color:rgba(240,196,188,.88);text-shadow:0 0 10px rgba(180,30,30,.5);
+    animation:omenfade 3.2s ease forwards}
+  .sanfloat.gain em{color:rgba(200,240,210,.88);text-shadow:0 0 10px rgba(87,179,104,.45)}
+  .sanfloat.time em{color:rgba(245,226,174,.88);text-shadow:0 0 10px rgba(201,162,75,.4)}
+  @keyframes omenfade{0%{opacity:0;filter:blur(3px)}16%{opacity:1;filter:blur(0)}80%{opacity:1}100%{opacity:0;filter:blur(1px)}}
   @keyframes sanfloat{
     0%{opacity:0;transform:translate(-50%,10px) scale(.9)}
     10%{opacity:1;transform:translate(-50%,0) scale(1)}
@@ -454,7 +506,12 @@
     100%{opacity:0;transform:translateY(-4px)}
   }
   .sanframe{position:fixed;inset:0;z-index:39;pointer-events:none;opacity:0;border:2px solid transparent}
-  .sanframe.loss{animation:sanframe 2.3s ease}
+  .sanframe.loss{animation:sanframe 2.3s ease,frameglitch 1.1s steps(2,end) 2}
+  @keyframes frameglitch{
+    0%,100%{filter:none}
+    33%{filter:hue-rotate(-14deg) contrast(1.25) blur(.4px)}
+    66%{filter:none}
+  }
   .sanframe.gain{animation:sanframe 2.3s ease}
   .sanframe.time{animation:sanframe 2.3s ease}
   .sanframe.loss{--frame:rgba(212,86,75,.62);--frameglow:rgba(212,86,75,.25)}
@@ -477,15 +534,31 @@
     border:1px solid rgba(201,162,75,.5);border-radius:14px;
     background:linear-gradient(180deg,rgba(20,16,10,.96),rgba(8,6,5,.98));
     box-shadow:0 0 0 1px rgba(201,162,75,.12),0 24px 70px rgba(0,0,0,.7),0 0 46px rgba(201,162,75,.18);
-    animation:sigcard 3.1s ease forwards}
+    animation:sigcard 3.8s ease forwards}
   .sigcard.loss{border-color:rgba(212,86,75,.55);
     background:linear-gradient(180deg,rgba(24,8,8,.97),rgba(8,4,4,.99));
     box-shadow:0 0 0 1px rgba(212,86,75,.12),0 24px 70px rgba(0,0,0,.75),0 0 46px rgba(212,86,75,.2)}
   .sigcard .sk{font-family:var(--sans);font-size:9px;letter-spacing:.34em;color:var(--gold);margin-bottom:8px}
   .sigcard.loss .sk{color:var(--red)}
+  .sigcard::before{content:'';position:absolute;inset:-9px;border:1px dashed rgba(201,162,75,.22);
+    border-radius:20px;pointer-events:none;animation:sigring 12s linear infinite}
+  .sigcard.loss::before{border-color:rgba(212,86,75,.28)}
+  @keyframes sigring{to{transform:rotate(360deg)}}
+  .sigcard::after{content:'';position:absolute;inset:0;border-radius:14px;pointer-events:none;
+    opacity:.18;background:repeating-linear-gradient(0deg,rgba(255,255,255,.09) 0 1px,transparent 1px 3px)}
   .sigcard .sg{font-family:var(--serif);font-size:44px;line-height:1.1;color:#f0dfb8;
-    text-shadow:0 0 24px rgba(201,162,75,.55)}
-  .sigcard.loss .sg{color:#e7a49b;text-shadow:0 0 24px rgba(212,86,75,.5);filter:grayscale(.3)}
+    text-shadow:0 0 24px rgba(201,162,75,.55);animation:sigbreath 2.6s ease-in-out infinite}
+  @keyframes sigbreath{
+    0%,100%{text-shadow:0 0 24px rgba(201,162,75,.55)}
+    50%{text-shadow:0 0 40px rgba(201,162,75,.9),0 0 10px rgba(255,230,170,.7)}
+  }
+  .sigcard.loss .sg{color:#e7a49b;animation:siglost 1.9s steps(2,end) infinite}
+  @keyframes siglost{
+    0%,100%{transform:none;filter:grayscale(.3) blur(0);text-shadow:0 0 24px rgba(212,86,75,.5)}
+    46%{transform:translateX(-2px) skewX(-4deg);filter:grayscale(.5) blur(.4px);
+      text-shadow:0 0 30px rgba(212,86,75,.8),-2px 0 rgba(90,220,255,.35)}
+    49%{transform:translateX(2px) skewX(3deg);filter:grayscale(.3) blur(0)}
+  }
   .sigcard .sn{font-family:var(--serif);font-size:18px;letter-spacing:.12em;color:#f4eadc;margin-top:6px}
   .sigcard .sd{font-family:var(--sans);font-size:11px;line-height:1.7;color:var(--muted);margin-top:6px}
   @keyframes sigcard{
@@ -640,7 +713,9 @@
     <div class="sanbox">
       <div class="sanhead"><span>理智 SAN</span><b id="hSan">80</b><span class="spacer"></span><span class="buff" id="hBuff"></span></div>
       <div class="bar"><i id="sanbar"></i></div>
+      <div class="sannote" id="sanNote"></div>
       <div class="sigilbar" id="sigilBar"></div>
+      <div class="signote" id="sigNote"></div>
     </div>
   </div>
 
@@ -761,6 +836,22 @@ const FORCED_TEXTS = [
   '所有窗口亮着同一盏灯。灯芯是你的名字。',
   '卷宗在你手里变软，像一层蜕下来的皮。',
   '有人在纸背敲了三下。第三下之后，你的名字少了一笔。'
+];
+const SAN_OMENS = [
+  '有人在纸背替你记了一笔。',
+  '你的影子慢了半拍。',
+  '潮声从耳后灌进来，带着你的名字。',
+  '墨迹正在往你这边爬。',
+  '你数过自己的手指吗？再数一次。',
+  '有什么东西借你的眼睛看了一会儿。',
+  '封缄处的鳃动了一下。',
+  '钟在咀嚼。秒针停在你的脉上。',
+  '纸页背面，有人用你的笔迹写：别回头。',
+  '你听见自己在隔壁说：继续。',
+  '灯芯是你的名字，正在烧。',
+  '第三十二页翻过去了，没有声音。',
+  '祂把你刚才的念头又念了一遍。',
+  '你呼出的气在纸上结了盐。'
 ];
 const DM_TEXTS = [
   '已封缄','祂在看','签在这里','第31号','11:17','你听见了吗','三十二','名字给我',
@@ -2038,6 +2129,16 @@ function updateHud(){
       sb.innerHTML = '';
     }
   }
+  var snEl = document.getElementById('sanNote');
+  if(snEl){
+    if(S.lastSanNote){ snEl.className = 'sannote on ' + (S.lastSanKind || ''); snEl.textContent = S.lastSanNote; }
+    else{ snEl.className = 'sannote'; snEl.textContent = ''; }
+  }
+  var gnEl = document.getElementById('sigNote');
+  if(gnEl){
+    if(S.lastSigilNote){ gnEl.className = 'signote on ' + (S.lastSigilKind || ''); gnEl.textContent = S.lastSigilNote; }
+    else{ gnEl.className = 'signote'; gnEl.textContent = ''; }
+  }
 }
 var SIGIL_PULSE_ID = null;
 function sanFx(delta, kind, label){
@@ -2071,12 +2172,13 @@ function sanFx(delta, kind, label){
   var d = document.createElement('div');
   d.className = 'sanfloat ' + kind + (Math.abs(delta) >= 10 ? ' big' : '');
   var txt = kind === 'time' ? '时段 −1' : ('理智 ' + (delta > 0 ? '+' : '−') + Math.abs(delta));
-  d.innerHTML = '<b>' + txt + '</b>' + (label ? '<small>' + esc(label) + '</small>' : '');
+  var omen = (kind === 'loss' || kind === 'time') ? pick(SAN_OMENS) : '';
+  d.innerHTML = '<b>' + txt + '</b>' + (label ? '<small>' + esc(label) + '</small>' : '') + (omen ? '<em>' + esc(omen) + '</em>' : '');
   document.body.appendChild(d);
-  setTimeout(function(){ if(d.parentNode) d.remove(); }, 3000);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, 3400);
   var b = document.createElement('div');
   b.className = 'sanbadge ' + kind;
-  b.textContent = txt + (label ? ' · ' + label : '');
+  b.textContent = (kind === 'loss' ? '☓ ' : (kind === 'gain' ? '◈ ' : '∅ ')) + txt + (label ? ' · ' + label : '');
   document.body.appendChild(b);
   setTimeout(function(){ if(b.parentNode) b.remove(); }, 3500);
 }
@@ -2090,7 +2192,7 @@ function showSigilCard(o){
     + '<div class="sn">' + esc(o.name || '') + '</div>'
     + '<div class="sd">' + esc(o.sub || '') + '</div>';
   document.body.appendChild(d);
-  setTimeout(function(){ if(d.parentNode) d.remove(); }, 3200);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, 3900);
 }
 function showSigilLossCard(gone){
   if(!gone || !gone.length) return;
@@ -2102,7 +2204,7 @@ function showSigilLossCard(gone){
     kind:'loss',
     glyph:first.sig ? first.sig.glyph : '×',
     name:gone.length > 1 ? (gone.length + ' 枚印记熄灭') : names,
-    sub:names + ' · ' + whos.join('、') + '离你而去 · 本局不再获得'
+    sub:names + ' · ' + whos.join('、') + '离你而去 · 本局不再获得，门在你背后合上'
   });
 }
 
@@ -2158,6 +2260,9 @@ function loseSan(n){
     S.time = Math.max(0, S.time - 1);
     S.zeroJitter = (S.zeroJitter || 0) + 1;
     if(S.time <= 0) S.tooLate = true;
+    S.lastSanNote = '时段 −1 · 理智已空（当前 0）';
+    S.lastSanKind = 'time';
+    if(typeof updateHud === 'function') updateHud();
     addLog('理智已空：一个时段被雾吞掉了。');
     setTimeout(function(){ toast(S.time <= 0 ? '理智已空 · 时段耗尽' : '理智已空 · 一个时段被消耗'); }, 180);
     sanFx(0, 'time', '时段被吞');
@@ -2177,6 +2282,9 @@ function loseSan(n){
     else if(S.san <= 15 && before > 15) band = '文字错位';
     else if(S.san <= 30 && before > 30) band = '崩解';
     else if(S.san <= 50 && before > 50) band = '低理智';
+    S.lastSanNote = '理智 −' + d + (band ? ' · ' + band : '') + '（当前 ' + S.san + '）';
+    S.lastSanKind = 'loss';
+    updateHud();
     sanFx(-d, 'loss', band);
   }
   if(before >= 50 && S.san < 50){
@@ -2223,6 +2331,9 @@ function healSan(n){
   var gained = S.san - before;
   if(gained <= 0) return;
   var band = (before <= 0 && S.san > 0) ? '脱离空壳' : ((before <= 15 && S.san > 15) ? '文字归位' : '');
+  S.lastSanNote = '理智 +' + gained + (band ? ' · ' + band : '') + '（当前 ' + S.san + '）';
+  S.lastSanKind = 'gain';
+  updateHud();
   sanFx(gained, 'gain', band);
   S.sanHealed = (S.sanHealed || 0) + gained;
   var gone = [];
@@ -2233,6 +2344,9 @@ function healSan(n){
   }
   if(gone.length){
     var msg = gone.map(function(g){ return g.who + '离你而去，印记「' + (g.sig ? g.sig.name : '?') + '」熄灭'; }).join('；');
+    S.lastSigilNote = '失印 · ' + gone.map(function(g){ return (g.sig ? g.sig.name : '?') + '（' + g.who + '）'; }).join('、');
+    S.lastSigilKind = 'loss';
+    if(typeof updateHud === 'function') updateHud();
     addLog(msg + '。本次探索不再获得这些印记。');
     setTimeout(function(){ toast(msg + '。本次探索不再获得。'); }, 520);
     showSigilLossCard(gone);
@@ -2374,11 +2488,14 @@ function grantSigil(){
     saveMeta();
   }
   addLog('获得印记：' + s.name + '（' + s.deity + '）。');
+  S.lastSigilNote = '得印 · ' + s.glyph + ' ' + s.name + ' · ' + s.deity;
+  S.lastSigilKind = 'gain';
   SIGIL_PULSE_ID = s.id;
+  updateHud();
   setTimeout(function(){ SIGIL_PULSE_ID = null; updateHud(); }, 1300);
   showSigilCard({
     kind:'gain', glyph:s.glyph, name:s.name,
-    sub:s.deity + ' · ' + (STAT_LABEL[s.stat] || '对应属性') + ' +6（SAN≤50 生效）'
+    sub:s.deity + ' · ' + (STAT_LABEL[s.stat] || '对应属性') + ' +6（SAN≤50 生效） · 纸背多了一枚指印'
   });
   return s;
 }
@@ -2416,6 +2533,7 @@ function initRun(){
     eventsSeen: [], nights: {n1:false, n2:false, n3:false},
     ded: {qs:[], score:-1, done:false},
     sigils: [], sigilBan: [], sanHealed: 0, leavers: [], zeroJitter: 0,
+    lastSanNote: '', lastSanKind: '', lastSigilNote: '', lastSigilKind: '',
     dmSeen: false, dmPending: false,
     flags: {}, tooLate: false, over: false, sanLost: 0,
     node: 'hub', curSite: '', curEvent: '', curNight: '',
@@ -2425,6 +2543,10 @@ function initRun(){
   saveMeta();
   addLog('抵达雾港镇。上级只留了一句话：查清王守义。');
   if(ownedSigils) addLog('随行印记 ' + ownedSigils + ' 枚，初始理智降至 ' + startSan + '。');
+  if(ownedSigils){
+    S.lastSanNote = '随行印记 ' + ownedSigils + ' 枚 · 初始理智 −' + (80 - startSan) + '（当前 ' + startSan + '）';
+    S.lastSanKind = 'loss';
+  }
   saveRun();
   render();
   toast(ownedSigils ? ('雾合上了。印记 -' + (80 - startSan) + ' 理智，当前 SAN ' + startSan + '。') : ('雾合上了。你有 ' + START_TIME + ' 个时段。'));
@@ -2439,6 +2561,8 @@ function render(){
   if(S && S.sanHealed === undefined) S.sanHealed = 0;
   if(S && !S.leavers) S.leavers = [];
   if(S && S.zeroJitter === undefined) S.zeroJitter = 0;
+  if(S && S.lastSanNote === undefined) S.lastSanNote = '';
+  if(S && S.lastSigilNote === undefined) S.lastSigilNote = '';
   if(S && S.dmSeen === undefined){ S.dmSeen = false; S.dmPending = false; }
   updateHud();
   document.body.classList.toggle('low-san', !!(S && S.san <= 30));
@@ -2717,7 +2841,7 @@ function renderResult(){
     });
     html += '</div>';
   }
-  if(r.sanLost > 0) html += '<div class="qr wrong"><span class="m">−</span>理智 ' + r.sanLost + '</div>';
+  if(r.sanLost > 0) html += '<div class="sanloss-banner"><b>理智 −' + r.sanLost + '</b><small>' + sanName() + ' · 剩余 ' + S.san + ' / ' + S.maxSan + (S.san <= 0 ? ' · 空壳' : '') + '</small><em>' + esc(pick(SAN_OMENS)) + '</em></div>';
   html += '<div class="endbtns"><button class="btn gold" data-a="cont">继续调查</button></div>';
   html += '</div>';
   stageEl.innerHTML = html;
@@ -3309,11 +3433,15 @@ function chooseFinal(i){
     S.zeroJitter = (S.zeroJitter || 0) + 1;
     if(S.time <= 0) S.tooLate = true;
     addLog('理智已空：结案的代价改由一个时段支付。');
+    S.lastSanNote = '时段 −1 · 理智已空（当前 0）';
+    S.lastSanKind = 'time';
     sanFx(0, 'time', '时段被吞');
   }else{
     var cost = Math.min(c.cost, S.san);
     S.san = clamp(S.san - c.cost, 0, S.maxSan);
     S.sanLost += c.cost;
+    S.lastSanNote = '结案代价 · 理智 −' + c.cost + (S.san <= 0 ? ' · 空壳' : '') + '（当前 ' + S.san + '）';
+    S.lastSanKind = 'loss';
     if(cost > 0) sanFx(-cost, 'loss', S.san <= 0 ? '空壳' : '');
   }
   var sanB = S.san >= 60 ? 0 : (S.san >= 45 ? 1 : (S.san >= 30 ? 2 : (S.san >= 15 ? 3 : 4)));
@@ -3426,6 +3554,8 @@ function submitSigil(id){
   if(triple){
     var preS = S.san;
     S.san = 0;
+    S.lastSanNote = '三柱神 · 理智归零（当前 0）';
+    S.lastSanKind = 'loss';
     if(preS > 0) sanFx(-preS, 'loss', '三柱神 · 空壳');
     else sanFx(0, 'time', '三柱神 · 空壳');
   }
