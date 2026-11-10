@@ -2240,19 +2240,30 @@ function loadMeta(){
           });
           return r;
         })(),
+        carry:(m.carry || []).filter(function(x, i, arr){ return SIGILS.some(function(s){ return s.id === x; }) && arr.indexOf(x) === i; }),
         outerDone:!!m.outerDone };
     }
   }catch(e){}
-  return { unlocked:[], grand:false, arch:[], extra:[], runs:0, bonus:0, growth:[], collected:[], submit:[], bound:[], boundAt:{}, echo:{}, outerDone:false };
+  return { unlocked:[], grand:false, arch:[], extra:[], runs:0, bonus:0, growth:[], collected:[], submit:[], bound:[], boundAt:{}, echo:{}, carry:[], outerDone:false };
 }
 function saveMeta(){
   try{ localStorage.setItem(META_KEY, JSON.stringify(META)); }catch(e){}
 }
+function syncCarry(){
+  if(!S || !S.sigils) return;
+  var cur = S.sigils.slice();
+  var old = META.carry || [];
+  if(old.length === cur.length && old.every(function(x, i){ return x === cur[i]; })) return;
+  META.carry = cur;
+  saveMeta();
+}
 function saveRun(){
+  syncCarry();
   if(!S || S.node === 'create' || S.node === 'ending') return;
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){}
 }
 function clearRun(){
+  syncCarry();
   try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
 }
 function loadRun(){
@@ -2538,6 +2549,7 @@ function applySigilOrder(payTime, checkTriple){
     if(pre > 0) sanFx(-pre, 'loss', '三外神 · 空壳');
     addLog('门、笑、林同时在你身上睁开。你没有疯——你只是被三只手同时翻到了同一页。');
     dropSigilIds(S.sigils.slice(), payTime);
+    if(META.carry && META.carry.length){ META.carry = []; }
     if(META.collected && META.collected.length){
       META.collected = [];
       META.submit = [];
@@ -2767,9 +2779,12 @@ function initRun(){
   order.slice(0, 4).forEach(function(sid, i){ coreMap[sid] = coreIds[i]; });
   var omens = {};
   order.forEach(function(sid){ omens[sid] = pick(OMENS); });
-  var carry = (META.collected || []).filter(function(id){ return !!sigilById(id); });
+  var carry = (META.carry || []).filter(function(id, i, arr){
+    return !!sigilById(id) && arr.indexOf(id) === i;
+  });
   var ownedSigils = carry.length;
   var startSan = Math.max(0, 80 - ownedSigils * 5);
+  var carryNames = carry.map(function(id){ var sg = sigilById(id); return sg ? (sg.glyph + ' ' + sg.name) : ''; }).filter(Boolean).join('、');
 
   S = {
     name: (DRAFT.name || '').trim() || '无名侦探',
@@ -2793,17 +2808,22 @@ function initRun(){
   META.runs = (META.runs || 0) + 1;
   saveMeta();
   addLog('抵达雾港镇。上级只留了一句话：查清王守义。');
-  if(ownedSigils) addLog('随行印记 ' + ownedSigils + ' 枚，初始理智降至 ' + startSan + '。');
+  if(ownedSigils) addLog('上一局留在你身上的印记跟了过来：' + carryNames + '。初始理智降至 ' + startSan + '。');
   if(ownedSigils){
     S.lastSanNote = '随行印记 ' + ownedSigils + ' 枚 · 初始理智 −' + (80 - startSan) + '（当前 ' + startSan + '）';
     S.lastSanKind = 'loss';
+    S.lastSigilNote = '随行 · ' + carryNames;
+    S.lastSigilKind = 'gain';
   }
   var orderChanged = applySigilOrder(true, true);
   saveRun();
   render();
-  if(!orderChanged) toast(ownedSigils ? ('雾合上了。印记 -' + (80 - startSan) + ' 理智，当前 SAN ' + startSan + '。') : ('雾合上了。你有 ' + START_TIME + ' 个时段。'));
+  if(!orderChanged) toast(ownedSigils ? ('雾合上了。随行 ' + ownedSigils + ' 枚印记使初始理智 −' + (80 - startSan) + '，当前 SAN ' + startSan + '。') : ('雾合上了。你有 ' + START_TIME + ' 个时段。'));
   else toast('雾合上了。随行印记互相排斥，理智 ' + S.san + '，时段 ' + S.time + '。');
-  if(ownedSigils && !orderChanged) setTimeout(function(){ sanFx(startSan - 80, 'loss', '随行印记'); }, 450);
+  if(ownedSigils && !orderChanged){
+    setTimeout(function(){ sanFx(startSan - 80, 'loss', '随行印记'); }, 450);
+    setTimeout(function(){ toast('随行：' + carryNames + '。每枚 −5 理智。'); }, 1400);
+  }
 }
 
 /* ---------- 渲染 ---------- */
@@ -2937,7 +2957,7 @@ function renderTitle(){
     ['结局','100 条结局按五种终局归类，不再按出身拆分。理智状态 × 真相层级决定同一终局里的具体落点。'],
     ['成长','部分简单结局会永久提升三项总和上限 +10，最多 +60。它们只需要带着 0 卷残页走到某个终局。'],
     ['评级','综合 S ≥80、A ≥70、B ≥60、C <60。部分异闻要求特定评级；基础上限 180 时最高只能到 B，得先靠成长结局把上限堆高。'],
-    ['印记','图鉴里的印记会随你进入下一局，每枚使初始理智 -5。理智归零后，每次扣理智改为消耗 1 个时段，文字开始错位。'],
+    ['印记','上一局结束时留在你身上的印记，会原样跟着进入下一局，每枚使初始理智 -5；图鉴只负责记录，不会自动把印记塞给你。理智归零后，每次扣理智改为消耗 1 个时段，文字开始错位。'],
     ['三系','外神、旧神、古神三类互相排斥。某一类达到 2 枚时，其余两系全部熄灭；每失去一枚印记，时段 -1。若开局同时带着门、笑、林三枚外神印记，理智直接归零，所有印记尽失，图鉴也会被一并清空。'],
     ['失印','恢复理智时，随机一枚印记熄灭，并有一位同行者离你而去；用这种方式失印不扣时段。'],
     ['末段','若你还没经历过任何事件，且时段只剩 1，雾里会走来一位属于你印记的神。祂会带走最后一个时段。'],
@@ -2982,7 +3002,13 @@ function renderCreate(){
   var cap = pointCap();
   html += '<div class="sumnote' + (base > cap ? ' over' : '') + '" id="sumNote">基础合计 ' + base + ' / ' + cap + (base > cap ? ' · 已超出' : '') + '</div>';
   html += '</div>';
-  html += '<div class="qr">出身加成：侦查 ' + (a.inv >= 0 ? '+' : '') + a.inv + ' · 意志 ' + (a.will >= 0 ? '+' : '') + a.will + ' · 幸运 ' + (a.luck >= 0 ? '+' : '') + a.luck + '<br>最终值 = 输入值 + 出身加成（最高 99，加成可把单项推过 90）。出身加成不计入合计上限；三项基础值合计上限 ' + cap + (META.bonus ? '（基础 180 + 永久加成 ' + META.bonus + '）' : '') + '。理智 SAN 固定 80。<br>属性被动：侦查 ≥65 勘察现场额外补一条线索；意志每 30 点减免 1 点理智损失；幸运豁免成功时完全免除该次理智损失。</div>';
+  var carryPrev = (META.carry || []).filter(function(id){ return !!sigilById(id); });
+  var sanPrev = Math.max(0, 80 - carryPrev.length * 5);
+  var carryPrevNames = carryPrev.map(function(id){ var sg = sigilById(id); return sg ? sg.glyph + ' ' + sg.name : ''; }).filter(Boolean).join('、');
+  var sanLine = carryPrev.length
+    ? ('理智 SAN 80 − 随行印记 ' + carryPrev.length + ' 枚 × 5 = <b style="color:#ffc2b8">' + sanPrev + '</b>。随行：' + carryPrevNames + '。')
+    : '理智 SAN 80，你身上没有随行的印记。';
+  html += '<div class="qr">出身加成：侦查 ' + (a.inv >= 0 ? '+' : '') + a.inv + ' · 意志 ' + (a.will >= 0 ? '+' : '') + a.will + ' · 幸运 ' + (a.luck >= 0 ? '+' : '') + a.luck + '<br>最终值 = 输入值 + 出身加成（最高 99，加成可把单项推过 90）。出身加成不计入合计上限；三项基础值合计上限 ' + cap + (META.bonus ? '（基础 180 + 永久加成 ' + META.bonus + '）' : '') + '。' + sanLine + '<br>属性被动：侦查 ≥65 勘察现场额外补一条线索；意志每 30 点减免 1 点理智损失；幸运豁免成功时完全免除该次理智损失。</div>';
   html += '<div class="endbtns"><button class="btn" data-a="rollall">一键掷骰</button><button class="btn gold" data-a="confirm">确认建档</button><button class="btn" data-a="toTitle">返回标题</button></div>';
   html += '</div>';
   stageEl.innerHTML = html;
