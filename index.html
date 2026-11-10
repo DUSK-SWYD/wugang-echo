@@ -46,6 +46,41 @@
   .scan{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.3;
     background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
   body.low-san .scan{opacity:.5;background:repeating-linear-gradient(0deg,rgba(180,40,40,.03) 0 1px,transparent 1px 4px)}
+  body.san-murk .scene h2,
+  body.san-murk .scene .body p,
+  body.san-murk .scene .sub,
+  body.san-murk .scene .ask,
+  body.san-murk .opt .t{
+    filter:blur(.12px);letter-spacing:.01em;
+    text-shadow:0 0 1px rgba(212,86,75,.2),0 0 8px rgba(120,20,20,.12)}
+  body.san-warp .scene h2,
+  body.san-warp .scene .body p,
+  body.san-warp .scene .sub,
+  body.san-warp .scene .ask,
+  body.san-warp .opt .t{
+    font-family:"STKaiti","KaiTi","Kaiti SC",var(--serif);
+    font-style:italic;letter-spacing:.03em;filter:blur(.35px);
+    text-shadow:0 0 2px rgba(212,86,75,.3),1px 1px 0 rgba(60,8,8,.38)}
+  body.san-15 .scene h2,
+  body.san-15 .scene .body p,
+  body.san-15 .scene .sub,
+  body.san-15 .scene .ask,
+  body.san-15 .opt .t{
+    filter:blur(.6px);letter-spacing:.06em}
+  body.san-zero .scan{opacity:.62;background:repeating-linear-gradient(0deg,rgba(180,40,40,.06) 0 1px,transparent 1px 3px)}
+  body.san-zero .scene{border-left-color:var(--red);
+    box-shadow:0 0 46px rgba(120,20,20,.18),0 22px 56px rgba(0,0,0,.5)}
+  body.san-zero .scene h2,
+  body.san-zero .scene .body p,
+  body.san-zero .scene .sub,
+  body.san-zero .scene .ask,
+  body.san-zero .opt .t,
+  body.san-zero .act b{
+    font-family:"STKaiti","KaiTi","Kaiti SC",var(--serif);
+    font-style:italic;letter-spacing:.035em;filter:blur(.9px);
+    text-shadow:0 0 2px rgba(212,86,75,.3),1px 1px 0 rgba(60,8,8,.42)}
+  body.san-zero .scene h2{font-weight:700;color:#f0d9d2}
+  body.san-zero .hud .st b,body.san-zero .sanhead b{color:var(--red)}
 
   .top{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);
     background:rgba(4,8,10,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
@@ -363,6 +398,12 @@
     pointer-events:auto;box-shadow:0 0 18px rgba(0,0,0,.4)}
   .dm:active{background:rgba(212,86,75,.3);color:#fff}
   .dm b{font-family:var(--serif);color:var(--red);margin-right:4px}
+  .dm.raw{background:transparent;border:0;border-radius:0;padding:0;box-shadow:none;
+    color:rgba(238,190,180,.94);font-family:var(--serif);font-size:18px;
+    letter-spacing:.16em;line-height:1.4;
+    text-shadow:0 0 10px rgba(212,86,75,.55),0 0 26px rgba(120,20,20,.4)}
+  .dm.raw b{display:none}
+  .dm.raw:active{background:transparent;color:#fff}
   @keyframes dmpop{
     0%{opacity:0;filter:blur(5px);transform:scale(.92)}
     7%{opacity:1;filter:blur(0);transform:scale(1)}
@@ -404,12 +445,14 @@
   @keyframes dizzyveil{0%{opacity:0}32%{opacity:1}100%{opacity:0}}
   .dmlayer.up{z-index:130}
   .dm.gal{left:50%;top:70%;white-space:normal;width:min(82vw,440px);
-    transform:translate(-50%,-50%);font-family:var(--serif);font-size:13px;line-height:1.72;
-    text-align:center;color:#e6d7c8;background:rgba(12,6,6,.92);border-color:rgba(201,162,75,.45);
-    border-radius:11px;padding:11px 15px;box-shadow:0 18px 60px rgba(0,0,0,.68);
+    transform:translate(-50%,-50%);font-family:var(--serif);font-size:14.5px;line-height:1.9;
+    text-align:center;color:#f0d9d2;background:transparent;border:0;
+    border-radius:0;padding:0;box-shadow:none;
+    text-shadow:0 0 12px rgba(212,86,75,.45),0 0 30px rgba(0,0,0,.85);
     animation:galpop 5s ease forwards;z-index:131}
+  .dm.gal:active{background:transparent}
   .dm.gal b{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.24em;
-    color:var(--gold);margin:0 0 4px}
+    color:var(--gold);margin:0 0 6px;text-shadow:none}
   .dm.gal .dmtext{display:block}
   @keyframes galpop{
     0%{opacity:0;transform:translate(-50%,-50%) scale(.9);filter:blur(5px)}
@@ -508,6 +551,7 @@
 const SAVE_KEY = 'wugang_baimu_run_v1';
 const META_KEY = 'wugang_baimu_meta_v1';
 const START_TIME = 12;
+const LEAVER_NAMES = ['王守义','老周','阿盐','陈婆','小满','哑巴船工','刘警官','卖鱼嫂','打更人','井边的孩子','档案室老张','穿雨衣的邮差','顾先生','阿细','船坞的老瘸子'];
 const POINT_CAP = 180;
 const GROWTH_IDS = [1, 9, 25, 33, 41, 65];
 function pointCap(){
@@ -1938,6 +1982,14 @@ function randomNormalClues(n){
 }
 function loseSan(n){
   if(!S || n <= 0) return 0;
+  if(S.san <= 0){
+    S.time = Math.max(0, S.time - 1);
+    S.zeroJitter = (S.zeroJitter || 0) + 1;
+    if(S.time <= 0) S.tooLate = true;
+    addLog('理智已空：一个时段被雾吞掉了。');
+    setTimeout(function(){ toast(S.time <= 0 ? '理智已空 · 时段耗尽' : '理智已空 · 一个时段被消耗'); }, 180);
+    return 0;
+  }
   var before = S.san;
   var d = Math.max(1, n - Math.floor(S.will / 30));
   if(S.shield > 0){
@@ -1951,6 +2003,7 @@ function loseSan(n){
     setTimeout(function(){ showForced('雾从纸缝里长出来，带着盐和鳃的味道。有人替你把下一页翻开了。', '低理智 · 弹幕已出现 · 点击它'); }, 600);
   }
   if(before > 30 && S.san <= 30 && S.san > 0) setTimeout(function(){ showForced(pick(FORCED_TEXTS), '崩解 · 印记开始显现'); }, 900);
+  if(before > 15 && S.san <= 15 && S.san > 0) setTimeout(function(){ showForced('页码开始自己换位置。你先看见结尾，再看见开头。', '崩解 · 文字开始错位'); }, 900);
   if(before > 0 && S.san <= 0) setTimeout(function(){ showForced('理性归零。本案由你承办，也由你结案。', '空壳 · 祂在等你签字'); }, 900);
   return d;
 }
@@ -1968,9 +2021,38 @@ function sanName(){
   var v = S.san;
   return v >= 60 ? '清醒' : (v >= 45 ? '动摇' : (v >= 30 ? '崩解' : (v >= 15 ? '沦陷' : '空壳')));
 }
+function sigilLeaver(){
+  if(!S || !S.sigils || !S.sigils.length) return null;
+  var idx = Math.floor(Math.random() * S.sigils.length);
+  var id = S.sigils.splice(idx, 1)[0];
+  if(!S.sigilBan) S.sigilBan = [];
+  if(S.sigilBan.indexOf(id) < 0) S.sigilBan.push(id);
+  var sg = sigilById(id);
+  if(!S.leavers) S.leavers = [];
+  var pool = LEAVER_NAMES.filter(function(n){ return S.leavers.indexOf(n) < 0; });
+  if(!pool.length) pool = LEAVER_NAMES;
+  var who = pick(pool);
+  S.leavers.push(who);
+  return {who:who, sig:sg};
+}
 function healSan(n){
-  if(!S) return;
+  if(!S || n <= 0) return;
+  var before = S.san;
   S.san = clamp(S.san + n, 0, S.maxSan);
+  var gained = S.san - before;
+  if(gained <= 0) return;
+  S.sanHealed = (S.sanHealed || 0) + gained;
+  var gone = [];
+  while(S.sanHealed >= 10){
+    S.sanHealed -= 10;
+    var r = sigilLeaver();
+    if(r) gone.push(r);
+  }
+  if(gone.length){
+    var msg = gone.map(function(g){ return g.who + '离你而去，印记「' + (g.sig ? g.sig.name : '?') + '」熄灭'; }).join('；');
+    addLog(msg + '。本次探索不再获得这些印记。');
+    setTimeout(function(){ toast(msg + '。本次探索不再获得。'); }, 520);
+  }
 }
 function sigilById(id){
   for(var i = 0; i < SIGILS.length; i++){ if(SIGILS[i].id === id) return SIGILS[i]; }
@@ -2019,7 +2101,7 @@ function syncDanmaku(){
   if(!live){ stopDanmaku(true); return; }
   if(S.san < 50 && !S.dmSeen){ S.dmSeen = true; S.dmPending = true; }
   var gap = dmGap();
-  var burst = gap < 0 ? Math.min(3, 1 + Math.floor(-gap / 500)) : 1;
+  var burst = gap < 0 ? Math.min(5, 1 + Math.floor(-gap / 400)) : 1;
   var tick = gap <= 0 ? 300 : gap;
   if(DM_TIMER && tick === DM_GAP && burst === DM_BURST){
     if(S.dmPending){ S.dmPending = false; setTimeout(spawnDanmaku, 250); }
@@ -2038,25 +2120,35 @@ function spawnDanmaku(){
   if(!S || S.san > 50) return;
   if(['hub','site','result','event','night','ded','final'].indexOf(S.node) < 0) return;
   var layer = document.getElementById('dmLayer');
-  if(!layer || layer.children.length >= 26) return;
+  if(!layer || layer.children.length >= 42) return;
   var d = document.createElement('div');
-  d.className = 'dm' + (Math.random() < 0.3 ? ' writhe' : '');
+  var scroll = Math.random() < 0.3;
+  var raw = !scroll && Math.random() < 0.62;
+  var wr = Math.random() < 0.3 ? ' writhe' : '';
+  d.className = 'dm' + (raw ? ' raw' : '') + wr;
   d.setAttribute('data-a', 'dm');
-  d.innerHTML = '<span class="dmtext"><b>' + pick(DM_GLYPHS) + '</b>' + esc(pick(DM_TEXTS)) + '</span>';
+  var txt = pick(DM_TEXTS);
+  d.innerHTML = raw ? esc(txt) : ('<span class="dmtext"><b>' + pick(DM_GLYPHS) + '</b>' + esc(txt) + '</span>');
   d.style.top = (3 + Math.random() * 90) + 'vh';
-  if(Math.random() < 0.38){
+  if(scroll){
     d.style.left = '100%';
     d.style.willChange = 'transform';
     var sdur = (S.san <= 15 ? 8 : (S.san <= 30 ? 11 : 15)) + Math.random() * 4;
     d.style.animation = 'dmmove ' + sdur.toFixed(1) + 's linear forwards';
   }else{
-    d.style.left = (3 + Math.random() * 62) + 'vw';
-    d.style.fontSize = (10.5 + Math.random() * 3.5).toFixed(1) + 'px';
+    d.style.left = (3 + Math.random() * 60) + 'vw';
+    d.style.fontSize = (raw ? (16 + Math.random() * 8) : (10.5 + Math.random() * 3.5)).toFixed(1) + 'px';
     var pdur = (S.san <= 15 ? 2.4 : (S.san <= 30 ? 3.1 : 3.8)) + Math.random() * 1.5;
     d.style.animation = 'dmpop ' + pdur.toFixed(1) + 's ease forwards';
   }
   d.addEventListener('animationend', function(){ if(d.parentNode) d.remove(); });
   layer.appendChild(d);
+  if(!scroll){
+    var rc = d.getBoundingClientRect();
+    if(rc.right > window.innerWidth - 6){
+      d.style.left = Math.max(3, window.innerWidth - rc.width - 8) + 'px';
+    }
+  }
 }
 function showForced(main, sub){
   var old = document.querySelector('.forced');
@@ -2070,7 +2162,9 @@ function showForced(main, sub){
 function grantSigil(){
   if(!S) return null;
   if(!S.sigils) S.sigils = [];
-  var pool = SIGILS.filter(function(x){ return S.sigils.indexOf(x.id) < 0; });
+  var pool = SIGILS.filter(function(x){
+    return S.sigils.indexOf(x.id) < 0 && (S.sigilBan || []).indexOf(x.id) < 0;
+  });
   if(!pool.length){
     var st = pick(['inv','will','luck']);
     S.buff[st] = (S.buff[st] || 0) + 8;
@@ -2117,6 +2211,8 @@ function initRun(){
   order.slice(0, 4).forEach(function(sid, i){ coreMap[sid] = coreIds[i]; });
   var omens = {};
   order.forEach(function(sid){ omens[sid] = pick(OMENS); });
+  var ownedSigils = (META.collected || []).length;
+  var startSan = Math.max(15, 80 - ownedSigils * 5);
 
   S = {
     name: (DRAFT.name || '').trim() || '无名侦探',
@@ -2124,13 +2220,13 @@ function initRun(){
     inv: clamp(DRAFT.inv + arch.inv, 5, 99),
     will: clamp(DRAFT.will + arch.will, 5, 99),
     luck: clamp(DRAFT.luck + arch.luck, 5, 99),
-    san: 80, maxSan: 80, time: START_TIME,
+    san: startSan, maxSan: 80, time: START_TIME,
     done: [], clues: [], items: [arch.item],
     buff: {inv:0, will:0, luck:0}, shield: 0,
     mapOrder: order, coreMap: coreMap, omens: omens,
     eventsSeen: [], nights: {n1:false, n2:false, n3:false},
     ded: {qs:[], score:-1, done:false},
-    sigils: [],
+    sigils: [], sigilBan: [], sanHealed: 0, leavers: [], zeroJitter: 0,
     dmSeen: false, dmPending: false,
     flags: {}, tooLate: false, over: false, sanLost: 0,
     node: 'hub', curSite: '', curEvent: '', curNight: '',
@@ -2139,18 +2235,27 @@ function initRun(){
   META.runs = (META.runs || 0) + 1;
   saveMeta();
   addLog('抵达雾港镇。上级只留了一句话：查清王守义。');
+  if(ownedSigils) addLog('随行印记 ' + ownedSigils + ' 枚，初始理智降至 ' + startSan + '。');
   saveRun();
   render();
-  toast('雾合上了。你有 ' + START_TIME + ' 个时段。');
+  toast(ownedSigils ? ('雾合上了。印记 -' + (80 - startSan) + ' 理智，当前 SAN ' + startSan + '。') : ('雾合上了。你有 ' + START_TIME + ' 个时段。'));
 }
 
 /* ---------- 渲染 ---------- */
 function render(){
   if(S && S.node !== 'create' && S.node !== 'ending') saveRun();
   if(S && !S.sigils) S.sigils = [];
+  if(S && !S.sigilBan) S.sigilBan = [];
+  if(S && S.sanHealed === undefined) S.sanHealed = 0;
+  if(S && !S.leavers) S.leavers = [];
+  if(S && S.zeroJitter === undefined) S.zeroJitter = 0;
   if(S && S.dmSeen === undefined){ S.dmSeen = false; S.dmPending = false; }
   updateHud();
   document.body.classList.toggle('low-san', !!(S && S.san <= 30));
+  document.body.classList.toggle('san-murk', !!(S && S.san < 50));
+  document.body.classList.toggle('san-warp', !!(S && S.san < 30));
+  document.body.classList.toggle('san-15', !!(S && S.san <= 15));
+  document.body.classList.toggle('san-zero', !!(S && S.san <= 0));
   if(!S){ renderTitle(); lastNode = 'title'; stopDanmaku(true); return; }
   switch(S.node){
     case 'create': renderCreate(); break;
@@ -2165,7 +2270,71 @@ function render(){
     default: renderTitle();
   }
   syncDanmaku();
+  if(S && S.san <= 15 && S.node !== 'ending' && S.node !== 'create') scrambleScene();
+  if(S && S.san <= 0 && S.node !== 'ending' && S.node !== 'create') zeroDistort();
   if(S.node !== lastNode){ lastNode = S.node; window.scrollTo(0, 0); }
+}
+function srand(seed){
+  var x = Math.sin(seed * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+}
+function seededShuffle(arr, seed){
+  for(var i = arr.length - 1; i > 0; i--){
+    var j = Math.floor(srand(seed + i * 7.31) * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function scrambleScene(){
+  if(!S) return;
+  var seed = (S.san + 1) * 97 + (S.zeroJitter || 0) * 31 + (S.time || 0) * 13;
+  var h2 = document.querySelector('.scene h2');
+  if(h2 && !h2.children.length){
+    var chars = h2.textContent.split('');
+    seededShuffle(chars, seed + 3);
+    h2.textContent = chars.join('');
+  }
+  var body = document.querySelector('.scene .body');
+  if(body){
+    var ps = Array.prototype.filter.call(body.children, function(el){ return el.tagName === 'P'; });
+    seededShuffle(ps, seed + 11);
+    ps.forEach(function(p){ body.appendChild(p); });
+    ps.forEach(function(p, i){
+      if(p.children.length) return;
+      var parts = p.textContent.match(/[^。！？；]+[。！？；]?/g);
+      if(parts && parts.length > 1){
+        seededShuffle(parts, seed + i * 37);
+        p.textContent = parts.join('');
+      }
+    });
+  }
+  var grid = document.querySelector('.mapgrid');
+  if(grid && grid.children.length > 1){
+    var cards = Array.prototype.slice.call(grid.children);
+    seededShuffle(cards, seed + 23);
+    cards.forEach(function(c){ grid.appendChild(c); });
+  }
+  var opts = document.querySelector('.scene .opts');
+  if(opts && opts.children.length > 1){
+    var kids = Array.prototype.slice.call(opts.children);
+    seededShuffle(kids, seed + 19);
+    kids.forEach(function(k){ opts.appendChild(k); });
+  }
+}
+function zeroDistort(){
+  if(!S || S.san > 0) return;
+  var nodes = document.querySelectorAll('.scene h2,.scene .sub,.scene .body p,.scene .ask,.scene .opt,.scene .act,.scene .chip,.mapgrid .site,.progress');
+  var n = S.zeroJitter || 0;
+  for(var i = 0; i < nodes.length; i++){
+    var a = Math.sin((i + 1) * 127.1 + n * 311.7) * 43758.5453;
+    var b = Math.sin((i + 5) * 47.3 + n * 113.9) * 24634.6345;
+    var c = Math.sin((i + 9) * 13.7 + n * 71.3) * 15731.7431;
+    a = a - Math.floor(a); b = b - Math.floor(b); c = c - Math.floor(c);
+    var dx = (a * 2 - 1) * 5.5;
+    var dy = (b * 2 - 1) * 4.5;
+    var rot = (c * 2 - 1) * 1.1;
+    nodes[i].style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px) rotate(' + rot.toFixed(2) + 'deg)';
+  }
 }
 
 function renderTitle(){
@@ -2196,6 +2365,8 @@ function renderTitle(){
     ['结局','100 条结局按五种终局归类，不再按出身拆分。理智状态 × 真相层级决定同一终局里的具体落点。'],
     ['成长','部分简单结局会永久提升三项总和上限 +10，最多 +60。它们只需要带着 0 卷残页走到某个终局。'],
     ['评级','综合 S ≥80、A ≥70、B ≥60、C <60。部分异闻要求特定评级；基础上限 180 时最高只能到 B，得先靠成长结局把上限堆高。'],
+    ['印记','每持有一枚印记，下一局初始理智 -5。理智归零后，每次扣理智改为消耗 1 个时段，文字开始错位。'],
+    ['失印','每恢复 10 点理智，随机一枚印记熄灭，本次探索不再获得，并会有一位同行者离你而去。'],
     ['隐藏','100 条之外还有第 101 幕。它不在任何提示里。你只能自己撞上它。']
   ];
   html += '<div class="rules">';
@@ -2943,8 +3114,15 @@ function chooseFinal(i){
   if(lock){ toast(lock); return; }
   var c = CHOICES[i];
   var preSan = S.san;
-  S.san = clamp(S.san - c.cost, 0, S.maxSan);
-  S.sanLost += c.cost;
+  if(S.san <= 0){
+    S.time = Math.max(0, S.time - 1);
+    S.zeroJitter = (S.zeroJitter || 0) + 1;
+    if(S.time <= 0) S.tooLate = true;
+    addLog('理智已空：结案的代价改由一个时段支付。');
+  }else{
+    S.san = clamp(S.san - c.cost, 0, S.maxSan);
+    S.sanLost += c.cost;
+  }
   var sanB = S.san >= 60 ? 0 : (S.san >= 45 ? 1 : (S.san >= 30 ? 2 : (S.san >= 15 ? 3 : 4)));
   var core = coreCount();
   var truth = Math.min(3, core + (S.ded.score >= 2 ? 1 : 0));
