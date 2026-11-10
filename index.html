@@ -538,6 +538,33 @@
   }
   .sanframe.gain{animation:sanframe 2.3s ease}
   .sanframe.time{animation:sanframe 2.3s ease}
+  #rift{position:fixed;inset:0;z-index:190;pointer-events:none;opacity:0;transition:opacity .16s linear}
+  #rift.on{opacity:1;pointer-events:auto}
+  #rift i{position:absolute;top:-2vh;bottom:-2vh;width:51%;background:#010304;display:block}
+  #rift .rl{left:0;transform-origin:right center;transform:scaleX(0);
+    box-shadow:8px 0 26px rgba(212,86,75,.6),8px 0 68px rgba(212,86,75,.26);
+    transition:transform .58s cubic-bezier(.66,0,.34,1)}
+  #rift .rr{right:0;transform-origin:left center;transform:scaleX(0);
+    box-shadow:-8px 0 26px rgba(212,86,75,.6),-8px 0 68px rgba(212,86,75,.26);
+    transition:transform .58s cubic-bezier(.66,0,.34,1)}
+  #rift.on .rl,#rift.on .rr{transform:scaleX(1)}
+  #rift::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;
+    background:linear-gradient(180deg,transparent,rgba(255,214,206,.9) 22%,rgba(212,86,75,.95) 50%,rgba(255,214,206,.9) 78%,transparent);
+    box-shadow:0 0 22px rgba(212,86,75,.9),0 0 60px rgba(212,86,75,.5);
+    opacity:0;transition:opacity .18s linear}
+  #rift.on::after{opacity:1;animation:riftseam .9s ease-out}
+  @keyframes riftseam{0%{opacity:1;transform:scaleY(.1)}30%{opacity:1;transform:scaleY(1)}100%{opacity:.35;transform:scaleY(1)}}
+  body.quake .top,body.quake .wrap{animation:quake .52s cubic-bezier(.36,.07,.19,.97) both}
+  @keyframes quake{
+    0%,100%{transform:translate3d(0,0,0)}
+    10%{transform:translate3d(-9px,4px,0) rotate(-.35deg)}
+    22%{transform:translate3d(8px,-5px,0) rotate(.4deg)}
+    34%{transform:translate3d(-7px,-3px,0) rotate(-.3deg)}
+    46%{transform:translate3d(6px,5px,0) rotate(.32deg)}
+    58%{transform:translate3d(-5px,2px,0) rotate(-.22deg)}
+    70%{transform:translate3d(4px,-3px,0) rotate(.18deg)}
+    84%{transform:translate3d(-2px,1px,0)}
+  }
   .sanframe.loss{--frame:rgba(212,86,75,.62);--frameglow:rgba(212,86,75,.25)}
   .sanframe.gain{--frame:rgba(87,179,104,.58);--frameglow:rgba(87,179,104,.22)}
   .sanframe.time{--frame:rgba(201,162,75,.58);--frameglow:rgba(201,162,75,.22)}
@@ -710,6 +737,7 @@
 <div class="fog fog-a"></div><div class="fog fog-b"></div><div class="scan"></div>
 <div class="sanflash" id="sanFlash"></div>
 <div class="sanframe" id="sanFrame"></div>
+<div id="rift"><i class="rl"></i><i class="rr"></i></div>
 <div class="dmlayer" id="dmLayer"></div>
 
 <header class="top">
@@ -893,6 +921,22 @@ const DM_TEXTS = [
   '别数了','潮在纸里','抬头','它在你背后','盖章','回廊在呼吸','第三页是湿的','不要读出声'
 ];
 const DM_GLYPHS = ['断','案','签','封','潮','门','齿','盲','林','笑','鳞','菌','翼'];
+const FORCED_HEADS = [
+  '封缄 · 祂已代签','批注 · 无落款','回执 · 墨还是湿的','附页 · 签名栏空着',
+  '影印 · 原件已不存在','补录 · 笔迹是你的','批示 · 来自没有舌头的嘴','用印 · 印泥有鳃'
+];
+const WHISPER_EMPTY = [
+  '低语重复了一遍，没有留下新的东西。',
+  '还是那一句。连停顿的位置都和上次一样。',
+  '它把你的名字念到第二遍，就忘了开头。',
+  '纸背的空处被磨得发亮，什么也没长出来。',
+  '这一次，雾只是经过，没有停下来。',
+  '声音在你耳边绕了一圈，从另一只耳朵出去了。',
+  '它想写点什么，笔尖是干的。',
+  '你听见它叹了口气——这声叹息也用过很多次了。',
+  '低语说自己已经说过这句了，然后又原样说了一遍。',
+  '没有新的印记。只剩一点熟悉得让人恶心的安静。'
+];
 
 const CLUES = {
   n_teng:{name:'藤连黑海',desc:'瓜藤的尽头不是土，是黑海。藤是活物的神经末梢，而你在它的一根血管上走。'},
@@ -2445,12 +2489,12 @@ function loseSan(n){
   if(S.san <= 0){
     S.time = Math.max(0, S.time - 1);
     S.zeroJitter = (S.zeroJitter || 0) + 1;
-    if(S.time <= 0) S.tooLate = true;
-    S.lastSanNote = '时段 −1 · 理智已空（当前 0）';
+    if(S.time <= 0){ S.tooLate = true; riftToFinal(); }
+    S.lastSanNote = '理智已空 · 时段 −1（当前 ' + S.time + '）';
     S.lastSanKind = 'time';
     if(typeof updateHud === 'function') updateHud();
-    addLog('理智已空：一个时段被雾吞掉了。');
-    setTimeout(function(){ toast(S.time <= 0 ? '理智已空 · 时段耗尽' : '理智已空 · 一个时段被消耗'); }, 180);
+    addLog('理智已空：这一次扣理智改由时段支付。');
+    setTimeout(function(){ toast(S.time <= 0 ? '理智已空 · 时段耗尽' : '理智已空 · 时段 −1'); }, 180);
     sanFx(0, 'time', '时段被吞');
     return 0;
   }
@@ -2475,11 +2519,16 @@ function loseSan(n){
   }
   if(before >= 50 && S.san < 50){
     if(!S.dmSeen){ S.dmSeen = true; S.dmPending = true; }
-    setTimeout(function(){ showForced('雾从纸缝里长出来，带着盐和鳃的味道。有人替你把下一页翻开了。', '低理智 · 弹幕已出现 · 点击它'); }, 600);
+    setTimeout(function(){ showForced('雾开始学你说话。它先学你的呼吸，再学你的名字；纸缝里长出盐和鳃的味道。', '低理智 · 弹幕已出现 · 点击它'); }, 600);
   }
   if(before > 30 && S.san <= 30 && S.san > 0) setTimeout(function(){ showForced(pick(FORCED_TEXTS), '崩解 · 印记开始显现'); }, 900);
   if(before > 15 && S.san <= 15 && S.san > 0) setTimeout(function(){ showForced('页码开始自己换位置。你先看见结尾，再看见开头。', '崩解 · 文字开始错位'); }, 900);
-  if(before > 0 && S.san <= 0) setTimeout(function(){ showForced('理性归零。本案由你承办，也由你结案。', '空壳 · 祂在等你签字'); }, 900);
+  if(before > 0 && S.san <= 0){
+    setTimeout(function(){ showForced('理性归零。本案由你承办，也由你结案。', '空壳 · 祂在等你签字'); }, 900);
+    if(!S.dmSeen){ S.dmSeen = true; S.dmPending = true; }
+    for(var k = 0; k < 12; k++) setTimeout(spawnDanmaku, 180 + k * 70);
+    if(typeof syncDanmaku === 'function') setTimeout(syncDanmaku, 220);
+  }
   return d;
 }
 function sanPenalty(){
@@ -2530,9 +2579,10 @@ function dropSigilIds(ids, payTime){
     var sanBefore = S.san;
     var cut = 0;
     gone.forEach(function(){ cut += 1 + Math.floor(Math.random() * 31); });
+    cut = Math.min(40, cut);
     if(cut > 0 && S.san > 0) loseSan(cut);
     S.time = Math.max(0, S.time - gone.length);
-    if(S.time <= 0) S.tooLate = true;
+    if(S.time <= 0){ S.tooLate = true; riftToFinal(); }
     realSan = sanBefore - S.san;
     realTime = timeBefore - S.time;
     S.lastSanNote = '失印清算 · 理智 −' + realSan + ' · 时段 −' + realTime + '（SAN ' + S.san + ' · 时段 ' + S.time + '）';
@@ -2607,11 +2657,11 @@ function healSan(n){
   var r = sigilLeaver();
   if(r){
     var nm = r.sig ? r.sig.name : '?';
-    S.lastSigilNote = '恢复理智 · 失印「' + nm + '」· 不扣时段';
+    S.lastSigilNote = '恢复理智 · 失印「' + nm + '」· 不扣理智、不扣时段';
     S.lastSigilKind = 'loss';
     updateHud();
     var msg = r.who + '离你而去，印记「' + nm + '」熄灭';
-    addLog(msg + '。恢复理智不会减少时段，但这枚印记本次探索不再获得。');
+    addLog(msg + '。恢复理智不掉理智、不扣时段，但这枚印记本次探索不再获得。');
     setTimeout(function(){ toast(msg + '。'); }, 520);
     showSigilLossCard([r]);
   }
@@ -2682,7 +2732,8 @@ function spawnDanmaku(){
   if(!S || S.san > 50) return;
   if(['hub','site','result','event','night','ded','final'].indexOf(S.node) < 0) return;
   var layer = document.getElementById('dmLayer');
-  if(!layer || layer.children.length >= 42) return;
+  if(!layer) return;
+  if(layer.children.length >= 42) layer.removeChild(layer.firstChild);
   var d = document.createElement('div');
   var scroll = Math.random() < 0.3;
   var raw = !scroll && Math.random() < 0.62;
@@ -2712,12 +2763,12 @@ function spawnDanmaku(){
     }
   }
 }
-function showForced(main, sub){
+function showForced(main, sub, head){
   var old = document.querySelector('.forced');
   if(old) old.remove();
   var d = document.createElement('div');
   d.className = 'forced';
-  d.innerHTML = '<div class="fh">封缄 · 祂已代签</div>' + esc(main) + (sub ? ('<div class="fs">' + esc(sub) + '</div>') : '');
+  d.innerHTML = '<div class="fh">' + esc(head || pick(FORCED_HEADS)) + '</div>' + esc(main) + (sub ? ('<div class="fs">' + esc(sub) + '</div>') : '');
   document.body.appendChild(d);
   setTimeout(function(){ if(d.parentNode) d.remove(); }, 6000);
 }
@@ -2731,7 +2782,7 @@ function grantSigil(){
     var st = pick(['inv','will','luck']);
     S.buff[st] = (S.buff[st] || 0) + 8;
     addLog('印记重复：下一次' + STAT_LABEL[st] + '判定 +8。');
-    return null;
+    return {buffOnly: st};
   }
   var t = dedTier();
   var weights = pool.map(function(x){
@@ -2774,7 +2825,11 @@ function onDanmaku(el){
   el.remove();
   var chance = S.san <= 15 ? 0.92 : (S.san <= 30 ? 0.74 : 0.55);
   var sig = Math.random() < chance ? grantSigil() : null;
-  showForced(pick(FORCED_TEXTS), sig ? ((sig.lostNow ? '印记被压灭：' : '印记显现：') + sig.glyph + ' · ' + sig.name) : '低语重复了一遍，没有留下新的东西。');
+  var sub;
+  if(!sig) sub = pick(WHISPER_EMPTY);
+  else if(sig.buffOnly) sub = '印记不再重复 · 下一次' + STAT_LABEL[sig.buffOnly] + '判定 +8';
+  else sub = (sig.lostNow ? '印记被压灭：' : '印记显现：') + sig.glyph + ' · ' + sig.name;
+  showForced(pick(FORCED_TEXTS), sub);
   updateHud();
 }
 
@@ -2792,8 +2847,8 @@ function initRun(){
   });
   var ownedSigils = carry.length;
   var cutEach = carry.map(function(id){ return 1 + Math.floor(Math.random() * 31); });
-  var sanCut = cutEach.reduce(function(a, b){ return a + b; }, 0);
-  var startSan = Math.max(0, 80 - sanCut);
+  var sanCut = Math.min(70, cutEach.reduce(function(a, b){ return a + b; }, 0));
+  var startSan = Math.max(10, 80 - sanCut);
   var carryNames = carry.map(function(id, i){
     var sg = sigilById(id);
     return sg ? (sg.glyph + ' ' + sg.name + ' −' + cutEach[i]) : '';
@@ -2814,7 +2869,7 @@ function initRun(){
     sigils: carry.slice(), sigilBan: [], sanHealed: 0, leavers: [], zeroJitter: 0,
     lastSanNote: '', lastSanKind: '', lastSigilNote: '', lastSigilKind: '',
     dmSeen: false, dmPending: false,
-    flags: {}, tooLate: false, over: false, sanLost: 0, godEvent: false, godSigil: '',
+    flags: {}, tooLate: false, collapsed: false, over: false, sanLost: 0, godEvent: false, godSigil: '',
     node: 'hub', curSite: '', curEvent: '', curNight: '',
     result: null, log: [], restCount: 0, ending: null
   };
@@ -2857,7 +2912,7 @@ function render(){
   document.body.classList.toggle('san-15', !!(S && S.san <= 15));
   document.body.classList.toggle('san-zero', !!(S && S.san <= 0));
   if(!S){ renderTitle(); lastNode = 'title'; stopDanmaku(true); return; }
-  if(S.node === 'hub' && S.time === 1 && !S.godEvent && S.eventsSeen && S.eventsSeen.length === 0 && ownedSigils().length){
+  if(S.node === 'hub' && S.time === 1 && !S.godEvent && ownedSigils().length){
     triggerGodEvent();
     return;
   }
@@ -2970,10 +3025,10 @@ function renderTitle(){
     ['结局','100 条结局按五种终局归类，不再按出身拆分。理智状态 × 真相层级决定同一终局里的具体落点。'],
     ['成长','部分简单结局会永久提升三项总和上限 +10，最多 +60。它们只需要带着 0 卷残页走到某个终局。'],
     ['评级','综合 S ≥80、A ≥70、B ≥60、C <60。部分异闻要求特定评级；基础上限 180 时最高只能到 B，得先靠成长结局把上限堆高。'],
-    ['印记','上一局结束时留在你身上的印记，会原样跟着进入下一局，每枚在开局随机夺走 1~31 点理智；图鉴只负责记录，不会自动把印记塞给你。理智归零后，每次扣理智改为消耗 1 个时段，文字开始错位。'],
-    ['三系','外神、旧神、古神三类互相排斥。某一类达到 2 枚时，其余两系全部熄灭；每失去一枚印记，理智随机 -1~31，时段 -1。若开局同时带着门、笑、林三枚外神印记，理智直接归零，所有印记尽失，图鉴也会被一并清空。'],
+    ['印记','上一局结束时留在你身上的印记，会原样跟着进入下一局，每枚在开局随机夺走 1~31 点理智；图鉴只负责记录，不会自动把印记塞给你。理智归零后，再扣理智改为消耗 1 个时段，文字开始错位。'],
+    ['三系','外神、旧神、古神三类互相排斥。某一类达到 2 枚时，其余两系全部熄灭；每失去一枚印记，理智随机 -1~31（单次清算最多 -40），时段 -1。若开局同时带着门、笑、林三枚外神印记，理智直接归零，所有印记尽失，图鉴也会被一并清空。'],
     ['失印','恢复理智时，随机一枚印记熄灭，并有一位同行者离你而去；用这种方式失印不扣理智、也不扣时段。'],
-    ['末段','若你还没经历过任何事件，且时段只剩 1，雾里会走来一位属于你印记的神。祂会带走最后一个时段。'],
+    ['末段','还带着印记、而时段只剩 1 时，雾里会走来一位属于你印记的神。祂会带走最后一个时段，结局落在该印记对应的那一格。'],
     ['回响','结案时身上带着的印记会改写结局的收尾与标题：同一格结局，带不同印记就是不同的一幕。回廊会标出替你收尾的那一枚。'],
     ['隐藏','100 条之外还有第 101 幕。它不在任何提示里。你只能自己撞上它。']
   ];
@@ -3022,7 +3077,7 @@ function renderCreate(){
   var sanLine = carryPrev.length
     ? ('理智 SAN 80 − 随行印记 ' + carryPrev.length + ' 枚（每枚随机 1~31）= <b style="color:#ffc2b8">' + sanPrevMin + ' ~ ' + sanPrevMax + '</b>。随行：' + carryPrevNames + '。')
     : '理智 SAN 80，你身上没有随行的印记。';
-  html += '<div class="qr">出身加成：侦查 ' + (a.inv >= 0 ? '+' : '') + a.inv + ' · 意志 ' + (a.will >= 0 ? '+' : '') + a.will + ' · 幸运 ' + (a.luck >= 0 ? '+' : '') + a.luck + '<br>最终值 = 输入值 + 出身加成（最高 99，加成可把单项推过 90）。出身加成不计入合计上限；三项基础值合计上限 ' + cap + (META.bonus ? '（基础 180 + 永久加成 ' + META.bonus + '）' : '') + '。' + sanLine + '<br>属性被动：侦查 ≥65 勘察现场额外补一条线索；意志每 30 点减免 1 点理智损失；幸运豁免成功时完全免除该次理智损失。</div>';
+  html += '<div class="qr">目标：在 ' + START_TIME + ' 个时段内查清镇子，然后结案。<br>出身加成：侦查 ' + (a.inv >= 0 ? '+' : '') + a.inv + ' · 意志 ' + (a.will >= 0 ? '+' : '') + a.will + ' · 幸运 ' + (a.luck >= 0 ? '+' : '') + a.luck + '<br>最终值 = 输入值 + 出身加成（最高 99，加成可把单项推过 90）。出身加成不计入合计上限；三项基础值合计上限 ' + cap + (META.bonus ? '（基础 180 + 永久加成 ' + META.bonus + '）' : '') + '。' + sanLine + '<br>属性被动：侦查 ≥65 勘察现场额外补一条线索；意志每 30 点减免 1 点理智损失；幸运豁免成功时完全免除该次理智损失。</div>';
   html += '<div class="endbtns"><button class="btn" data-a="rollall">一键掷骰</button><button class="btn gold" data-a="confirm">确认建档</button><button class="btn" data-a="toTitle">返回标题</button></div>';
   html += '</div>';
   stageEl.innerHTML = html;
@@ -3077,6 +3132,13 @@ function renderHub(){
   html += '<div class="kick">雾港镇 · 第 ' + (13 - S.time) + ' 时段</div>';
   html += '<h2>雾里的十个地方</h2>';
   html += '<div class="sub">' + (S.time > 0 ? ('还能走 ' + S.time + ' 个时段。每个现场消耗 1 段。') : '时段已经用尽。雾在合拢，你只能结案。') + '</div>';
+  if(S.time === 2 && ownedSigils().length){
+    html += '<div class="sub" style="color:#d4564b">只剩两个时段，而你身上带着印记。雾里的东西开始往这边走了。</div>';
+  } else if(S.san <= 20){
+    html += '<div class="sub">理智所剩无几。休息能换回一点清醒，但会失去一枚印记；硬撑下去，每次扣理智都会吞掉一个时段。</div>';
+  } else if(S.clues.length === 0 && S.done.length === 0){
+    html += '<div class="sub">先挑一个现场。查完一处会留下线索，线索够多，结案时才有的写。</div>';
+  }
   html += '<div class="progress"><span>现场 <b>' + S.done.length + '/' + SITE_ORDER.length + '</b></span><span>线索 <b>' + S.clues.length + '</b></span><span>残卷 <b>' + core + '/4</b></span><span>推理 <b>' + (S.ded.score >= 0 ? S.ded.score + '/3' : '—') + '</b></span><span>SAN <b>' + S.san + '</b></span></div>';
   html += '</div><div class="mapgrid">';
   S.mapOrder.forEach(function(sid, i){
@@ -3795,6 +3857,26 @@ function submitDed(){
   addLog('推理完成：' + ok + '/3' + (insight.length ? '，洞察线索 +' + insight.length : '') + (healed ? '，理智 +' + healed : '') + (coreId ? '，残卷 +1' : '') + '。');
   saveRun();
   render();
+}
+
+function riftToFinal(){
+  if(!S || S.over || S.collapsed) return;
+  if(S.node === 'final' || S.node === 'ending') return;
+  S.collapsed = true;
+  S.tooLate = true;
+  var body = document.body;
+  var rift = document.getElementById('rift');
+  body.classList.add('quake');
+  setTimeout(function(){
+    body.classList.remove('quake');
+    if(rift) rift.classList.add('on');
+  }, 260);
+  setTimeout(function(){
+    openFinal();
+  }, 1120);
+  setTimeout(function(){
+    if(rift) rift.classList.remove('on');
+  }, 1760);
 }
 
 function openFinal(){
