@@ -391,6 +391,73 @@
     display:inline-flex;align-items:center;gap:5px;line-height:1.2}
   .sgchip b{font-family:var(--serif);color:var(--red);font-weight:600}
   .sgchip:active{background:rgba(212,86,75,.2)}
+  .sgchip.sgnew{animation:sgnew 1.15s ease}
+  @keyframes sgnew{
+    0%{transform:scale(.72);box-shadow:0 0 0 rgba(201,162,75,0);border-color:var(--line2)}
+    30%{transform:scale(1.1);box-shadow:0 0 20px rgba(201,162,75,.55);border-color:var(--gold);color:#fff}
+    100%{transform:scale(1);box-shadow:none}
+  }
+  .sanbox{position:relative}
+  .sanbox.hit-loss{animation:sanhitloss .72s ease}
+  .sanbox.hit-gain{animation:sanhitgain .8s ease}
+  .sanbox.hit-time{animation:sanhittime .8s ease}
+  @keyframes sanhitloss{
+    0%,100%{border-color:var(--line);box-shadow:none;transform:none}
+    18%{border-color:var(--red);box-shadow:0 0 0 1px rgba(212,86,75,.55),0 0 30px rgba(212,86,75,.38);transform:translateX(0)}
+    32%{transform:translateX(-2px)}44%{transform:translateX(2px)}58%{transform:translateX(-1px)}
+  }
+  @keyframes sanhitgain{
+    0%,100%{border-color:var(--line);box-shadow:none}
+    30%{border-color:var(--green);box-shadow:0 0 0 1px rgba(87,179,104,.5),0 0 26px rgba(87,179,104,.35)}
+  }
+  @keyframes sanhittime{
+    0%,100%{border-color:var(--line);box-shadow:none}
+    30%{border-color:var(--gold);box-shadow:0 0 0 1px rgba(201,162,75,.5),0 0 26px rgba(201,162,75,.35)}
+  }
+  .sanflash{position:fixed;inset:0;z-index:38;pointer-events:none;opacity:0}
+  .sanflash.loss{background:radial-gradient(ellipse at 50% 18%,rgba(212,86,75,.28),transparent 62%);animation:sanflash .72s ease}
+  .sanflash.gain{background:radial-gradient(ellipse at 50% 18%,rgba(87,179,104,.24),transparent 62%);animation:sanflash .82s ease}
+  .sanflash.time{background:radial-gradient(ellipse at 50% 18%,rgba(201,162,75,.26),transparent 62%);animation:sanflash .72s ease}
+  .sanflash.loss.big{background:radial-gradient(ellipse at 50% 18%,rgba(212,86,75,.42),transparent 68%)}
+  @keyframes sanflash{0%{opacity:0}16%{opacity:1}100%{opacity:0}}
+  .sanfloat{position:fixed;left:50%;top:36vh;transform:translate(-50%,0);z-index:90;
+    pointer-events:none;font-family:var(--sans);font-size:24px;font-weight:700;
+    letter-spacing:.08em;text-align:center;color:#ff8a7c;
+    text-shadow:0 0 18px currentColor;animation:sanfloat 1.25s ease forwards}
+  .sanfloat b{display:block;font-size:1em}
+  .sanfloat small{display:block;margin-top:5px;font-size:10px;letter-spacing:.3em;
+    font-weight:400;opacity:.85;color:inherit}
+  .sanfloat.loss{color:#ff8a7c}
+  .sanfloat.gain{color:#8fe0a2}
+  .sanfloat.time{color:#e3c377}
+  .sanfloat.big{font-size:38px}
+  @keyframes sanfloat{
+    0%{opacity:0;transform:translate(-50%,10px) scale(.9)}
+    16%{opacity:1;transform:translate(-50%,0) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-38px) scale(1.02)}
+  }
+  .sigcard{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);z-index:125;
+    width:min(84vw,360px);pointer-events:none;text-align:center;padding:18px 18px 16px;
+    border:1px solid rgba(201,162,75,.5);border-radius:14px;
+    background:linear-gradient(180deg,rgba(20,16,10,.96),rgba(8,6,5,.98));
+    box-shadow:0 0 0 1px rgba(201,162,75,.12),0 24px 70px rgba(0,0,0,.7),0 0 46px rgba(201,162,75,.18);
+    animation:sigcard 3.1s ease forwards}
+  .sigcard.loss{border-color:rgba(212,86,75,.55);
+    background:linear-gradient(180deg,rgba(24,8,8,.97),rgba(8,4,4,.99));
+    box-shadow:0 0 0 1px rgba(212,86,75,.12),0 24px 70px rgba(0,0,0,.75),0 0 46px rgba(212,86,75,.2)}
+  .sigcard .sk{font-family:var(--sans);font-size:9px;letter-spacing:.34em;color:var(--gold);margin-bottom:8px}
+  .sigcard.loss .sk{color:var(--red)}
+  .sigcard .sg{font-family:var(--serif);font-size:44px;line-height:1.1;color:#f0dfb8;
+    text-shadow:0 0 24px rgba(201,162,75,.55)}
+  .sigcard.loss .sg{color:#e7a49b;text-shadow:0 0 24px rgba(212,86,75,.5);filter:grayscale(.3)}
+  .sigcard .sn{font-family:var(--serif);font-size:18px;letter-spacing:.12em;color:#f4eadc;margin-top:6px}
+  .sigcard .sd{font-family:var(--sans);font-size:11px;line-height:1.7;color:var(--muted);margin-top:6px}
+  @keyframes sigcard{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.86);filter:blur(4px)}
+    10%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(0)}
+    78%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.04);filter:blur(3px)}
+  }
   .dmlayer{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
   .dm{position:absolute;left:50%;white-space:nowrap;font-family:var(--sans);font-size:11.5px;
     letter-spacing:.06em;color:rgba(226,142,132,.9);background:rgba(14,4,5,.62);
@@ -508,6 +575,7 @@
 </head>
 <body>
 <div class="fog fog-a"></div><div class="fog fog-b"></div><div class="scan"></div>
+<div class="sanflash" id="sanFlash"></div>
 <div class="dmlayer" id="dmLayer"></div>
 
 <header class="top">
@@ -1918,6 +1986,7 @@ function updateHud(){
   if(sanBonus() > 0) parts.push('清明 · 判定 +' + sanBonus());
   if(sanPenalty() > 0) parts.push(sanName() + ' · 判定 -' + sanPenalty());
   if(S.shield) parts.push('护盾 ' + S.shield);
+  if(S.san > 50 && ownedSigils().length) parts.push('印记沉默 · SAN≤50 显现');
   document.getElementById('hBuff').textContent = parts.join(' · ');
   var sb = document.getElementById('sigilBar');
   if(sb){
@@ -1925,13 +1994,62 @@ function updateHud(){
     if(S.san <= 50 && vis.length){
       sb.className = 'sigilbar on';
       sb.innerHTML = vis.map(function(x){
-        return '<span class="sgchip" data-a="sigilinfo" data-id="' + x.id + '"><b>' + x.glyph + '</b>' + x.name.replace('之印记', '') + '</span>';
+        return '<span class="sgchip' + (x.id === SIGIL_PULSE_ID ? ' sgnew' : '') + '" data-a="sigilinfo" data-id="' + x.id + '"><b>' + x.glyph + '</b>' + x.name.replace('之印记', '') + '</span>';
       }).join('');
     }else{
       sb.className = 'sigilbar';
       sb.innerHTML = '';
     }
   }
+}
+var SIGIL_PULSE_ID = null;
+function sanFx(delta, kind, label){
+  var box = document.querySelector('.sanbox');
+  if(box){
+    box.classList.remove('hit-loss','hit-gain','hit-time');
+    void box.offsetWidth;
+    box.classList.add(kind === 'gain' ? 'hit-gain' : (kind === 'time' ? 'hit-time' : 'hit-loss'));
+    setTimeout(function(){ box.classList.remove('hit-loss','hit-gain','hit-time'); }, 900);
+  }
+  var f = document.getElementById('sanFlash');
+  if(f){
+    f.className = 'sanflash';
+    void f.offsetWidth;
+    f.className = 'sanflash ' + (kind === 'gain' ? 'gain' : (kind === 'time' ? 'time' : 'loss')) + (Math.abs(delta) >= 10 ? ' big' : '');
+  }
+  var olds = document.querySelectorAll('.sanfloat');
+  for(var i = 0; i < olds.length; i++) olds[i].remove();
+  var d = document.createElement('div');
+  d.className = 'sanfloat ' + kind + (Math.abs(delta) >= 10 ? ' big' : '');
+  var txt = kind === 'time' ? '时段 −1' : ('理智 ' + (delta > 0 ? '+' : '−') + Math.abs(delta));
+  d.innerHTML = '<b>' + txt + '</b>' + (label ? '<small>' + esc(label) + '</small>' : '');
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, 1400);
+}
+function showSigilCard(o){
+  var old = document.querySelector('.sigcard');
+  if(old) old.remove();
+  var d = document.createElement('div');
+  d.className = 'sigcard ' + (o.kind || 'gain');
+  d.innerHTML = '<div class="sk">' + esc(o.kind === 'loss' ? '印记熄灭' : '获得印记') + '</div>'
+    + '<div class="sg">' + esc(o.glyph || '×') + '</div>'
+    + '<div class="sn">' + esc(o.name || '') + '</div>'
+    + '<div class="sd">' + esc(o.sub || '') + '</div>';
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, 3200);
+}
+function showSigilLossCard(gone){
+  if(!gone || !gone.length) return;
+  var first = gone[0];
+  var names = gone.map(function(g){ return g.sig ? g.sig.name : '印记'; }).join('、');
+  var whos = [];
+  gone.forEach(function(g){ if(g.who && whos.indexOf(g.who) < 0) whos.push(g.who); });
+  showSigilCard({
+    kind:'loss',
+    glyph:first.sig ? first.sig.glyph : '×',
+    name:gone.length > 1 ? (gone.length + ' 枚印记熄灭') : names,
+    sub:names + ' · ' + whos.join('、') + '离你而去 · 本局不再获得'
+  });
 }
 
 /* ---------- 小工具 ---------- */
@@ -1988,6 +2106,7 @@ function loseSan(n){
     if(S.time <= 0) S.tooLate = true;
     addLog('理智已空：一个时段被雾吞掉了。');
     setTimeout(function(){ toast(S.time <= 0 ? '理智已空 · 时段耗尽' : '理智已空 · 一个时段被消耗'); }, 180);
+    sanFx(0, 'time', '时段被吞');
     return 0;
   }
   var before = S.san;
@@ -1998,6 +2117,14 @@ function loseSan(n){
   }
   S.san = clamp(S.san - d, 0, S.maxSan);
   S.sanLost += d;
+  if(d > 0){
+    var band = '';
+    if(S.san <= 0 && before > 0) band = '空壳';
+    else if(S.san <= 15 && before > 15) band = '文字错位';
+    else if(S.san <= 30 && before > 30) band = '崩解';
+    else if(S.san <= 50 && before > 50) band = '低理智';
+    sanFx(-d, 'loss', band);
+  }
   if(before >= 50 && S.san < 50){
     if(!S.dmSeen){ S.dmSeen = true; S.dmPending = true; }
     setTimeout(function(){ showForced('雾从纸缝里长出来，带着盐和鳃的味道。有人替你把下一页翻开了。', '低理智 · 弹幕已出现 · 点击它'); }, 600);
@@ -2041,6 +2168,8 @@ function healSan(n){
   S.san = clamp(S.san + n, 0, S.maxSan);
   var gained = S.san - before;
   if(gained <= 0) return;
+  var band = (before <= 0 && S.san > 0) ? '脱离空壳' : ((before <= 15 && S.san > 15) ? '文字归位' : '');
+  sanFx(gained, 'gain', band);
   S.sanHealed = (S.sanHealed || 0) + gained;
   var gone = [];
   while(S.sanHealed >= 10){
@@ -2052,6 +2181,7 @@ function healSan(n){
     var msg = gone.map(function(g){ return g.who + '离你而去，印记「' + (g.sig ? g.sig.name : '?') + '」熄灭'; }).join('；');
     addLog(msg + '。本次探索不再获得这些印记。');
     setTimeout(function(){ toast(msg + '。本次探索不再获得。'); }, 520);
+    showSigilLossCard(gone);
   }
 }
 function sigilById(id){
@@ -2190,6 +2320,12 @@ function grantSigil(){
     saveMeta();
   }
   addLog('获得印记：' + s.name + '（' + s.deity + '）。');
+  SIGIL_PULSE_ID = s.id;
+  setTimeout(function(){ SIGIL_PULSE_ID = null; updateHud(); }, 1300);
+  showSigilCard({
+    kind:'gain', glyph:s.glyph, name:s.name,
+    sub:s.deity + ' · ' + (STAT_LABEL[s.stat] || '对应属性') + ' +6（SAN≤50 生效）'
+  });
   return s;
 }
 function onDanmaku(el){
@@ -2199,7 +2335,6 @@ function onDanmaku(el){
   var sig = Math.random() < chance ? grantSigil() : null;
   showForced(pick(FORCED_TEXTS), sig ? ('印记显现：' + sig.glyph + ' · ' + sig.name) : '低语重复了一遍，没有留下新的东西。');
   updateHud();
-  if(sig) toast('获得印记：' + sig.name + '（' + sig.deity + '）');
 }
 
 function initRun(){
@@ -2239,6 +2374,7 @@ function initRun(){
   saveRun();
   render();
   toast(ownedSigils ? ('雾合上了。印记 -' + (80 - startSan) + ' 理智，当前 SAN ' + startSan + '。') : ('雾合上了。你有 ' + START_TIME + ' 个时段。'));
+  if(ownedSigils) setTimeout(function(){ sanFx(startSan - 80, 'loss', '随行印记'); }, 450);
 }
 
 /* ---------- 渲染 ---------- */
@@ -3119,9 +3255,12 @@ function chooseFinal(i){
     S.zeroJitter = (S.zeroJitter || 0) + 1;
     if(S.time <= 0) S.tooLate = true;
     addLog('理智已空：结案的代价改由一个时段支付。');
+    sanFx(0, 'time', '时段被吞');
   }else{
+    var cost = Math.min(c.cost, S.san);
     S.san = clamp(S.san - c.cost, 0, S.maxSan);
     S.sanLost += c.cost;
+    if(cost > 0) sanFx(-cost, 'loss', S.san <= 0 ? '空壳' : '');
   }
   var sanB = S.san >= 60 ? 0 : (S.san >= 45 ? 1 : (S.san >= 30 ? 2 : (S.san >= 15 ? 3 : 4)));
   var core = coreCount();
@@ -3230,7 +3369,12 @@ function submitSigil(id){
   var allOuter = OUTER_IDS.every(function(x){ return META.submit.indexOf(x) >= 0; });
   var triple = allOuter && !META.outerDone;
   if(allOuter) META.outerDone = true;
-  if(triple) S.san = 0;
+  if(triple){
+    var preS = S.san;
+    S.san = 0;
+    if(preS > 0) sanFx(-preS, 'loss', '三柱神 · 空壳');
+    else sanFx(0, 'time', '三柱神 · 空壳');
+  }
   var slot = BOUND_BY_SIGIL[id];
   var ci = Math.floor((slot - 1) / 20);
   var rest = (slot - 1) % 20;
