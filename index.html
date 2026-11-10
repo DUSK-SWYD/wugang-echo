@@ -133,6 +133,10 @@
   @keyframes scenein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .kick{font-family:var(--sans);font-size:9.5px;letter-spacing:.24em;color:var(--abyss);margin-bottom:5px}
   .scene h2{margin:0 0 4px;font-size:clamp(19px,5.4vw,22px);letter-spacing:.06em;color:#eef6f3;font-weight:600;line-height:1.4}
+  .scene.godscene{border-left-color:var(--red);
+    box-shadow:0 0 52px rgba(120,20,20,.22),0 22px 56px rgba(0,0,0,.52)}
+  .scene.godscene h2{color:#f0d9d2;
+    text-shadow:0 0 20px rgba(212,86,75,.5),-2px 0 rgba(90,220,255,.25),2px 0 rgba(255,40,20,.25)}
   .scene .sub{font-family:var(--sans);font-size:12px;color:var(--dim);margin-bottom:12px;letter-spacing:.03em;line-height:1.65}
   .body p{margin:.7em 0;font-size:15.5px;line-height:1.85;color:#cbd9d5;text-align:justify;text-justify:inter-ideograph}
   .body p:first-child{margin-top:0}
@@ -256,6 +260,7 @@
   .unlock{margin:14px auto 0;max-width:520px;padding:8px 12px;border:1px dashed var(--gold-dim);
     border-radius:8px;font-family:var(--sans);font-size:11.5px;color:var(--gold);line-height:1.7}
   .unlock.growth{border-style:solid;border-color:var(--teal);color:var(--teal);background:rgba(95,182,168,.06)}
+  .unlock.echo{border-style:solid;border-color:rgba(169,139,223,.42);color:#c9b6ee;background:rgba(169,139,223,.06)}
   .fogcount{margin-top:12px;font-family:var(--sans);font-size:11px;color:var(--dim);letter-spacing:.08em}
   .fogcount b{color:var(--gold)}
   .endbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:20px}
@@ -270,6 +275,25 @@
   .tone-red h2{color:var(--red)}
   .tone-purple h2{color:var(--purple)}
   .tone-void h2{color:#e8d9a8;text-shadow:0 0 30px rgba(201,162,75,.35)}
+  .ending.collapse{border-color:rgba(212,86,75,.45);
+    box-shadow:0 0 46px rgba(120,20,20,.22),0 30px 80px rgba(0,0,0,.6)}
+  .ending.collapse h2{color:#f0d9d2;animation:endglitch 3.6s steps(2,end) infinite;
+    text-shadow:0 0 20px rgba(212,86,75,.5),-2px 0 rgba(90,220,255,.32),2px 0 rgba(255,40,20,.32)}
+  @keyframes endglitch{
+    0%,100%{transform:none;opacity:1}
+    44%{transform:translateX(-1.5px) skewX(-2deg);opacity:.94}
+    47%{transform:translateX(2px) skewX(2deg);opacity:.8}
+    49%{transform:none;opacity:1}
+    76%{opacity:.9}
+    78%{opacity:1}
+  }
+  .ending.collapse .ebody p{animation:endtext 7s ease-in-out infinite}
+  .ending.collapse .ebody p:nth-child(2n){animation-delay:-3.5s}
+  @keyframes endtext{
+    0%,100%{text-shadow:none;filter:none}
+    48%{text-shadow:0 0 8px rgba(212,86,75,.22);filter:blur(.2px)}
+    52%{filter:none}
+  }
 
   .hero{text-align:center;padding:26px 0 8px}
   .sigil{width:86px;height:86px;margin:0 auto 16px;position:relative;display:grid;place-items:center;
@@ -820,6 +844,17 @@ function boundTitle(v){
 }
 const TRIPLE_TEXT = '门、笑、林，三枚柱神印记在你身上连成一条线。你不再是一个人，你是它们共用的一页纸。\n\n所有别的印记都暗了下去。你看不见它们了——它们不配与这三位并列。最后一份卷宗自己翻开，里面没有案情，只有一行你的名字，和三个空着的签名栏。\n\n你签完第三个名字，理性归零。雾港镇从地图上消失的那一秒，没有人听见潮声。';
 const TRIPLE_VERDICT = '三柱神齐。你已不属于任何一桩案子，你是案子本身。';
+
+/* 三类印记互相排斥：外神 / 旧神 / 古神。 */
+const SIGIL_FACTION = {
+  gate:'outer', laugh:'outer', forest:'outer', blind:'outer',
+  tide:'old', scales:'old',
+  fungi:'elder', teeth:'elder', wing:'elder'
+};
+const FACTION_NAME = {outer:'外神', old:'旧神', elder:'古神'};
+function sigilFaction(id){
+  return SIGIL_FACTION[id] || 'elder';
+}
 
 const FORCED_TEXTS = [
   '第〇三一号：已封缄。落款处生着鳃。',
@@ -1458,7 +1493,7 @@ const DED_BANK = [
 /* =========================================================
    结局矩阵：5 抉择 × 5 理智层 × 4 真相层 = 100，其中 1–6 号为异闻幕
    ========================================================= */
-const SAN_NAMES = ['清醒','镇定','动摇','崩坏','将熄'];
+const SAN_NAMES = ['清醒','镇定','动摇','沦陷','空壳'];
 const TRUTH_NAMES = ['一无所知','半页残卷','接近真相','完整卷宗'];
 
 const CHOICES = [
@@ -1823,6 +1858,137 @@ const TRUTH_PARAS = [
   ]
 ];
 
+/* 理智「空壳」层的专属段落：每个抉择一组，避免最低理智的 20 条结局共用同一段 */
+const VOID_OPEN = [
+  '你贴着封条的手已经不听使唤。镇子在你眼里裂成两层：一层是墙，一层是纸。你分不清自己正把封条贴在哪一层上。',
+  '你坐进椅子，肩章从两边垂下来，像两片湿透的鳃。走廊里有人立正，你听见自己的骨头先回答了「到」。',
+  '码头在你脚下倾斜。你捏着船票，却读不出上面的字——它们正慢慢游向纸边，像一群离岸的鱼。',
+  '灯芯已经烧到你手指。火光里没有镇子，只有一排排眼眶。你把自己的名字添进去，火才勉强稳住。',
+  '证词上的字开始互相吞吃。你想补上缺的那句，笔尖却从纸背穿了过去，戳到一只正在写字的手。'
+];
+const VOID_TRUTH = [
+  [
+    '你其实什么都没查清。封条下的东西翻了个身，你听见井口在数你的呼吸。',
+    '半页残卷贴在你掌心，字从皮肤底下浮出来。你按得越紧，它们游得越深。',
+    '律令的纹路爬满你的手臂。你念到第三十一句时，海面下有人替你念了第三十二句。',
+    '四页拼成的名字在你舌头上展开。你念反了它，于是被封住的变成你自己；井口在你胸口合拢。'
+  ],
+  [
+    '你接过了警徽，却想不起该把它别在哪。镜子里的肩章自己长了出来，正一寸寸勒进锁骨。',
+    '抽屉里的残卷开始替你写笔录。你按住纸，它从指缝里继续写：嫌疑人，王警官。',
+    '四字词从你嘴里成串地掉出来，落地就变成牙齿。你数了数，三十一颗，正好一排。',
+    '完整卷宗翻到最后一页，签名栏里是你的脸。你坐进那把椅子，听见门从外面锁上。'
+  ],
+  [
+    '船没有开。你一直站在码头上，看着自己的背影上了船，越走越远。',
+    '残卷在海里泡开，浮成一张没有五官的脸。它朝你张嘴，吐出一口你熟悉的雾。',
+    '四页在你胃里拼齐。你听见船底有人敲了三下，又敲了三下，节奏和你的心跳一样。',
+    '船票上的终点显出来了：雾港镇。你回头，发现自己从未离开，海只是把岸翻了个面。'
+  ],
+  [
+    '灯点起来了，可你没有影子。镇上的窗一扇扇亮起，每扇窗里都坐着同一个你。',
+    '烧掉的残卷在火里恢复原样，字却是反的。你凑近去读，眉毛先被燎没了。',
+    '井底三十一个人同时抬头。你数到第三十二个，才发现自己也在下面，正举着灯。',
+    '完整的真相烧成灰，灰在你眼眶里重新聚拢。你终于看清：灯罩里一直只有一颗眼珠，正在看你。'
+  ],
+  [
+    '你交上去的证词缺了一页。补上的那一页，是从你脑子里直接撕下来的。',
+    '残卷贴在你舌下。你每说一句真话，它就替你删掉一个字，直到你说的话和它一模一样。',
+    '你写的每句话都对，连起来却是一份对你的起诉书。你在被告席上坐下，才发现椅子是温的。',
+    '四页拼成完整的真相。你在末尾写下「此处字迹不清」，抬头看见所有字都变成了你的指纹。'
+  ]
+];
+const VOID_OPEN2 = [
+  '封条在你手里变成一条湿舌头。你把它按在井口，它却反过来舔你的指缝，尝出你藏起来的那个名字。',
+  '制服里没有身体，只有一排空衣钩。你坐下时，听见三十一副肩章同时轻轻碰响，像在点名。',
+  '海面竖起一道纸墙。船撞上去没有声音，只有墨迹慢慢洇开，把码头和你一起泡软。',
+  '你点燃的不是灯，是自己的瞳孔。火从眼眶里往外烧，照亮的每个角落都站着一个没有脸的自己。',
+  '你开口作证，吐出来的却是别人的证词。它们在桌上叠成一张脸，嘴唇一张一合，念你的名字。'
+];
+function openParaFor(i, sanB, truth){
+  if(sanB >= 4 && VOID_OPEN[i]) return (truth % 2 ? VOID_OPEN2[i] : VOID_OPEN[i]);
+  return OPEN_PARAS[i][Math.min(sanB, 3)];
+}
+function truthParaFor(i, truth, sanB){
+  if(sanB >= 4 && VOID_TRUTH[i]) return VOID_TRUTH[i][Math.min(truth, 3)];
+  return TRUTH_PARAS[i][truth];
+}
+
+/* =========================================================
+   印记回响：同一格结局，带着哪一枚印记收尾，读法就不同。
+   ========================================================= */
+const SIGIL_CODA = {
+  gate:'门印在你结案的那一刻开了半寸。你看见另外九十九种结局从门缝里排队走过，每一种都长着你的脸。门问你选哪一种，你说：已经选完了。门就合上，把你的答案锁在了外面。',
+  laugh:'笑印在你唇上留下一点凉。很远的地方有人替你把这段结局重讲了一遍，讲得比你好，也比你好笑。你没有纠正他——听众只有你自己，而你正听得津津有味。',
+  forest:'林印在你脚底生了根。你结完案才发现，自己已经长在镇口，叶子落了一地。明年春天会有人在你身上找到那份卷宗；他会读完，然后忘记自己为什么来。',
+  blind:'盲印熄掉了最后一盏灯。笛声停了，所有还没被写下的结局在同一秒里一起结案。你不确定自己是被选中，还是只是被顺手翻了过去。',
+  tide:'潮印把结局泡得发软。你听见海底有座城正在给这份卷宗归档，柜子很深，编号是三十一。下沉的不是你，是纸；你只是恰好站在纸的上面。',
+  scales:'鳞印让你在结案栏留下了湿指印。海说这份卷宗归它管，把纸抽走了，抽得很轻。你手上还剩一层盐，像被谁握过，握了很久才松开。',
+  fungi:'菌印把结局分装进两只罐子，一只装事实，一只装你。米·戈说这样更方便检索。你没有反对——提意见的那部分，已经先被装进去了。',
+  teeth:'齿印把最后一页嚼碎了。你尝出这一案的咸淡：前半段像铁，后半段像盐。咽下去以后，你终于不记得自己为什么要查它。',
+  wing:'翼印在你背后收拢。有人替你抹掉了卷宗上的名字，抹得很干净，连墨痕都没留下。风从海上吹来，你第一次觉得，不被记住也算一种结案。'
+};
+const MIX_CODA = {
+  'elder+old':'菌丝与潮水在你身上各占一半。它们不争，只是轮流替你翻页：一页干，一页湿，翻到最后一页时，两边同时停手。',
+  'elder+outer':'门外站着人，门内长着林。菌丝从门缝里探出去，替你敲了三下，敲门声是三种不同的语言。',
+  'old+outer':'潮声从门缝里进来，把笛声泡软了。两种声音都不肯先停，只好一起等你的结局写完，再决定谁先散去。',
+  'elder+old+outer':'三系各留了一枚，谁也不肯让位。你身上像一间住满房客的屋子，每个房客都说自己才是房东，而你只是那盏灯。'
+};
+const TRACE_LINES = {
+  zero:'你口袋里那页无字纸在你结案时轻轻响了一声。它还记着自己被读过的那个晚上，也记得读它的人没有回来。',
+  ded3:'三道推理你都答对了。所以你比任何人都清楚：这段结局是算出来的，不是走出来的。算得越准，越像别人早写好的。',
+  clues:'你把查到的线索在桌上摊开，它们拼出的不是案子，是一张脸。你数了数眼睛，决定不把数字写进报告。',
+  events:'一路上遇见的那些东西还跟着你：井盖下的手、没有眼睛的警犬、贴着名字的磁带。它们不说话，只在你回头时一起停下。',
+  site_gua:'回程你路过瓜田。老陈还在拔藤，拔到第三十一根时停下来看了你一眼，什么也没问。',
+  site_cao:'草垛的灰还没有冷透。你在灰里又摸到一片鳞，这次它没有颤，像已经认命。',
+  site_jing:'枯井的木板被人重新盖好了。你听见下面有人在给灯添油，一滴，一滴，节奏和你的呼吸一样。',
+  site_shui:'海湾浮着那张舌头拼成的脸。它朝你张开嘴，只吐出一个字：结。',
+  site_horse:'旋转木马还在转，二十三匹马，四十六只眼睛。那匹白马的眼睛今天干了一点。',
+  site_fa:'法庭的电脑还亮着。购物车里那件名叫「一位侦探」的商品，物流显示：已签收。',
+  site_motel:'旅馆的床单上留着你的形状。枕边又多了一页纸，还是空的，但边角比昨天整齐。',
+  site_cell:'审讯室的铁栏上多了一道新刻痕，位置正好是你从前数到的高度。你没有量，只是认得。',
+  site_salt:'盐场的盐山塌了一角。你蹲下去，看见每粒盐里都封着一句没说完的话，其中一句是你的。',
+  site_ferry:'旧渡口的船还没有开。检票的人没有脸，正低头数票根，数到三十二，停了一下。'
+};
+function dominantSigil(){
+  if(!S || !S.sigils || !S.sigils.length) return null;
+  var counts = {}, best = '', bestN = 0;
+  S.sigils.forEach(function(id){ var f = sigilFaction(id); counts[f] = (counts[f] || 0) + 1; });
+  Object.keys(counts).forEach(function(f){ if(counts[f] > bestN){ bestN = counts[f]; best = f; } });
+  for(var i = S.sigils.length - 1; i >= 0; i--){
+    if(sigilFaction(S.sigils[i]) === best) return sigilById(S.sigils[i]);
+  }
+  return sigilById(S.sigils[S.sigils.length - 1]);
+}
+function sigilMixKey(){
+  if(!S || !S.sigils || !S.sigils.length) return '';
+  var set = {};
+  S.sigils.forEach(function(id){ set[sigilFaction(id)] = true; });
+  var keys = Object.keys(set).sort();
+  return keys.length >= 2 ? keys.join('+') : '';
+}
+function sigilCoda(){
+  var sg = dominantSigil();
+  if(!sg) return '';
+  var main = SIGIL_CODA[sg.id] || '';
+  var mix = MIX_CODA[sigilMixKey()] || '';
+  return mix ? (main + '\n\n' + mix) : main;
+}
+function traceCoda(){
+  if(!S) return '';
+  if(S.items && S.items.indexOf('zero') >= 0) return TRACE_LINES.zero;
+  if(S.ded && S.ded.score === 3) return TRACE_LINES.ded3;
+  if(S.done){
+    for(var i = S.done.length - 1; i >= 0; i--){
+      var line = TRACE_LINES['site_' + S.done[i]];
+      if(line) return line;
+    }
+  }
+  if((S.eventsSeen || []).length >= 3) return TRACE_LINES.events;
+  if(S.clues && S.clues.length >= 10) return TRACE_LINES.clues;
+  return '';
+}
+
 const COMBO_PARAS = [
   [
     `你带着问题离开。没人相信你的报告，你自己也不全信。
@@ -1883,110 +2049,110 @@ const VERDICTS = [
 
 const END_TAILS = [
   /* 001–020 · 无言之镇 */
-  '封条贴得很正。你不知道自己封住了什么，但今晚应该能睡着。',
-  '你把半页残卷压进封条下面。纸角露在外面，像一句没说完的话。',
-  '你封住井口时，听见里面有人轻轻说了一声谢谢。你没敢应。',
-  '四卷残页拼成的名字被你念反。海面安静下来，像被按住的喉咙。',
-  '你封了井，却漏了一条缝。夜里风从缝里进来，带着咸味。',
-  '封条压住半页真相。剩下半页你烧了，灰落在鞋面上，像盐。',
-  '你按着律令的纹路把封条抹平。手心的汗把墨迹晕开了一点。',
-  '完整的名被拆成四句，分别贴在四扇门上。镇子终于不再复读。',
-  '你贴完封条，才发现自己贴反了。没人敢揭，也没人敢说。',
-  '半页残卷在封条下发热。你按住它，像按住一只还在跳的心脏。',
-  '你封住井口，井里的声音却从你嘴里出来，替你把话说完。',
-  '四页拼齐的那一刻，你忘了自己要封的是海，还是自己。',
-  '封条上多了一个指印，不是你的。你决定当作没看见。',
-  '你把残卷吞了下去。封条贴好时，胃里有人在念说明书。',
-  '井口被封住了。你每天仍往井里送饭，送三十二份。',
-  '完整的真相在你脑子里展开。你把它折好，塞回井里。',
-  '你封住井口，然后坐在旁边等。等谁来揭，等谁来替你签。',
-  '半页残卷自己烧了起来。封条没粘住，井口一直开着。',
-  '你用最后的力气把封条按平。井底传来掌声，很整齐。',
-  '你看完了完整的真相。现在轮到你被写进下一页。',
+  '封条蘸的浆糊里混着盐。你压下去的时候，全镇同时松了一口气，那口气很长，像刚从水底浮上来。',
+  '档案室的最后一格抽屉被你封死了。里面还有东西在翻页，翻得很有耐心。',
+  '老陈的瓜田在你封井的第二夜全枯了。他照常挑水，只是不再问是谁拔的藤。',
+  '你把四页残卷摊在井口，念了一个反着的名字。海面平了，平得像被人一把按住喉咙。',
+  '木板上你留了一道指宽的缝。夜里有人隔着缝教你说话，一句一句，很慢，你一句也没学。',
+  '草垛的灰里有片鳞，你没有上交，把它和封条一起按进了井壁。',
+  '你顺着律令的纹路抹平封条。掌心里留下的不是墨，是三十一道细齿印。',
+  '完整的名字被拆成四句，分别钉在四扇门上。镇子从此不再复读，只在梦里重复。',
+  '封条贴反了。第二天全镇人说话都倒着来，没有一个人敢提醒你。',
+  '残卷在封条底下发烫。你按住它，像按住一颗还在跳、但已经不属于任何人的心。',
+  '井封住了，你的嘴却开始替它说话。梦里你把「没事了」重复了三十一遍。',
+  '四页齐的那一刻，你分不清要封的是海，还是自己那句没说完的解释。',
+  '封条上多了一个指印，不是你的。你没有揭，也没有上报。',
+  '你把残卷吞了下去。封条贴好时，胃里有人在念使用说明，念得很慢。',
+  '井口封死了。你仍每天往井下送饭，三十二份，一份不多，一份不少。',
+  '完整的真相在你脑子里铺开。你把它折成四折，塞回井里，像把被子叠好。',
+  '贴完封条，你就坐在旁边等。等谁来揭，等谁来替你签那个空着的名。',
+  '残卷自己烧了起来。封条没粘住，井口整夜开着，风从里面出来，带着鱼腥。',
+  '你用最后的力气把封条按平。井底传来掌声，整齐得像在点名。',
+  '你封住了所有声音，包括自己的。第二天，寻人启事上多了一张没有嘴的照片。',
   /* 021–040 · 新王警官 */
-  '警徽别得很正。第一宗案子没有尸体，只有一间空审讯室。',
-  '你把半页残卷压在玻璃板下。第二天它自己翻了个面。',
-  '你开始用四字词写结案报告。它们执行得很好，只是越来越不像人话。',
-  '四卷残页成了新的办案手册。第一条：不要读完第四页。',
-  '你接了班，也接了那本永远写不完的值班表。',
-  '半页残卷锁进抽屉。钥匙丢进井里，第二天挂在门上。',
-  '你审完最后一个活人。笔录上，嫌疑人一栏写着你的名字。',
-  '完整卷宗归档。你把「王守义」三个字，从封面挪到了扉页。',
-  '你坐上椅子，听见走廊里有人立正。你没有回头。',
-  '残卷在抽屉里发烫。你假装那是暖气。',
-  '你开始替井底的人做笔录。他们说的每句话，你都觉得耳熟。',
-  '四页拼齐，你终于看懂：新王警官只是第三十二个称呼。',
-  '你忘了自己什么时候换的制服。镜子里的肩章，比你更合身。',
-  '半页残卷从抽屉里爬出来，替你写完了第一份报告。',
-  '你审自己审了一夜。天亮时，笔录多了一页，签的是「王警官」。',
-  '完整的案卷写完，封面上没有你的名字，但每个人都叫你王警官。',
-  '椅子在等你。你坐下去，发现它一直是温的。',
-  '残卷贴在你背上，像一张没撕干净的膏药。',
-  '你听见三十二个声音同时说「坐好」。你坐好了。',
-  '最后一页是你。你被压在最底下，成了新的值班表。',
+  '你换上那身制服时，袖口比你的手腕旧。第一宗案子没有尸体，只有一间还温着的审讯室。',
+  '玻璃板下压着半页残卷。第二天它翻了个面，正面朝上，像故意给你看。',
+  '你开始用四字词写结案报告。它们执行得很好，只是执行出来的东西越来越不像人话。',
+  '四卷残页成了新办案手册。第一条只有七个字：不要读第四页。',
+  '值班表摊开，第一页的日期是你的忌日。你还是签了名。',
+  '钥匙丢进井里，早上却挂在门把手上，还在滴水。',
+  '你审完最后一个活人。笔录的嫌疑人一栏，慢慢浮出了你的名字。',
+  '完整卷宗归档。你把「王守义」三个字从封面挪到扉页，压在自己名字下面。',
+  '你坐上那张椅子，走廊里有人立正。你数了数，三十一个，一个也没有回头。',
+  '抽屉里的残卷发烫。你告诉自己那是暖气——冬天确实冷，但还没冷到这份上。',
+  '你开始替井底的人做笔录。他们说的每句口供，你都觉得在哪里听过。',
+  '四页拼齐，你终于看懂：新王警官只是第三十二个称呼，前面还有三十一个。',
+  '镜子里的肩章比你更合身，也更旧。你想不起它是什么时候挂上去的。',
+  '残卷从抽屉里爬出来，替你写完了第一份报告，落款是你的警号。',
+  '你审自己审了一夜。天亮时笔录多了一页，签的是「王警官」，字迹却像你的。',
+  '完整案卷写完，封面没有你的名字。可镇口每个人都叫你王警官。',
+  '椅子在等你。你坐下去，发现坐垫是温的，像刚有人起身让了座。',
+  '残卷贴在你背上，像一张没撕干净的膏药。你决定留着它。',
+  '三十二个声音同时说「坐好」。你坐好了，还顺手整了整领口。',
+  '最后一页是你。你被压在最底下，仍听见自己用王警官的声音点名；点到第三十二个，你替他答了「到」。',
   /* 041–060 · 离岸的回响 */
-  '船开了。雾港镇缩成一行小字，很快被浪抹掉。',
-  '你带走半页真相。剩下半页，留给了下一班船。',
-  '你回头看了一眼。镇子没有追来，只是把你记进了潮汐表。',
-  '四卷残页缝进船票。你发誓不再打开，除非海先开口。',
-  '船票是单程的。你数了三遍，码头还是比你先消失。',
-  '半页残卷在行李里发烫。你把它扔进海，它朝岸游了回去。',
-  '你在船上听说雾港又失踪一人。日期那一栏，是你离开的那天。',
-  '完整的真相被你折成四折，垫在船票下面。船速忽然快了一倍。',
-  '你不确定船开往哪里。但码头在后退，这就够了。',
-  '残卷上的字被海水泡开，浮成一张脸。你把它按回纸里。',
+  '船离岸时没有鸣笛。雾港缩成一行小字，被浪抹掉，又被下一道浪写回来。',
+  '你带走半页真相，剩下半页留在检票口。你希望下一个拿到它的人不会读。',
+  '潮汐表上多了一行，编号三十二。你没有订过这个位置。',
+  '四卷残页缝进船票夹层。你发誓不打开，除非海先开口。',
+  '船票是单程的。你数了三遍，码头总比你先消失。',
+  '你把发烫的残卷扔进海里。它浮起来，朝岸的方向慢慢游，像回家。',
+  '船上有人问你雾港在哪。你张嘴，发现那个名字已经念不出来了。',
+  '完整真相被你折成四折，垫在船票底下。那一夜船速快了一倍。',
+  '你说不清船开往哪里。但码头在后退，这就够了。',
+  '残卷上的字被海水泡开，浮成一张脸。你把它按回纸里，按了很久才松手。',
   '海面很平。你知道，平不是因为安全，是因为深。',
-  '四页拼齐，船开始下沉。你这才明白，有些岸是给回头的人准备的。',
-  '船板在脚下起伏，像呼吸。你告诉自己那是浪。',
-  '半页残卷在你胸口发亮。同船的人都说，你像一盏灯。',
-  '你听见水下有人敲船底。三下，停顿，三下。',
-  '完整的真相读完后，你发现自己一直站在码头上，没有上船。',
-  '你买了一张票，检票口没有灯。船还是开了。',
-  '残卷烧完了，船票上的字才显出来：不设终点。',
-  '海把你送回了岸边。你认不出这是雾港，还是井底。',
-  '你读完了最后一页。船、海、镇子一起合上，像一本卷宗。',
+  '四页拼齐，船开始下沉。你这才明白，有些岸是专门留给回头的人的。',
+  '船板在脚下起伏，像呼吸。你告诉自己那是浪，说了三遍。',
+  '残卷贴在你胸口发亮。同船的人都说，你像一盏灯。',
+  '水下有人敲船底。三下，停顿，三下。你没有回应，他也很有耐心。',
+  '读完最后一句，你发现自己一直站在码头上，从未上船。',
+  '你买了一张票，检票口没有灯。船照样开了，而且满座。',
+  '残卷烧完，船票上的字才显出来：不设终点，不设回程。',
+  '海把你送回岸边。你认不出这是雾港，还是井底。',
+  '最后一页合上时，船、海、镇子一起合上；你被封进书脊，听见外面有人用你的声音说：船开了。',
   /* 061–080 · 以我为烛 */
-  '灯点起来了。镇上所有窗都没亮，只有你这一盏。',
-  '你烧掉半页残卷。火光里浮出几个名字，其中一个是你。',
-  '你把自己的一截记忆当灯芯。照亮的是一口井，井底坐着三十一个人。',
-  '四卷残页一起烧起来。你第一次看清「谕令者」没有脸。',
-  '灯油够烧一夜。你算了算，刚好够照到井口。',
-  '半页残卷在火里卷曲，发出很轻的哭声。你没有把火拨小。',
-  '你举着灯走进井底。三十一个人同时抬头，像一排灯芯。',
-  '完整的真相烧成灰。灰落在你手背上，烫出一个名字。',
-  '你把火点着，才发现灯罩里没有灯芯。烧的是你的手指。',
-  '残卷烧到一半，火苗忽然朝你弯腰，像在行礼。',
-  '你照亮了井底，也照亮了自己站在井底这件事。',
-  '四页烧完，井口合拢。你听见有人在上面吹灭了灯。',
-  '你烧掉了名字、警号、来时的路。剩下来的部分正好当灯芯。',
-  '半页残卷在火里替你说话。它说的每一句，都比你真。',
-  '你看见三十二盏灯同时亮起。第三十二盏，在你胸腔里。',
-  '完整的真相亮得刺眼。你闭上眼睛，光就从眼眶里流出来。',
-  '火很小。你把自己凑近了一点，镇上就亮了一点。',
-  '残卷先烧完，然后是船票、警徽、你的影子。',
-  '你听见有人在数灯。数到三十二，声音停了，火还在烧。',
-  '最后一页被火读完。你成了灯本身，不再需要有人点。',
+  '火柴划到第三根才亮。全镇的窗都没亮，只有你这一盏，亮得不太像灯。',
+  '你烧掉半页残卷，火光里浮出几个名字，其中一个是你，另一个也是。',
+  '你拿一截记忆当灯芯，照亮的是一口井，井底坐着三十一个人。',
+  '四卷残页一起烧起来。你第一次看清「谕令者」没有脸，只有很多张嘴。',
+  '灯油只够烧一夜。你算了算，刚好够把最黑的那段路照到井口。',
+  '残卷在火里卷曲，发出很轻的哭声。你没有把火拨小。',
+  '你举着灯下到井底。三十一个人同时抬头，像一排等着被点燃的灯芯。',
+  '完整真相烧成灰，灰落在你手背上，烫出一个名字。你没有看清是谁的。',
+  '火点着了，你才发现灯罩里没有灯芯。烧的是你的手指。',
+  '残卷烧到一半，火苗忽然朝你弯腰，像在行礼，又像在道歉。',
+  '你照亮了井底，也照亮了自己正站在井底这件事。',
+  '四页烧完，井口合拢。你听见上面有人轻轻吹灭了灯。',
+  '你烧掉名字、警号、来时的路。剩下的部分，正好够当一夜灯芯。',
+  '残卷在火里替你说话。它说的每一句，都比你真。',
+  '三十二盏灯同时亮起。第三十二盏在你胸腔里，烧的是心跳。',
+  '完整的真相亮得刺眼。你闭上眼睛，光就从眼眶里流出来，落到纸上。',
+  '火很小。你把自己凑近一点，镇上就亮一点，像在还一笔旧债。',
+  '残卷先烧完，然后是船票、警徽、你的影子。你留下了一盏灯。',
+  '有人在镇口数灯。数到三十二，声音停了，火还在烧。',
+  '最后一页被火读完。你成了灯本身；灯芯还记得自己是人，于是每个夜里都用火苗数还剩几根手指。',
   /* 081–100 · 不完整的证词 */
-  '你交上去的证词缺了一页。没人追问，所有人都松了口气。',
-  '半页残卷被你漏在附录外。它后来出现在别人的卷宗里。',
-  '每句话都对得上现场，连起来却指向一个不存在的凶手。案子结了。',
+  '你在证词最后撕掉一页，撕得很齐。没有人追问，所有人都松了口气——包括你。',
+  '半页残卷被你漏在附录外。三个月后，它出现在别人的卷宗里，字迹和你一样。',
+  '每句话都对得上现场，连起来却指向一个不存在的人。案子照样结了。',
   '四卷残页拼出完整真相。你在最后一行写：此处字迹不清。',
-  '你把最关键的一句删了。纸面留下凹痕，像一道很浅的伤。',
-  '半页残卷被你折进衬衫口袋。走路时，它轻轻敲你的肋骨。',
-  '你写的真相太完整，于是你划掉了最后一段，让它重新可疑。',
-  '四页齐了。你没有拼，而是抽出其中一页，扔进井里。',
+  '你删掉最关键的一句。纸面留下凹痕，像一道很浅、很旧的伤。',
+  '半页残卷折进衬衫口袋，走路时轻轻敲你的肋骨，像在提醒什么。',
+  '你写的真相太完整，于是你划掉最后一段，让它重新可疑。',
+  '四页齐了。你没有拼，抽出其中一页扔进井里。井说了一声谢谢。',
   '你反复读自己的证词，读到后来，开始相信那个更温和的版本。',
-  '残卷上的字开始自己挪动，替你补全句子。你没有阻止。',
-  '你交上去的卷宗有三十一页。清点时，多出第三十二页。',
-  '完整的真相被装订成册。封面写着：不予采信。',
-  '纸上的字替你说话。你只负责点头，签得很工整。',
+  '残卷上的字自己挪动，替你补全句子。你没有阻止，因为你也想听。',
+  '你交上去的卷宗有三十一页。清点时多出第三十二页，字是你的。',
+  '完整的真相被装订成册。封面上四个字：不予采信。',
+  '纸上的字替你说话。你只负责点头，签得很工整，像在练字。',
   '半页残卷贴在你舌下。你每说一句真话，它就少一个字。',
-  '你在证词里留下三个空白。审判时，空白开始回答。',
-  '四页拼好又拆开。你决定只交一页，剩下的吞进肚子。',
-  '签名栏是空的。你签了，笔迹却像王守义。',
-  '残卷在你手里化成灰。灰落在证词上，正好补上缺的那句。',
-  '你听见有人在庭上朗读你的证词。读到一半，他换成了你的声音。',
-  '最后一页没有字。你把自己的名字写上去，它就成了唯一证据。'
+  '你在证词里留了三个空白。审判那天，空白先开口了。',
+  '四页拼好又拆开。你只交一页，剩下的咽下去，咽得很慢。',
+  '签名栏空着。你签了，笔迹却慢慢变成王守义的。',
+  '残卷在你手里化成灰。灰落在证词上，正好补上缺的那一句。',
+  '有人当庭朗读你的证词。读到一半，他换成了你的声音。',
+  '最后一页没有字。你写下自己的名字，字从纸背渗回来，一笔一笔改成了「证物」。'
 ];
 
 const GRAND_VERDICT = '你读完了它，于是它完整了一次；从今往后，轮到它读你。';
@@ -2065,10 +2231,19 @@ function loadMeta(){
           });
           return r;
         })(),
+        echo:(function(){
+          var o = m.echo || {}, r = {};
+          Object.keys(o).forEach(function(k){
+            var n = Number(k);
+            if(n < 1 || n > 100) return;
+            if(SIGILS.some(function(s){ return s.id === o[k]; })) r[n] = o[k];
+          });
+          return r;
+        })(),
         outerDone:!!m.outerDone };
     }
   }catch(e){}
-  return { unlocked:[], grand:false, arch:[], extra:[], runs:0, bonus:0, growth:[], collected:[], submit:[], bound:[], boundAt:{}, outerDone:false };
+  return { unlocked:[], grand:false, arch:[], extra:[], runs:0, bonus:0, growth:[], collected:[], submit:[], bound:[], boundAt:{}, echo:{}, outerDone:false };
 }
 function saveMeta(){
   try{ localStorage.setItem(META_KEY, JSON.stringify(META)); }catch(e){}
@@ -2310,19 +2485,92 @@ function sanName(){
   var v = S.san;
   return v >= 60 ? '清醒' : (v >= 45 ? '动摇' : (v >= 30 ? '崩解' : (v >= 15 ? '沦陷' : '空壳')));
 }
+function pickLeaverName(){
+  if(!S.leavers) S.leavers = [];
+  var pool = LEAVER_NAMES.filter(function(n){ return S.leavers.indexOf(n) < 0; });
+  if(!pool.length) pool = LEAVER_NAMES;
+  var who = pick(pool);
+  S.leavers.push(who);
+  return who;
+}
 function sigilLeaver(){
   if(!S || !S.sigils || !S.sigils.length) return null;
   var idx = Math.floor(Math.random() * S.sigils.length);
   var id = S.sigils.splice(idx, 1)[0];
   if(!S.sigilBan) S.sigilBan = [];
   if(S.sigilBan.indexOf(id) < 0) S.sigilBan.push(id);
-  var sg = sigilById(id);
-  if(!S.leavers) S.leavers = [];
-  var pool = LEAVER_NAMES.filter(function(n){ return S.leavers.indexOf(n) < 0; });
-  if(!pool.length) pool = LEAVER_NAMES;
-  var who = pick(pool);
-  S.leavers.push(who);
-  return {who:who, sig:sg};
+  return {who:pickLeaverName(), sig:sigilById(id)};
+}
+function dropSigilIds(ids, payTime){
+  if(!S || !ids || !ids.length) return [];
+  var gone = [];
+  ids.forEach(function(id){
+    var idx = S.sigils.indexOf(id);
+    if(idx < 0) return;
+    S.sigils.splice(idx, 1);
+    if(!S.sigilBan) S.sigilBan = [];
+    if(S.sigilBan.indexOf(id) < 0) S.sigilBan.push(id);
+    gone.push({who:pickLeaverName(), sig:sigilById(id)});
+  });
+  if(!gone.length) return [];
+  if(payTime){
+    S.time = Math.max(0, S.time - gone.length);
+    if(S.time <= 0) S.tooLate = true;
+    S.lastSanNote = '失印清算 · 时段 −' + gone.length + '（当前 ' + S.time + '）';
+    S.lastSanKind = 'time';
+  }
+  var msg = gone.map(function(g){ return g.who + '离你而去，印记「' + (g.sig ? g.sig.name : '?') + '」熄灭'; }).join('；');
+  S.lastSigilNote = '失印 · ' + gone.map(function(g){ return (g.sig ? g.sig.name : '?') + '（' + g.who + '）'; }).join('、');
+  S.lastSigilKind = 'loss';
+  addLog(msg + (payTime ? '。每失去一枚印记，时段 −1。' : '。'));
+  setTimeout(function(){ toast(msg + (payTime ? '。时段 −' + gone.length + '。' : '。')); }, 420);
+  showSigilLossCard(gone);
+  return gone;
+}
+function applySigilOrder(payTime, checkTriple){
+  if(!S || !S.sigils || !S.sigils.length) return false;
+  if(typeof payTime === 'undefined') payTime = true;
+  var changed = false;
+  var hasThreeOuter = checkTriple && OUTER_IDS.every(function(id){ return S.sigils.indexOf(id) >= 0; });
+  if(hasThreeOuter){
+    var pre = S.san;
+    S.san = 0;
+    if(pre > 0) sanFx(-pre, 'loss', '三外神 · 空壳');
+    addLog('门、笑、林同时在你身上睁开。你没有疯——你只是被三只手同时翻到了同一页。');
+    dropSigilIds(S.sigils.slice(), payTime);
+    if(META.collected && META.collected.length){
+      META.collected = [];
+      META.submit = [];
+      META.outerDone = false;
+      saveMeta();
+      addLog('你图鉴里的印记也一并暗了下去。它们不再跟随你。');
+    }
+    S.lastSanNote = '三外神同席 · 理智归零 · 印记尽失（当前 0）';
+    S.lastSanKind = 'loss';
+    updateHud();
+    setTimeout(function(){ toast('三外神同席。图鉴尽空——这一局，你从零开始。'); }, 700);
+    return true;
+  }
+  var counts = {};
+  S.sigils.forEach(function(id){ var f = sigilFaction(id); counts[f] = (counts[f] || 0) + 1; });
+  var target = null, max = 1;
+  Object.keys(counts).forEach(function(f){
+    if(counts[f] >= 2 && counts[f] > max){ max = counts[f]; target = f; }
+  });
+  if(target){
+    var others = S.sigils.filter(function(id){ return sigilFaction(id) !== target; });
+    if(others.length){
+      var gone = dropSigilIds(others, payTime);
+      if(gone.length){
+        S.lastSigilNote = '三系互斥 · 只留' + FACTION_NAME[target] + ' · 失印 ' + gone.length;
+        S.lastSigilKind = 'loss';
+        addLog('「' + FACTION_NAME[target] + '」的印记压过了其余两系，' + gone.length + ' 枚印记同时熄灭。');
+        changed = true;
+      }
+    }
+  }
+  updateHud();
+  return changed;
 }
 function healSan(n){
   if(!S || n <= 0) return;
@@ -2336,20 +2584,16 @@ function healSan(n){
   updateHud();
   sanFx(gained, 'gain', band);
   S.sanHealed = (S.sanHealed || 0) + gained;
-  var gone = [];
-  while(S.sanHealed >= 10){
-    S.sanHealed -= 10;
-    var r = sigilLeaver();
-    if(r) gone.push(r);
-  }
-  if(gone.length){
-    var msg = gone.map(function(g){ return g.who + '离你而去，印记「' + (g.sig ? g.sig.name : '?') + '」熄灭'; }).join('；');
-    S.lastSigilNote = '失印 · ' + gone.map(function(g){ return (g.sig ? g.sig.name : '?') + '（' + g.who + '）'; }).join('、');
+  var r = sigilLeaver();
+  if(r){
+    var nm = r.sig ? r.sig.name : '?';
+    S.lastSigilNote = '恢复理智 · 失印「' + nm + '」· 不扣时段';
     S.lastSigilKind = 'loss';
-    if(typeof updateHud === 'function') updateHud();
-    addLog(msg + '。本次探索不再获得这些印记。');
-    setTimeout(function(){ toast(msg + '。本次探索不再获得。'); }, 520);
-    showSigilLossCard(gone);
+    updateHud();
+    var msg = r.who + '离你而去，印记「' + nm + '」熄灭';
+    addLog(msg + '。恢复理智不会减少时段，但这枚印记本次探索不再获得。');
+    setTimeout(function(){ toast(msg + '。'); }, 520);
+    showSigilLossCard([r]);
   }
 }
 function sigilById(id){
@@ -2483,12 +2727,18 @@ function grantSigil(){
     if(r <= acc){ s = pool[i]; break; }
   }
   S.sigils.push(s.id);
+  var conflicted = applySigilOrder(true, false);
+  if(S.sigils.indexOf(s.id) < 0){
+    addLog('印记「' + s.name + '」刚显现，就被另一系的印记压灭了。');
+    s.lostNow = true;
+    return s;
+  }
   if(META.collected.indexOf(s.id) < 0){
     META.collected.push(s.id);
     saveMeta();
   }
   addLog('获得印记：' + s.name + '（' + s.deity + '）。');
-  S.lastSigilNote = '得印 · ' + s.glyph + ' ' + s.name + ' · ' + s.deity;
+  S.lastSigilNote = '得印 · ' + s.glyph + ' ' + s.name + ' · ' + s.deity + (conflicted ? ' · 异系已熄灭' : '');
   S.lastSigilKind = 'gain';
   SIGIL_PULSE_ID = s.id;
   updateHud();
@@ -2504,7 +2754,7 @@ function onDanmaku(el){
   el.remove();
   var chance = S.san <= 15 ? 0.92 : (S.san <= 30 ? 0.74 : 0.55);
   var sig = Math.random() < chance ? grantSigil() : null;
-  showForced(pick(FORCED_TEXTS), sig ? ('印记显现：' + sig.glyph + ' · ' + sig.name) : '低语重复了一遍，没有留下新的东西。');
+  showForced(pick(FORCED_TEXTS), sig ? ((sig.lostNow ? '印记被压灭：' : '印记显现：') + sig.glyph + ' · ' + sig.name) : '低语重复了一遍，没有留下新的东西。');
   updateHud();
 }
 
@@ -2517,8 +2767,9 @@ function initRun(){
   order.slice(0, 4).forEach(function(sid, i){ coreMap[sid] = coreIds[i]; });
   var omens = {};
   order.forEach(function(sid){ omens[sid] = pick(OMENS); });
-  var ownedSigils = (META.collected || []).length;
-  var startSan = Math.max(15, 80 - ownedSigils * 5);
+  var carry = (META.collected || []).filter(function(id){ return !!sigilById(id); });
+  var ownedSigils = carry.length;
+  var startSan = Math.max(0, 80 - ownedSigils * 5);
 
   S = {
     name: (DRAFT.name || '').trim() || '无名侦探',
@@ -2532,10 +2783,10 @@ function initRun(){
     mapOrder: order, coreMap: coreMap, omens: omens,
     eventsSeen: [], nights: {n1:false, n2:false, n3:false},
     ded: {qs:[], score:-1, done:false},
-    sigils: [], sigilBan: [], sanHealed: 0, leavers: [], zeroJitter: 0,
+    sigils: carry.slice(), sigilBan: [], sanHealed: 0, leavers: [], zeroJitter: 0,
     lastSanNote: '', lastSanKind: '', lastSigilNote: '', lastSigilKind: '',
     dmSeen: false, dmPending: false,
-    flags: {}, tooLate: false, over: false, sanLost: 0,
+    flags: {}, tooLate: false, over: false, sanLost: 0, godEvent: false, godSigil: '',
     node: 'hub', curSite: '', curEvent: '', curNight: '',
     result: null, log: [], restCount: 0, ending: null
   };
@@ -2547,10 +2798,12 @@ function initRun(){
     S.lastSanNote = '随行印记 ' + ownedSigils + ' 枚 · 初始理智 −' + (80 - startSan) + '（当前 ' + startSan + '）';
     S.lastSanKind = 'loss';
   }
+  var orderChanged = applySigilOrder(true, true);
   saveRun();
   render();
-  toast(ownedSigils ? ('雾合上了。印记 -' + (80 - startSan) + ' 理智，当前 SAN ' + startSan + '。') : ('雾合上了。你有 ' + START_TIME + ' 个时段。'));
-  if(ownedSigils) setTimeout(function(){ sanFx(startSan - 80, 'loss', '随行印记'); }, 450);
+  if(!orderChanged) toast(ownedSigils ? ('雾合上了。印记 -' + (80 - startSan) + ' 理智，当前 SAN ' + startSan + '。') : ('雾合上了。你有 ' + START_TIME + ' 个时段。'));
+  else toast('雾合上了。随行印记互相排斥，理智 ' + S.san + '，时段 ' + S.time + '。');
+  if(ownedSigils && !orderChanged) setTimeout(function(){ sanFx(startSan - 80, 'loss', '随行印记'); }, 450);
 }
 
 /* ---------- 渲染 ---------- */
@@ -2571,6 +2824,10 @@ function render(){
   document.body.classList.toggle('san-15', !!(S && S.san <= 15));
   document.body.classList.toggle('san-zero', !!(S && S.san <= 0));
   if(!S){ renderTitle(); lastNode = 'title'; stopDanmaku(true); return; }
+  if(S.node === 'hub' && S.time === 1 && !S.godEvent && S.eventsSeen && S.eventsSeen.length === 0 && ownedSigils().length){
+    triggerGodEvent();
+    return;
+  }
   switch(S.node){
     case 'create': renderCreate(); break;
     case 'hub': renderHub(); break;
@@ -2580,6 +2837,7 @@ function render(){
     case 'night': renderNight(); break;
     case 'ded': renderDed(); break;
     case 'final': renderFinal(); break;
+    case 'god': renderGod(); break;
     case 'ending': renderEnding(); break;
     default: renderTitle();
   }
@@ -2679,8 +2937,11 @@ function renderTitle(){
     ['结局','100 条结局按五种终局归类，不再按出身拆分。理智状态 × 真相层级决定同一终局里的具体落点。'],
     ['成长','部分简单结局会永久提升三项总和上限 +10，最多 +60。它们只需要带着 0 卷残页走到某个终局。'],
     ['评级','综合 S ≥80、A ≥70、B ≥60、C <60。部分异闻要求特定评级；基础上限 180 时最高只能到 B，得先靠成长结局把上限堆高。'],
-    ['印记','每持有一枚印记，下一局初始理智 -5。理智归零后，每次扣理智改为消耗 1 个时段，文字开始错位。'],
-    ['失印','每恢复 10 点理智，随机一枚印记熄灭，本次探索不再获得，并会有一位同行者离你而去。'],
+    ['印记','图鉴里的印记会随你进入下一局，每枚使初始理智 -5。理智归零后，每次扣理智改为消耗 1 个时段，文字开始错位。'],
+    ['三系','外神、旧神、古神三类互相排斥。某一类达到 2 枚时，其余两系全部熄灭；每失去一枚印记，时段 -1。若开局同时带着门、笑、林三枚外神印记，理智直接归零，所有印记尽失，图鉴也会被一并清空。'],
+    ['失印','恢复理智时，随机一枚印记熄灭，并有一位同行者离你而去；用这种方式失印不扣时段。'],
+    ['末段','若你还没经历过任何事件，且时段只剩 1，雾里会走来一位属于你印记的神。祂会带走最后一个时段。'],
+    ['回响','结案时身上带着的印记会改写结局的收尾与标题：同一格结局，带不同印记就是不同的一幕。回廊会标出替你收尾的那一枚。'],
     ['隐藏','100 条之外还有第 101 幕。它不在任何提示里。你只能自己撞上它。']
   ];
   html += '<div class="rules">';
@@ -2796,6 +3057,84 @@ function renderHub(){
   html += '<button class="act final" data-a="finalopen"><b>结案</b><span>做出终局抉择</span></button>';
   html += '</div>';
   stageEl.innerHTML = html;
+}
+
+/* ---------- 末段 · 神明夜遇 ---------- */
+function godEventText(sg){
+  var f = sigilFaction(sg.id);
+  var open = f === 'outer'
+    ? '雾向两边退开，像有人从中间翻开一页。你听见自己的名字被拆成三截，从三个方向同时念出。'
+    : (f === 'old'
+      ? '海面没有风，却立起一道湿墙。墙后有个巨大的东西在睡，它每呼吸一次，镇子就旧十年。'
+      : '街灯一盏盏灭下去，只剩你脚下这一圈。圈外的东西已经等了很久，耐心得像一块石头。');
+  var face = f === 'outer'
+    ? '祂没有脸。你只看了一眼，就想起自己从未有过脸。'
+    : (f === 'old'
+      ? '祂没有睁眼。可你知道，祂一直在看你——从你出生前的那个梦里。'
+      : '祂没有开口。你却听见自己用小时候的声音，把名字交了出去。');
+  return open + '\n\n' + sg.line + '\n\n雾里走出一个轮廓。' + face + '\n\n祂说：你身上有我的印记。最后一段路，跟我走。';
+}
+function triggerGodEvent(){
+  if(!S || S.godEvent) return;
+  var owned = ownedSigils();
+  if(!owned.length) return;
+  S.godEvent = true;
+  S.godSigil = pick(owned).id;
+  S.node = 'god';
+  saveRun();
+  render();
+}
+function renderGod(){
+  var owned = ownedSigils();
+  var sg = sigilById(S.godSigil) || owned[0];
+  if(!sg){ openFinal(); return; }
+  var f = sigilFaction(sg.id);
+  var html = '<div class="scene godscene">';
+  html += '<div class="kick">末段 · 未记录</div>';
+  html += '<h2>祂在雾里等你</h2>';
+  html += '<div class="sub">时段只剩 1。你身上的「' + esc(sg.name) + '」开始发烫。</div>';
+  html += '<div class="body">' + nl2p(godEventText(sg)) + '</div>';
+  html += '<div class="ask"><div class="h">' + esc(FACTION_NAME[f]) + ' · ' + esc(sg.rank || '') + '</div>' + esc(sg.deity) + '</div>';
+  html += '<div class="opts"><button class="opt deep" data-a="godend"><span class="t">让祂把最后一段路走完</span><span class="tag">时段清零 · 结局并入第 ' + BOUND_BY_SIGIL[sg.id] + ' 号</span></button></div>';
+  html += '</div>';
+  stageEl.innerHTML = html;
+}
+function godEnd(){
+  if(!S) return;
+  var sg = sigilById(S.godSigil) || ownedSigils()[0];
+  if(!sg){ openFinal(); return; }
+  var slot = BOUND_BY_SIGIL[sg.id];
+  if(!slot){ openFinal(); return; }
+  var ci = Math.floor((slot - 1) / 20);
+  var rest = (slot - 1) % 20;
+  var sb = Math.floor(rest / 4);
+  var tr = rest % 4;
+  var isNew = META.unlocked.indexOf(slot) < 0;
+  if(isNew){
+    META.unlocked.push(slot);
+    META.unlocked.sort(function(a, b){ return a - b; });
+  }
+  if(META.bound.indexOf(sg.id) < 0){
+    META.bound.push(sg.id);
+  }
+  if(META.boundAt) META.boundAt[slot] = sg.id;
+  saveMeta();
+  var body = [caseRecap(), godEventText(sg), sg.endBody].join('\n\n');
+  S.time = 0;
+  S.lastSanNote = '时段归零 · 祂收走了最后一段（当前 0）';
+  S.lastSanKind = 'time';
+  sanFx(0, 'time', '时段归零');
+  S.ending = {
+    bound:true, id:slot, sigil:sg.id,
+    title: sg.endTitle + ' · 末段相认',
+    verdict: sg.verdict,
+    body: body,
+    choice:ci, sanB:sb, truth:tr, core:coreCount(), isNew:isNew
+  };
+  S.over = true;
+  S.node = 'ending';
+  clearRun();
+  render();
 }
 
 function renderSite(){
@@ -2977,19 +3316,23 @@ function renderEnding(){
   var growNote = e.growth
     ? '<div class="unlock growth">永久属性上限 +10：今后建档三项总和上限提升到 ' + (180 + (e.bonus || 0)) + '。综合评级因此可以继续向上，S 级需要把上限堆满。</div>'
     : '';
+  var esg = e.sigil ? sigilById(e.sigil) : null;
+  var echoNote = esg
+    ? '<div class="unlock echo">这一条由「' + esc(esg.glyph + ' · ' + esg.name) + '」替你收尾。同一格结局，换一枚印记就会读成另一幕。</div>'
+    : '';
   var eid = e.bound
     ? ('第 ' + e.id + ' 号结局 · 印记终幕')
     : (e.grand ? '不在 100 条之内 · 第 101 号' : (e.extra ? ('异闻幕 · 第 ' + e.id + ' 号') : ('第 ' + e.id + ' 号结局 · ' + ('00' + e.id).slice(-3) + ' / 100')));
   var fog = e.bound
     ? ('九枚印记中，你已臣服 <b>' + (META.bound || []).length + '</b> 枚。' + (META.outerDone ? '<br>三柱神已齐，其它印记不再显现。' : ''))
     : (e.grand ? '100 条迷雾之外，你找到了第 101 条。' : (e.extra ? '这是异闻幕：只有在特定属性、推理或理智条件下才会出现。' : (e.arch ? '这是只属于某个出身的幕。换一种出身，结尾会不一样。' : ('雾中还有 <b>' + remain + '</b> 条结局未被你看见。' + (META.grand ? '<br>第 101 号已经显现。' : '<br>另有 1 幕，不在 100 条之内。')))));
-  var html = '<div class="ending ' + ((e.grand || e.bound) ? 'tone-void' : CHOICES[e.choice].tone) + '">';
+  var html = '<div class="ending ' + ((e.grand || e.bound) ? 'tone-void' : CHOICES[e.choice].tone) + (S.san <= 0 ? ' collapse' : '') + '">';
   html += '<div class="end-kick">' + (e.bound ? 'BOUND · 异变臣服' : (e.grand ? 'THE 101ST · 隐藏终幕' : (e.extra ? 'ANOMALY · 异闻幕' : 'ENDING · 雾港回响'))) + '</div>';
   html += '<h2>' + esc(e.title) + '</h2>';
   html += '<div class="eid">' + eid + '</div>';
   html += '<blockquote>' + esc(e.verdict) + '</blockquote>';
   html += '<div class="ebody">' + nl2p(e.body) + '</div>';
-  html += stats + growNote + unlockNote;
+  html += stats + growNote + echoNote + unlockNote;
   html += '<div class="fogcount">' + fog + '</div>';
   html += '<div class="endbtns">';
   html += '<button class="btn gold" data-a="gallery">结局回廊</button>';
@@ -3490,12 +3833,24 @@ function chooseFinal(i){
       META.unlocked.sort(function(a, b){ return a - b; });
       saveMeta();
     }
+    var dsg = dominantSigil();
+    if(dsg){
+      if(!META.echo) META.echo = {};
+      META.echo[id] = dsg.id;
+      saveMeta();
+    }
+    var parts = [caseRecap(), openParaFor(i, sanB, truth), truthParaFor(i, truth, sanB), END_TAILS[id - 1]];
+    var sc = sigilCoda();
+    if(sc) parts.push(sc);
+    var tc = traceCoda();
+    if(tc) parts.push(tc);
     S.ending = {
       grand:false, id:id,
-      title: c.title + ' · ' + TRUTH_NAMES[truth] + '（' + SAN_NAMES[sanB] + '）',
-      body: [caseRecap(), OPEN_PARAS[i][Math.min(sanB, 3)], TRUTH_PARAS[i][truth], END_TAILS[id - 1]].join('\n\n'),
+      title: c.title + ' · ' + TRUTH_NAMES[truth] + '（' + SAN_NAMES[sanB] + '）' + (dsg ? ' · ' + dsg.glyph + '印回响' : ''),
+      body: parts.join('\n\n'),
       verdict: VERDICTS[(id - 1) % VERDICTS.length],
       choice:i, sanB:sanB, truth:truth, core:core, isNew:isNew,
+      sigil: dsg ? dsg.id : '',
       growth:growNew, bonus:META.bonus
     };
   }
@@ -3564,7 +3919,7 @@ function submitSigil(id){
   var rest = (slot - 1) % 20;
   var sb = Math.floor(rest / 4);
   var tr = rest % 4;
-  var base = [caseRecap(), OPEN_PARAS[ci][Math.min(sb, 3)], TRUTH_PARAS[ci][tr], END_TAILS[slot - 1]].join('\n\n');
+  var base = [caseRecap(), openParaFor(ci, sb, tr), truthParaFor(ci, tr, sb), END_TAILS[slot - 1]].join('\n\n');
   var isNew = META.unlocked.indexOf(slot) < 0;
   if(isNew){
     META.unlocked.push(slot);
@@ -3591,7 +3946,7 @@ function showSigilInfo(id){
   var bd = META.bound.indexOf(id) >= 0;
   var html = '<div class="sec"><h4>' + (on ? (s.glyph + ' · ' + s.name) : '未显现的印记') + '</h4>';
   if(on){
-    html += '<div class="galnote">' + esc(s.deity) + (s.rank ? ' · <span style="color:var(--red)">' + esc(s.rank) + '</span>' : '') + '</div>';
+    html += '<div class="galnote">' + esc(s.deity) + (s.rank ? ' · <span style="color:var(--red)">' + esc(s.rank) + '</span>' : '') + ' · ' + FACTION_NAME[sigilFaction(id)] + '</div>';
     html += '<div class="galnote">' + esc(s.line) + '</div>';
     html += '<div class="galnote">被动：理智不高于 50 时，' + STAT_LABEL[s.stat] + ' +6。</div>';
     html += '<div class="galnote">祈福：' + esc(s.desc) + '</div>';
@@ -3614,7 +3969,8 @@ function synopsisFor(id){
   var tail = END_TAILS[id - 1] || '';
   var first = tail.split(/[。！？]/)[0];
   var line = first ? (first + '。') : '雾把这一页收走了，只留下你的名字。';
-  return m.title.replace(/^[^·]+·\s*/, '') + '：' + line;
+  var hv = (META.echo && META.echo[id]) ? sigilById(META.echo[id]) : null;
+  return m.title.replace(/^[^·]+·\s*/, '') + '：' + line + (hv ? '（' + hv.glyph + '印收尾）' : '');
 }
 function spawnGalleryDm(id, text){
   var layer = document.getElementById('dmLayer');
@@ -3659,9 +4015,12 @@ function showGalleryCell(id){
   }
   var bv = META.boundAt ? META.boundAt[id] : null;
   var m = endingMeta(id);
+  var hv = (META.echo && META.echo[id]) ? sigilById(META.echo[id]) : null;
   var html = '<div class="sec"><h4>' + esc(bv ? boundTitle(bv) : m.title) + '</h4>';
   html += '<div class="galnote">第 ' + id + ' 号 · 已记录</div>';
-  html += '<div class="galnote">' + (bv ? '印记终幕。九枚印记之一已经并入这一格。' : '它由你的选择、理智与推理共同写成。') + '</div></div>';
+  html += '<div class="galnote">' + (bv ? '印记终幕。九枚印记之一已经并入这一格。' : '它由你的选择、理智与推理共同写成。') + '</div>';
+  if(hv) html += '<div class="galnote" style="color:#c9b6ee">替你收尾的是「' + esc(hv.glyph + ' · ' + hv.name) + '」。同一格换一枚印记，会读成另一幕。</div>';
+  html += '</div>';
   openModal('结局回廊', html);
 }
 
@@ -3678,7 +4037,8 @@ function openGallery(){
       if(on) got++;
       var m = endingMeta(id);
       var bv = META.boundAt ? META.boundAt[id] : null;
-      var label = on ? (bv ? boundTitle(bv) : m.title.replace(/^[^·]+·\s*/, '')) : '？？';
+      var hv = (META.echo && META.echo[id]) ? sigilById(META.echo[id]) : null;
+      var label = on ? (bv ? boundTitle(bv) : m.title.replace(/^[^·]+·\s*/, '') + (hv ? ' ·' + hv.glyph : '')) : '？？';
       g += '<div class="gcell ' + (on ? 'on' : '') + '" data-a="gcell" data-id="' + id + '"><b>#' + ('00' + id).slice(-3) + '</b><span>' + (on ? esc(label) : '？？') + '</span></div>';
     }
     html += '<div class="gsec"><div class="ghead"><b>' + esc(ch.title) + '</b><span>' + got + ' / 20</span></div><div class="grid100">' + g + '</div></div>';
@@ -3700,6 +4060,7 @@ function openGallery(){
   });
   sigHtml += '</div>';
   sigHtml += '<div class="galnote" style="text-align:left">九枚印记各占 100 条结局中的一格。臣服后，对应的格子才会亮起。</div>';
+  sigHtml += '<div class="galnote" style="text-align:left">结案时带着印记，结局的收尾会改写；回廊里亮起的格子会标出替你收尾的那一枚。</div>';
   if(META.outerDone) sigHtml += '<div class="galnote" style="text-align:left">三柱神已齐。其它印记不再显现。</div>';
   sigHtml += '</div>';
   html += sigHtml;
@@ -3940,6 +4301,9 @@ function handleAction(a, id, q, o, el){
       break;
     case 'nightpick':
       if(S) chooseNight(parseInt(q, 10));
+      break;
+    case 'godend':
+      godEnd();
       break;
     case 'finalopen':
       openFinal();
