@@ -2781,8 +2781,10 @@ function grantSigil(){
   if(!pool.length){
     var st = pick(['inv','will','luck']);
     S.buff[st] = (S.buff[st] || 0) + 8;
-    addLog('印记重复：下一次' + STAT_LABEL[st] + '判定 +8。');
-    return {buffOnly: st};
+    var cut = 1 + Math.floor(Math.random() * 31);
+    var realCut = loseSan(cut);
+    addLog('印记重复：下一次' + STAT_LABEL[st] + '判定 +8；理智 −' + (realCut || 0) + '。');
+    return {buffOnly: st, cut: realCut, rawCut: cut};
   }
   var t = dedTier();
   var weights = pool.map(function(x){
@@ -2827,7 +2829,7 @@ function onDanmaku(el){
   var sig = Math.random() < chance ? grantSigil() : null;
   var sub;
   if(!sig) sub = pick(WHISPER_EMPTY);
-  else if(sig.buffOnly) sub = '印记不再重复 · 下一次' + STAT_LABEL[sig.buffOnly] + '判定 +8';
+  else if(sig.buffOnly) sub = '印记不再重复 · ' + (sig.cut > 0 ? ('理智 −' + sig.cut) : '理智已空 · 时段 −1') + ' · 下一次' + STAT_LABEL[sig.buffOnly] + '判定 +8';
   else sub = (sig.lostNow ? '印记被压灭：' : '印记显现：') + sig.glyph + ' · ' + sig.name;
   showForced(pick(FORCED_TEXTS), sub);
   updateHud();
